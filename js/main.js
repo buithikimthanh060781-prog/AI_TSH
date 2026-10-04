@@ -302,8 +302,13 @@ function updateAuthUI() {
           <span class="chevron-down">▼</span>
         </button>
         <div class="user-dropdown" id="user-dropdown">
+          <div style="padding: 10px 16px; border-bottom: 1px solid var(--border-color); font-size: 0.82rem;">
+            ${currentUser.is_verified 
+              ? '<span style="color: #10b981; font-weight: 600;">✓ Đã được Admin kích hoạt</span>' 
+              : '<span style="color: #f59e0b; font-weight: 600;">⏳ Chờ Admin xác thực</span>'}
+          </div>
           <a href="javascript:void(0)" onclick="openHistoryModal()"><span class="icon">📜</span> Lịch sử tra cứu</a>
-          ${currentUser.is_verified ? '' : '<a href="javascript:void(0)" onclick="resendVerification()"><span class="icon">✉️</span> Gửi lại xác thực email</a>'}
+          ${currentUser.is_verified ? '' : '<a href="lienhe.html"><span class="icon">📞</span> Liên hệ kích hoạt nhanh</a>'}
           <div class="dropdown-divider"></div>
           <a href="javascript:void(0)" onclick="handleLogout()"><span class="icon">🚪</span> Đăng xuất</a>
         </div>
@@ -324,11 +329,11 @@ function updateAuthUI() {
       if (!currentUser.is_verified) {
         verifyBanner.style.display = 'block';
         verifyBanner.innerHTML = `
-          <div class="banner-content">
-            <span class="banner-icon">⚠️</span>
+          <div class="banner-content container">
+            <span class="banner-icon">⏳</span>
             <div class="banner-text">
-              <strong>Tài khoản chưa xác thực email:</strong> Bạn chỉ được tra cứu đầy đủ 1 lần duy nhất. Hãy kiểm tra hộp thư kích hoạt hoặc
-              <button type="button" class="btn-resend-inline" onclick="resendVerification()">gửi lại email xác thực</button>.
+              <strong>Tài khoản đang chờ Admin xác thực:</strong> Bạn đang được trải nghiệm 1 lượt tra cứu dùng thử. Vui lòng liên hệ Quản trị viên để được duyệt và kích hoạt tài khoản sử dụng không giới hạn.
+              <a href="lienhe.html" class="btn-resend-inline" style="margin-left: 8px;">Liên hệ Admin &rarr;</a>
             </div>
           </div>
         `;
@@ -1608,7 +1613,8 @@ document.addEventListener('DOMContentLoaded', () => {
           body: JSON.stringify({ email, password: pass })
         });
         if (res.ok) {
-          alert('Đăng ký thành công! Toàn bộ 23 chỉ số đã được mở khoá.');
+          const data = await res.json();
+          alert(data.message || 'Đăng ký tài khoản thành công! Tài khoản của bạn đang chờ Quản trị viên (Admin) duyệt và kích hoạt.');
           closeAuthModal();
           await checkAuth();
           return;
@@ -1625,10 +1631,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // Fallback cho GitHub Pages tĩnh hoặc khi chạy offline
-      const staticUser = { email, is_verified: 1 };
+      const staticUser = { email, is_verified: 0 };
       try { localStorage.setItem('tsh_user', JSON.stringify(staticUser)); } catch (e) {}
       currentUser = staticUser;
-      alert('Đăng ký thành công! Toàn bộ 23 chỉ số đã được mở khoá.');
+      alert('Đăng ký tài khoản thành công! Tài khoản của bạn đang chờ Quản trị viên (Admin) duyệt và kích hoạt.');
       closeAuthModal();
       updateAuthUI();
     });

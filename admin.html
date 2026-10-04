@@ -82,6 +82,97 @@
       border-radius: 4px;
       cursor: pointer;
     }
+    .badge-pending {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid #f59e0b;
+      color: #fcd34d;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.78rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .badge-verified {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid #10b981;
+      color: #6ee7b7;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.78rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn-verify-sm {
+      background: #10b981;
+      color: #064e3b;
+      border: none;
+      padding: 4px 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-verify-sm:hover {
+      background: #34d399;
+    }
+    .btn-unverify-sm {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+      padding: 3px 6px;
+      font-size: 0.75rem;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-unverify-sm:hover {
+      color: #ef4444;
+      border-color: #ef4444;
+    }
+    .filter-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 14px;
+    }
+    .filter-tab {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .filter-tab.active, .filter-tab:hover {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: #38bdf8;
+      color: #38bdf8;
+    }
+    .filter-badge {
+      background: rgba(255, 255, 255, 0.12);
+      padding: 2px 7px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+    }
+    .filter-badge.pending-count {
+      background: #f59e0b;
+      color: #0f172a;
+      font-weight: 700;
+    }
+    .row-pending {
+      background: rgba(245, 158, 11, 0.04);
+    }
   </style>
 </head>
 <body>
@@ -110,11 +201,26 @@
       <div class="admin-toolbar">
         <div>
           <h2 style="font-size: 1.5rem; margin-bottom: 4px;">Danh Sách Tài Khoản Thành Viên</h2>
-          <p style="color: var(--text-muted); font-size: 0.88rem;">Theo dõi trạng thái, giới hạn 2 thiết bị và gia hạn thời hạn sử dụng.</p>
+          <p style="color: var(--text-muted); font-size: 0.88rem;">Theo dõi trạng thái, xác thực tài khoản thành viên, giới hạn 2 thiết bị và gia hạn thời hạn sử dụng.</p>
+
+          <div class="filter-group">
+            <button type="button" class="filter-tab active" id="tab-filter-all" onclick="setFilter('all')">
+              Tất cả <span class="filter-badge" id="count-all">0</span>
+            </button>
+            <button type="button" class="filter-tab" id="tab-filter-pending" onclick="setFilter('pending')">
+              ⏳ Chờ xác thực <span class="filter-badge pending-count" id="count-pending">0</span>
+            </button>
+            <button type="button" class="filter-tab" id="tab-filter-verified" onclick="setFilter('verified')">
+              ✓ Đã xác thực <span class="filter-badge" id="count-verified">0</span>
+            </button>
+            <button type="button" class="btn btn-outline btn-sm" id="btn-verify-all" style="display: none; border-color: #10b981; color: #10b981;" onclick="verifyAllPending()">
+              ✓ Kích hoạt tất cả chờ duyệt
+            </button>
+          </div>
         </div>
 
-        <div style="display: flex; gap: 10px;">
-          <input type="text" id="admin-search-user" class="form-control" placeholder="Tìm theo email..." style="width: 260px;">
+        <div style="display: flex; gap: 10px; align-self: flex-start; margin-top: 4px;">
+          <input type="text" id="admin-search-user" class="form-control" placeholder="Tìm theo email..." style="width: 260px;" onkeydown="if(event.key==='Enter') loadUsers()">
           <button type="button" class="btn btn-outline btn-sm" onclick="loadUsers()">Làm mới ↻</button>
         </div>
       </div>
@@ -190,6 +296,31 @@
           Xác Nhận Xoá Vĩnh Viễn
         </button>
       </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Xác thực / Kích hoạt tài khoản -->
+  <div class="modal-backdrop" id="verify-modal">
+    <div class="modal-card" style="max-width: 480px;">
+      <button type="button" class="modal-close" onclick="closeVerifyModal()">&times;</button>
+      <h3 style="margin-bottom: 8px; font-size: 1.3rem; color: #10b981;">✓ Kích Hoạt & Xác Thực Tài Khoản</h3>
+      <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 16px;" id="verify-modal-user-email"></p>
+      
+      <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px; margin-bottom: 16px;">
+        <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 8px;">Cấp thời hạn sử dụng ngay khi kích hoạt:</label>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="submitVerify(0)">Giữ nguyên (Miễn phí)</button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="submitVerify(30)">+30 Ngày</button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="submitVerify(90)">+90 Ngày (3 tháng)</button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="submitVerify(365)">+1 Năm (12 tháng)</button>
+        </div>
+        <button type="button" class="btn btn-gold btn-sm" style="width: 100%; margin-top: 8px;" onclick="submitVerifyUnlimited()">🌟 Kích hoạt + Vĩnh viễn (Trọn đời)</button>
+      </div>
+
+      <div style="display: flex; gap: 10px; justify-content: flex-end;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeVerifyModal()">Huỷ</button>
+        <button type="button" class="btn btn-primary btn-sm" style="background: #10b981;" onclick="submitVerify(0)">Xác thực kích hoạt ngay</button>
+      </div>
     </div>
   </div>
 

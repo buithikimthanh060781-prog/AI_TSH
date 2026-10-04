@@ -23,17 +23,19 @@ Hệ thống Landing Page tra cứu và phân tích Thần số học Pythagoras
 - **Xuất ảnh kết quả PNG**: Dùng HTML5 Canvas vẽ ảnh thẻ căn cước Thần số học sang trọng, tải về chia sẻ mạng xã hội.
 - **In / Lưu PDF**: Hỗ trợ CSS in ấn `@media print` dàn trang A4 sạch đẹp.
 
-### 2. Mô hình Freemium & Xác thực tài khoản
+### 2. Mô hình Freemium & Xác thực tài khoản bởi Admin
 - Khách chưa đăng ký xem được 2 chỉ số miễn phí (Đường đời, Sứ mệnh). 21 chỉ số còn lại bị khoá 🔒 trên bản đồ và thẻ. Bấm vào ô khoá sẽ hiện popup đăng ký/đăng nhập ngay tại chỗ.
-- Đăng ký tài khoản miễn phí bằng email mở khoá ngay toàn bộ 23 chỉ số.
+- Đăng ký tài khoản bằng email: Sau khi đăng ký, tài khoản ở trạng thái **Chờ Admin xác thực/kích hoạt**. Người dùng được trải nghiệm dùng thử 1 lượt tra cứu đầy đủ 23 chỉ số.
+- Từ lượt tra cứu thứ 2, hệ thống yêu cầu tài khoản phải được **Quản trị viên (Admin) phê duyệt và kích hoạt** mới có thể tra cứu không giới hạn.
 - Giới hạn tối đa **2 thiết bị / tài khoản**: Trình duyệt thứ 3 đăng nhập sẽ bị chặn (403 `DEVICE_LIMIT`). Chỉ admin mới có quyền gỡ thiết bị cũ để giải phóng vị trí.
-- Xác thực email: Tài khoản chưa xác thực chỉ được tra cứu tối đa 1 lần, lần thứ 2 bị chặn ở server kèm banner yêu cầu xác thực.
 - Quên mật khẩu & Đặt lại mật khẩu: Token 1 giờ, tự động đăng xuất tất cả các thiết bị cũ khi đổi mật khẩu mới thành công.
 - Lịch sử tra cứu: Lưu tối đa 50 lần tra cứu gần nhất, bấm 1 chạm để tra cứu lại.
 
 ### 3. Cổng Quản Trị Hệ Thống (Admin Panel)
 - Đăng nhập bảo mật tách biệt bằng username/password trong file `.env`.
-- Quản lý danh sách thành viên, tìm kiếm theo email.
+- **Xác thực & Kích hoạt tài khoản**: Quản trị viên duyệt người dùng trực tiếp trên Dashboard, kích hoạt 1 chạm hoặc kích hoạt kèm cấp gói sử dụng (+30 ngày, +90 ngày, +1 năm, Vĩnh viễn).
+- **Hỗ trợ duyệt hàng loạt**: Nút kích hoạt nhanh tất cả các tài khoản đang chờ phê duyệt.
+- **Bộ lọc tài khoản thông minh**: Lọc nhanh "Tất cả", "⏳ Chờ xác thực", "✓ Đã xác thực" kèm badge hiển thị số lượng theo thời gian thực.
 - Gia hạn nhanh thời hạn sử dụng (+7, +30, +90, +365 ngày, Vĩnh viễn).
 - Quản lý thiết bị: Xem IP, User-Agent, đặt nhãn gợi nhớ (vd: "Laptop Thanh"), gỡ thiết bị.
 - Cảnh báo bất thường: Tự động gắn cờ **⚠ Nghi vấn** khi 1 tài khoản đăng nhập từ 2 IP khác nhau trong vòng 6 giờ.

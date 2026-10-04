@@ -46,7 +46,7 @@ router.get('/me', requireAdmin, (req, res) => {
 
 // GET /api/admin/users
 router.get('/users', requireAdmin, (req, res) => {
-  const { q } = req.query;
+  const { q, status } = req.query;
   let sql = `
     SELECT 
       u.id, u.email, u.is_verified, u.plan_expires, u.created_at,
@@ -56,15 +56,35 @@ router.get('/users', requireAdmin, (req, res) => {
     LEFT JOIN sessions s ON u.id = s.user_id AND s.expires_at > datetime('now')
   `;
   const params = [];
+  const whereClauses = [];
 
   if (q && q.trim()) {
-    sql += ` WHERE u.email LIKE ? `;
+    whereClauses.push(`u.email LIKE ?`);
     params.push(`%${q.trim()}%`);
+  }
+
+  if (status === 'pending') {
+    whereClauses.push(`u.is_verified = 0`);
+  } else if (status === 'verified') {
+    whereClauses.push(`u.is_verified = 1`);
+  }
+
+  if (whereClauses.length > 0) {
+    sql += ` WHERE ` + whereClauses.join(' AND ');
   }
 
   sql += ` GROUP BY u.id ORDER BY u.id DESC`;
 
   const users = db.prepare(sql).all(...params);
+
+  // Thống kê tổng số lượng người dùng
+  const statsRow = db.prepare(`
+    SELECT 
+      COUNT(*) as total,
+      COALESCE(SUM(CASE WHEN is_verified = 1 THEN 1 ELSE 0 END), 0) as verified,
+      COALESCE(SUM(CASE WHEN is_verified = 0 THEN 1 ELSE 0 END), 0) as pending
+    FROM users
+  `).get();
 
   // Check suspicious flag for each user: 2 devices with different IPs within 6 hours
   const suspiciousStmt = db.prepare(`
@@ -85,7 +105,83 @@ router.get('/users', requireAdmin, (req, res) => {
     is_suspicious: suspiciousUserIds.has(u.id)
   }));
 
-  res.json({ success: true, users: enrichedUsers });
+  res.json({ 
+    success: true, 
+    users: enrichedUsers,
+    stats: {
+      total: statsRow ? statsRow.total : 0,
+      verified: statsRow ? statsRow.verified : 0,
+      pending: statsRow ? statsRow.pending : 0
+    }
+  });
+});
+
+// POST /api/admin/users/:id/verify - Xác thực / kích hoạt tài khoản bởi Admin
+router.post('/users/:id/verify', requireAdmin, (req, res) => {
+  const userId = parseInt(req.params.id, 10);
+  const { verified, planDays, unlimited } = req.body;
+
+  const user = db.prepare('SELECT id, email, plan_expires FROM users WHERE id = ?').get(userId);
+  if (!user) {
+    return res.status(404).json({ error: 'USER_NOT_FOUND', message: 'Không tìm thấy người dùng.' });
+  }
+
+  const isVerified = (verified === false || verified === 0 || verified === '0') ? 0 : 1;
+
+  let newExpiry = user.plan_expires;
+  if (isVerified && unlimited) {
+    newExpiry = 'unlimited';
+  } else if (isVerified && planDays) {
+    const numDays = parseInt(planDays, 10);
+    let baseTime = Date.now();
+    if (user.plan_expires && user.plan_expires !== 'unlimited') {
+      const currentExpiry = new Date(user.plan_expires).getTime();
+      if (currentExpiry > baseTime) {
+        baseTime = currentExpiry;
+      }
+    }
+    newExpiry = new Date(baseTime + numDays * 24 * 60 * 60 * 1000).toISOString();
+  }
+
+  db.prepare(`
+    UPDATE users 
+    SET is_verified = ?, 
+        verify_token = NULL, 
+        verify_token_expires = NULL,
+        plan_expires = ?,
+        updated_at = CURRENT_TIMESTAMP 
+    WHERE id = ?
+  `).run(isVerified, newExpiry, userId);
+
+  const statusMsg = isVerified 
+    ? `Đã xác thực và kích hoạt tài khoản ${user.email} thành công!` 
+    : `Đã huỷ xác thực tài khoản ${user.email}.`;
+
+  res.json({ 
+    success: true, 
+    message: statusMsg,
+    is_verified: isVerified,
+    plan_expires: newExpiry
+  });
+});
+
+// POST /api/admin/users/verify-all - Kích hoạt hàng loạt tất cả tài khoản đang chờ
+router.post('/users/verify-all', requireAdmin, (req, res) => {
+  const info = db.prepare(`
+    UPDATE users 
+    SET is_verified = 1, 
+        verify_token = NULL, 
+        verify_token_expires = NULL, 
+        updated_at = CURRENT_TIMESTAMP 
+    WHERE is_verified = 0
+  `).run();
+
+  const count = info.changes || 0;
+  res.json({
+    success: true,
+    count,
+    message: count > 0 ? `Đã xác thực thành công ${count} tài khoản đang chờ duyệt!` : 'Không có tài khoản nào đang chờ xác thực.'
+  });
 });
 
 // POST /api/admin/users/:id/extend - Gia hạn thời hạn sử dụng

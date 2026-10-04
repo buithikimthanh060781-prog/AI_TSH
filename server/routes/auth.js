@@ -91,13 +91,15 @@ router.post('/register', async (req, res) => {
       secure: process.env.NODE_ENV === 'production'
     });
 
-    // Send verification email
-    const appUrl = process.env.APP_URL || `http://${req.headers.host || 'localhost:3000'}`;
-    sendVerificationEmail(cleanEmail, verify_token, appUrl);
+    // Log dev message
+    console.log('\n=========================================');
+    console.log(`👤 [USER REGISTER] Tài khoản mới: ${cleanEmail} (ID: ${userId})`);
+    console.log(`⏳ Trạng thái: Đang chờ Quản trị viên (Admin) xác thực/kích hoạt.`);
+    console.log('=========================================\n');
 
     return res.json({
       success: true,
-      message: 'Đăng ký tài khoản thành công! Vui lòng kiểm tra email để xác thực tài khoản.',
+      message: 'Đăng ký tài khoản thành công! Tài khoản của bạn đang chờ Quản trị viên (Admin) xác thực/kích hoạt.',
       user: {
         id: userId,
         email: cleanEmail,
@@ -226,19 +228,10 @@ router.post('/resend-verification', (req, res) => {
     return res.json({ success: true, message: 'Tài khoản của bạn đã được xác thực trước đó.' });
   }
 
-  const verify_token = crypto.randomBytes(24).toString('hex');
-  const verify_token_expires = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
-
-  db.prepare(`
-    UPDATE users 
-    SET verify_token = ?, verify_token_expires = ?, updated_at = CURRENT_TIMESTAMP 
-    WHERE id = ?
-  `).run(verify_token, verify_token_expires, user.id);
-
-  const appUrl = process.env.APP_URL || `http://${req.headers.host || 'localhost:3000'}`;
-  sendVerificationEmail(user.email, verify_token, appUrl);
-
-  res.json({ success: true, message: 'Link xác thực mới đã được gửi tới email của bạn.' });
+  res.json({ 
+    success: true, 
+    message: 'Tài khoản của bạn đang chờ Quản trị viên (Admin) xác thực và kích hoạt. Vui lòng liên hệ Admin qua mục Liên hệ để được hỗ trợ nhanh nhất.' 
+  });
 });
 
 // POST /api/auth/forgot-password

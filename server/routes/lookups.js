@@ -35,7 +35,7 @@ router.post('/', (req, res) => {
       if (count >= 1) {
         return res.status(403).json({
           error: 'REQUIRE_VERIFY',
-          message: 'Tài khoản của bạn chưa xác thực email và đã sử dụng hết lượt tra cứu miễn phí duy nhất. Vui lòng kiểm tra email để kích hoạt tài khoản hoặc yêu cầu gửi lại link xác thực.'
+          message: 'Tài khoản của bạn đang chờ Quản trị viên (Admin) xác thực/kích hoạt và đã sử dụng hết lượt tra cứu dùng thử. Vui lòng liên hệ Admin để được kích hoạt tài khoản sử dụng không giới hạn.'
         });
       }
     }
