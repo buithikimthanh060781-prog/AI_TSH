@@ -105,5 +105,8 @@ try {
 try {
   db.exec('ALTER TABLE users ADD COLUMN note TEXT;');
 } catch (e) {}
+try {
+  db.exec('ALTER TABLE users ADD COLUMN full_name TEXT;');
+} catch (e) {}
 
 module.exports = db;

@@ -18,6 +18,12 @@ const {
   sendPasswordChangedNotification 
 } = require('../lib/email');
 
+const { 
+  ADMIN_COOKIE_NAME, 
+  createAdminSession, 
+  deleteAdminSession 
+} = require('../lib/adminSession');
+
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
@@ -28,18 +34,53 @@ function isValidPhone(phone) {
   return /^(0[2-9][0-9]{8,9}|[0-9]{10,11})$/.test(cleaned);
 }
 
+// Đảm bảo có tài khoản Admin trong bảng users để Admin có đầy đủ quyền tra cứu thành viên VIP
+async function ensureAdminMemberUser(adminPass) {
+  let adminRow = db.prepare("SELECT * FROM users WHERE email = 'admin' OR phone = 'admin'").get();
+  if (!adminRow) {
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(adminPass, salt);
+    const ins = db.prepare(`
+      INSERT INTO users (email, phone, password_hash, is_verified, plan_expires, note)
+      VALUES ('admin', 'admin', ?, 1, 'unlimited', 'Tài khoản Quản trị viên')
+    `).run(hash);
+    adminRow = db.prepare("SELECT * FROM users WHERE id = ?").get(ins.lastInsertRowid);
+  } else {
+    if (!adminRow.is_verified || adminRow.plan_expires !== 'unlimited') {
+      db.prepare("UPDATE users SET is_verified = 1, plan_expires = 'unlimited' WHERE id = ?").run(adminRow.id);
+      adminRow = db.prepare("SELECT * FROM users WHERE id = ?").get(adminRow.id);
+    }
+  }
+  return adminRow;
+}
+
 // GET /api/auth/me
 router.get('/me', (req, res) => {
   if (!req.user) {
+    if (req.admin) {
+      return res.json({
+        authenticated: true,
+        user: {
+          id: 0,
+          phone: req.admin.username,
+          email: req.admin.username,
+          is_verified: true,
+          plan_expires: 'unlimited',
+          is_admin: true,
+          device_count: 1,
+          lookup_count: 0
+        }
+      });
+    }
     return res.json({ authenticated: false, user: null });
   }
 
   const deviceCount = countActiveDevices(req.user.id);
-
-  // Check lookup count
   const lookupStmt = db.prepare('SELECT COUNT(*) as count FROM lookups WHERE user_id = ?');
   const lookupRow = lookupStmt.get(req.user.id);
   const lookupCount = lookupRow ? lookupRow.count : 0;
+
+  const isAdmin = !!(req.admin || req.user.email === 'admin' || req.user.phone === 'admin');
 
   res.json({
     authenticated: true,
@@ -47,19 +88,22 @@ router.get('/me', (req, res) => {
       id: req.user.id,
       phone: req.user.phone || req.user.email,
       email: req.user.email,
-      is_verified: req.user.is_verified,
-      plan_expires: req.user.plan_expires,
+      full_name: req.user.full_name || '',
+      is_verified: isAdmin ? true : !!req.user.is_verified,
+      plan_expires: isAdmin ? 'unlimited' : req.user.plan_expires,
+      is_admin: isAdmin,
       device_count: deviceCount,
       lookup_count: lookupCount
     }
   });
 });
 
-// POST /api/auth/register - Đăng ký bằng số điện thoại
+// POST /api/auth/register - Đăng ký bằng họ tên và số điện thoại
 router.post('/register', async (req, res) => {
   try {
-    const { phone, email, password, note } = req.body;
+    const { phone, email, password, fullName, full_name, name, note } = req.body;
     const inputPhone = (phone || email || '').trim();
+    const userFullName = (fullName || full_name || name || '').trim().slice(0, 100) || null;
     const userNote = (typeof note === 'string' ? note.trim().slice(0, 500) : null) || null;
 
     if (!inputPhone || !isValidPhone(inputPhone)) {
@@ -79,10 +123,10 @@ router.post('/register', async (req, res) => {
     const password_hash = await bcrypt.hash(password, salt);
 
     const insertStmt = db.prepare(`
-      INSERT INTO users (email, phone, password_hash, is_verified, note)
-      VALUES (?, ?, ?, 0, ?)
+      INSERT INTO users (email, phone, password_hash, is_verified, full_name, note)
+      VALUES (?, ?, ?, 0, ?, ?)
     `);
-    const result = insertStmt.run(cleanPhone, cleanPhone, password_hash, userNote);
+    const result = insertStmt.run(cleanPhone, cleanPhone, password_hash, userFullName, userNote);
     const userId = Number(result.lastInsertRowid);
 
     // Create session
@@ -100,7 +144,7 @@ router.post('/register', async (req, res) => {
     });
 
     console.log('\n=========================================');
-    console.log(`👤 [USER REGISTER] Tài khoản mới: SĐT ${cleanPhone} (ID: ${userId})`);
+    console.log(`👤 [USER REGISTER] Tài khoản mới: ${userFullName ? `[${userFullName}] ` : ''}SĐT ${cleanPhone} (ID: ${userId})`);
     if (userNote) console.log(`📝 [GHI CHÚ]: ${userNote}`);
     console.log(`⏳ Trạng thái: Đang chờ Quản trị viên (Admin) xác thực/kích hoạt.`);
     console.log('=========================================\n');
@@ -112,6 +156,7 @@ router.post('/register', async (req, res) => {
         id: userId,
         phone: cleanPhone,
         email: cleanPhone,
+        full_name: userFullName,
         is_verified: false,
         note: userNote
       }
@@ -122,7 +167,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// POST /api/auth/login - Đăng nhập bằng số điện thoại hoặc email
+// POST /api/auth/login - Đăng nhập bằng số điện thoại hoặc email (Hỗ trợ Admin tự động chuyển sang trang quản trị)
 router.post('/login', async (req, res) => {
   try {
     const { phone, email, identifier, password } = req.body;
@@ -132,7 +177,63 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'MISSING_FIELDS', message: 'Vui lòng nhập số điện thoại và mật khẩu.' });
     }
 
+    const adminUser = process.env.ADMIN_USERNAME || 'admin';
+    const adminPass = process.env.ADMIN_PASSWORD || 'admin123456';
     const cleanInput = inputLogin.replace(/[\s.-]/g, '');
+
+    // 1. Kiểm tra tài khoản Quản trị viên (Admin)
+    const isAdminLogin = (
+      cleanInput.toLowerCase() === adminUser.toLowerCase() ||
+      cleanInput.toLowerCase() === 'admin' ||
+      cleanInput === '0762294134'
+    ) && password === adminPass;
+
+    if (isAdminLogin) {
+      const adminMember = await ensureAdminMemberUser(adminPass);
+
+      // Cấp Admin Session
+      const { sessionId: adminSessionId } = createAdminSession(adminUser);
+      res.cookie(ADMIN_COOKIE_NAME, adminSessionId, {
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production'
+      });
+
+      // Cấp Member Session (bỏ qua giới hạn thiết bị cho admin)
+      const ip = getClientIp(req);
+      const sessionRes = createSession(adminMember.id, req.deviceId, ip, req.headers['user-agent'], true);
+      if (!sessionRes.error) {
+        res.cookie(SESSION_COOKIE_NAME, sessionRes.sessionId, {
+          maxAge: SESSION_DURATION_DAYS * 24 * 60 * 60 * 1000,
+          httpOnly: true,
+          sameSite: 'lax',
+          secure: process.env.NODE_ENV === 'production'
+        });
+      }
+
+      console.log('\n=========================================');
+      console.log(`🛡️ [ADMIN ĐĂNG NHẬP THÀNH CÔNG] Tài khoản: ${adminUser}`);
+      console.log(`🚀 Tự động chuyển hướng đến /admin.html (kèm quyền tra cứu không giới hạn)`);
+      console.log('=========================================\n');
+
+      return res.json({
+        success: true,
+        isAdmin: true,
+        redirect: '/admin.html',
+        message: 'Đăng nhập Quản trị viên thành công! Đang chuyển hướng đến trang Quản trị...',
+        user: {
+          id: adminMember.id,
+          phone: adminUser,
+          email: adminUser,
+          is_verified: true,
+          plan_expires: 'unlimited',
+          is_admin: true
+        }
+      });
+    }
+
+    // 2. Đăng nhập thành viên bình thường
     const user = db.prepare('SELECT * FROM users WHERE phone = ? OR email = ? OR email = ?').get(cleanInput, cleanInput, inputLogin.toLowerCase());
     if (!user) {
       return res.status(401).json({ error: 'INVALID_CREDENTIALS', message: 'Số điện thoại hoặc mật khẩu không chính xác.' });
@@ -159,13 +260,15 @@ router.post('/login', async (req, res) => {
 
     return res.json({
       success: true,
+      isAdmin: false,
       message: 'Đăng nhập thành công!',
       user: {
         id: user.id,
         phone: user.phone || user.email,
         email: user.email,
         is_verified: !!user.is_verified,
-        plan_expires: user.plan_expires
+        plan_expires: user.plan_expires,
+        is_admin: false
       }
     });
   } catch (err) {
@@ -219,7 +322,11 @@ router.post('/logout', (req, res) => {
   if (req.sessionId) {
     deleteSession(req.sessionId);
   }
+  if (req.adminSessionId) {
+    deleteAdminSession(req.adminSessionId);
+  }
   res.clearCookie(SESSION_COOKIE_NAME);
+  res.clearCookie(ADMIN_COOKIE_NAME);
   res.json({ success: true, message: 'Đã đăng xuất.' });
 });
 

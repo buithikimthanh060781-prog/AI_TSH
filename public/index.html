@@ -402,8 +402,12 @@
       <form id="auth-form-register" autocomplete="off">
         <div id="reg-error" class="auth-error"></div>
         <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px;">
-          Đăng ký bằng số điện thoại. Sau khi đăng ký, Admin sẽ xác thực tài khoản để mở khoá 23 chỉ số!
+          Đăng ký bằng họ tên và số điện thoại. Sau khi đăng ký, Admin sẽ xác thực tài khoản để mở khoá 23 chỉ số!
         </p>
+        <div class="form-group">
+          <label class="form-label">Họ và tên</label>
+          <input type="text" id="reg-fullname" class="form-control" placeholder="Ví dụ: Nguyễn Văn A" required>
+        </div>
         <div class="form-group">
           <label class="form-label">Số điện thoại</label>
           <input type="tel" id="reg-phone" class="form-control" placeholder="Ví dụ: 0762294134" pattern="[0-9]{10,11}" required>
@@ -411,10 +415,6 @@
         <div class="form-group">
           <label class="form-label">Mật khẩu (tối thiểu 6 ký tự)</label>
           <input type="password" id="reg-password" class="form-control" placeholder="••••••••" minlength="6" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Ghi chú gửi Admin (không bắt buộc)</label>
-          <textarea id="reg-note" class="form-control" rows="2" placeholder="Ví dụ: Đã chuyển khoản ACB / Số Zalo liên hệ..." style="resize: vertical; font-size: 0.9rem;"></textarea>
         </div>
         <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 10px;">
           Đăng Ký Tài Khoản

@@ -120,9 +120,10 @@ function renderUsersTable(users) {
     const accountDisplay = u.phone || u.email;
     const subAccount = (u.phone && u.email && u.phone !== u.email) ? `<div style="font-size:0.78rem; color:var(--text-muted);">${u.email}</div>` : '';
 
-    const noteHtml = u.note
-      ? `<div style="max-width: 220px; font-size: 0.82rem; color: #f59e0b; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 6px; padding: 4px 8px; word-break: break-word;" title="${escapeHtml(u.note)}">📝 ${escapeHtml(u.note)}</div>`
-      : '<span style="color: var(--text-dim); font-size: 0.8rem;">—</span>';
+    const displayName = u.full_name || u.note || '';
+    const nameHtml = displayName 
+      ? `<strong style="color: #f8fafc; font-size: 0.92rem;">${escapeHtml(displayName)}</strong>`
+      : '<span style="color: var(--text-dim); font-size: 0.82rem;">—</span>';
 
     const verifiedHtml = u.is_verified 
       ? `
@@ -263,10 +264,11 @@ function openVerifyModal(userId, email) {
   const user = allUsers.find(u => u.id === userId);
   const emailEl = document.getElementById('verify-modal-user-email');
   if (emailEl) {
-    const noteHtml = (user && user.note)
-      ? `<div style="margin-top: 10px; padding: 8px 12px; background: rgba(245, 158, 11, 0.12); border: 1px dashed #f59e0b; border-radius: 6px; font-size: 0.88rem; color: #fcd34d; text-align: left;">📝 <strong>Ghi chú từ khách hàng:</strong><br>${escapeHtml(user.note)}</div>`
+    const customerName = user && (user.full_name || user.note);
+    const nameHtml = customerName
+      ? `<div style="margin-top: 8px; padding: 6px 12px; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 6px; font-size: 0.92rem; color: #38bdf8; text-align: left;">👤 Họ và tên: <strong>${escapeHtml(customerName)}</strong></div>`
       : '';
-    emailEl.innerHTML = `Tài khoản: <strong>${email}</strong>${noteHtml}`;
+    emailEl.innerHTML = `Tài khoản: <strong>${email}</strong>${nameHtml}`;
   }
   const modal = document.getElementById('verify-modal');
   if (modal) modal.classList.add('active');
@@ -429,10 +431,8 @@ document.getElementById('delete-user-form').addEventListener('submit', async (e)
 async function adminLogout() {
   try {
     await fetch('/api/admin/logout', { method: 'POST' });
-    window.location.href = '/admin-login.html';
-  } catch (err) {
-    window.location.href = '/admin-login.html';
-  }
+  } catch (err) {}
+  window.location.href = '/index.html';
 }
 
 // Search debounce

@@ -4,8 +4,7 @@ node_modules/
 # Environment variables
 .env
 
-# Database & SQLite files
-data/*.sqlite
+# Database & SQLite temporary runtime files (cho phép database.sqlite được lưu trên GitHub)
 data/*.sqlite-journal
 data/*.sqlite-shm
 data/*.sqlite-wal

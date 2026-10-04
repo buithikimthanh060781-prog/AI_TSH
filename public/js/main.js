@@ -294,25 +294,32 @@ function updateAuthUI() {
   if (!authNav) return;
 
   if (currentUser) {
-    const userDisplay = currentUser.phone || currentUser.email || 'Thành viên';
-    const userAvatar = (userDisplay && userDisplay.length > 0) ? userDisplay.slice(0, 1).toUpperCase() : '📱';
+    const userDisplay = currentUser.full_name || currentUser.phone || currentUser.email || 'Thành viên';
+    const userAvatar = currentUser.is_admin ? '👑' : ((userDisplay && userDisplay.length > 0) ? userDisplay.slice(0, 1).toUpperCase() : '📱');
+    const adminDirectBtn = currentUser.is_admin 
+      ? `<a href="admin.html" class="btn btn-outline btn-sm" style="margin-right: 8px; border-color: #38bdf8; color: #38bdf8; font-weight: 700; text-decoration: none;">🛡️ Trang Quản Trị</a>`
+      : '';
 
     authNav.innerHTML = `
+      ${adminDirectBtn}
       <div class="user-menu-wrap">
         <button type="button" class="btn-user-badge" id="btn-user-menu">
           <span class="user-avatar">${userAvatar}</span>
-          <span class="user-email">${userDisplay}</span>
+          <span class="user-email">${currentUser.is_admin ? `${userDisplay} (Admin)` : userDisplay}</span>
           <span class="chevron-down">▼</span>
         </button>
         <div class="user-dropdown" id="user-dropdown">
           <div style="padding: 10px 16px; border-bottom: 1px solid var(--border-color); font-size: 0.82rem;">
-            ${currentUser.is_verified 
-              ? '<span style="color: #10b981; font-weight: 600;">✓ Đã được Admin kích hoạt</span>' 
-              : '<span style="color: #f59e0b; font-weight: 600;">⏳ Chờ Admin xác thực</span>'}
+            ${currentUser.is_admin
+              ? '<span style="color: #f59e0b; font-weight: 700;">⭐ Quản trị viên (Admin VIP)</span>'
+              : (currentUser.is_verified 
+                  ? '<span style="color: #10b981; font-weight: 600;">✓ Đã được Admin kích hoạt</span>' 
+                  : '<span style="color: #f59e0b; font-weight: 600;">⏳ Chờ Admin xác thực</span>')}
           </div>
+          ${currentUser.is_admin ? '<a href="admin.html" style="color: #38bdf8; font-weight: 700;"><span class="icon">🛡️</span> Bảng Quản trị (Admin Panel)</a>' : ''}
           <a href="javascript:void(0)" onclick="openHistoryModal()"><span class="icon">📜</span> Lịch sử tra cứu</a>
           <a href="javascript:void(0)" onclick="openChangePasswordModal()"><span class="icon">🔑</span> Đổi mật khẩu</a>
-          ${currentUser.is_verified ? '' : '<a href="lienhe.html"><span class="icon">📞</span> Liên hệ kích hoạt (0762294134)</a>'}
+          ${(currentUser.is_verified || currentUser.is_admin) ? '' : '<a href="lienhe.html"><span class="icon">📞</span> Liên hệ kích hoạt (0762294134)</a>'}
           <div class="dropdown-divider"></div>
           <a href="javascript:void(0)" onclick="handleLogout()"><span class="icon">🚪</span> Đăng xuất</a>
         </div>
@@ -1651,13 +1658,21 @@ document.addEventListener('DOMContentLoaded', () => {
   if (regForm) {
     regForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      const fullNameInput = document.getElementById('reg-fullname');
+      const fullName = fullNameInput ? fullNameInput.value.trim() : '';
       const phoneInput = document.getElementById('reg-phone');
       const phone = phoneInput ? phoneInput.value.trim() : '';
       const pass = document.getElementById('reg-password')?.value;
-      const noteInput = document.getElementById('reg-note');
-      const note = noteInput ? noteInput.value.trim() : '';
       const errBox = document.getElementById('reg-error');
       if (errBox) errBox.style.display = 'none';
+
+      if (!fullName) {
+        if (errBox) {
+          errBox.textContent = 'Vui lòng nhập họ và tên của bạn.';
+          errBox.style.display = 'block';
+        }
+        return;
+      }
 
       if (!phone || !/^[0-9]{10,11}$/.test(phone)) {
         if (errBox) {
@@ -1671,7 +1686,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const res = await fetch('/api/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone, password: pass, note })
+          body: JSON.stringify({ phone, password: pass, fullName })
         });
         if (res.ok) {
           const data = await res.json();
@@ -1692,7 +1707,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // Fallback
-      const staticUser = { phone, email: phone, is_verified: 0 };
+      const staticUser = { phone, email: phone, full_name: fullName, is_verified: 0 };
       try { localStorage.setItem('tsh_user', JSON.stringify(staticUser)); } catch (e) {}
       currentUser = staticUser;
       alert('Đăng ký tài khoản thành công! Vui lòng liên hệ Admin qua Zalo/SĐT 0762294134 để được kích hoạt tài khoản.');
@@ -1717,12 +1732,17 @@ document.addEventListener('DOMContentLoaded', () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ phone, email: phone, password: pass })
         });
+        const data = await res.json();
         if (res.ok) {
+          if (data.isAdmin || data.redirect) {
+            alert(data.message || 'Đăng nhập Quản trị viên thành công! Đang chuyển hướng vào trang Quản trị...');
+            window.location.href = data.redirect || '/admin.html';
+            return;
+          }
           closeAuthModal();
           await checkAuth();
           return;
         } else if (res.status !== 404) {
-          const data = await res.json();
           if (errBox) {
             errBox.textContent = data.message || 'Số điện thoại hoặc mật khẩu không đúng.';
             errBox.style.display = 'block';

@@ -27,6 +27,28 @@ router.post('/login', (req, res) => {
     secure: process.env.NODE_ENV === 'production'
   });
 
+  // Đồng thời cấp phiên thành viên VIP cho Admin để có thể tra cứu ngay trên trang chủ
+  try {
+    const bcrypt = require('bcryptjs');
+    let adminRow = db.prepare("SELECT * FROM users WHERE email = 'admin' OR phone = 'admin'").get();
+    if (!adminRow) {
+      const hash = bcrypt.hashSync(adminPass, 10);
+      const ins = db.prepare("INSERT INTO users (email, phone, password_hash, is_verified, plan_expires, note) VALUES ('admin', 'admin', ?, 1, 'unlimited', 'Tài khoản Quản trị viên')").run(hash);
+      adminRow = db.prepare("SELECT * FROM users WHERE id = ?").get(ins.lastInsertRowid);
+    }
+    const { createSession, getClientIp, SESSION_COOKIE_NAME, SESSION_DURATION_DAYS } = require('../lib/session');
+    const ip = getClientIp(req);
+    const sessionRes = createSession(adminRow.id, req.deviceId, ip, req.headers['user-agent'], true);
+    if (!sessionRes.error) {
+      res.cookie(SESSION_COOKIE_NAME, sessionRes.sessionId, {
+        maxAge: SESSION_DURATION_DAYS * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production'
+      });
+    }
+  } catch (e) {}
+
   res.json({ success: true, message: 'Đăng nhập quản trị thành công!' });
 });
 
@@ -35,6 +57,13 @@ router.post('/logout', (req, res) => {
   if (req.adminSessionId) {
     deleteAdminSession(req.adminSessionId);
   }
+  try {
+    const { deleteSession, SESSION_COOKIE_NAME } = require('../lib/session');
+    if (req.sessionId) {
+      deleteSession(req.sessionId);
+    }
+    res.clearCookie(SESSION_COOKIE_NAME);
+  } catch (e) {}
   res.clearCookie(ADMIN_COOKIE_NAME);
   res.json({ success: true, message: 'Đã đăng xuất quản trị.' });
 });
@@ -49,7 +78,7 @@ router.get('/users', requireAdmin, (req, res) => {
   const { q, status } = req.query;
   let sql = `
     SELECT 
-      u.id, u.email, u.phone, u.note, u.is_verified, u.plan_expires, u.created_at,
+      u.id, u.email, u.phone, u.full_name, u.note, u.is_verified, u.plan_expires, u.created_at,
       MAX(s.created_at) as last_login,
       COUNT(DISTINCT s.device_id) as active_devices
     FROM users u
@@ -59,8 +88,8 @@ router.get('/users', requireAdmin, (req, res) => {
   const whereClauses = [];
 
   if (q && q.trim()) {
-    whereClauses.push(`(u.email LIKE ? OR u.phone LIKE ?)`);
-    params.push(`%${q.trim()}%`, `%${q.trim()}%`);
+    whereClauses.push(`(u.email LIKE ? OR u.phone LIKE ? OR u.full_name LIKE ?)`);
+    params.push(`%${q.trim()}%`, `%${q.trim()}%`, `%${q.trim()}%`);
   }
 
   if (status === 'pending') {
@@ -294,6 +323,19 @@ router.post('/users/:id/devices/:deviceId/label', requireAdmin, (req, res) => {
   `).run(userId, deviceId, (label || '').trim());
 
   res.json({ success: true, message: 'Đã lưu nhãn thiết bị.' });
+});
+
+// GET /api/admin/backup-db - Tải file backup database về máy
+router.get('/backup-db', requireAdmin, (req, res) => {
+  const path = require('path');
+  const fs = require('fs');
+  const dbFile = path.join(__dirname, '..', '..', 'data', 'database.sqlite');
+  if (fs.existsSync(dbFile)) {
+    const filename = `database-backup-${new Date().toISOString().slice(0, 10)}.sqlite`;
+    res.download(dbFile, filename);
+  } else {
+    res.status(404).json({ error: 'DATABASE_NOT_FOUND', message: 'Không tìm thấy file database.' });
+  }
 });
 
 module.exports = router;

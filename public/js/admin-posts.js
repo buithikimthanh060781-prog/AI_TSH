@@ -108,7 +108,7 @@ async function loadAdminPosts() {
         <tr>
           <td>#${p.id}</td>
           <td>
-            <strong><a href="/bai-viet.html?slug=${p.slug}" target="_blank" style="color: #fff;">${p.title}</a></strong>
+            <strong><a href="/bai-viet.html?slug=${p.slug}" target="_blank" style="color: var(--text-main); font-weight: 700;">${p.title}</a></strong>
           </td>
           <td>${statusBadge}</td>
           <td>${p.view_count || 0}</td>
@@ -234,4 +234,12 @@ async function deletePost(id) {
   } catch (err) {
     alert('Không thể xoá bài viết.');
   }
+}
+
+// Logout
+async function adminLogout() {
+  try {
+    await fetch('/api/admin/logout', { method: 'POST' });
+  } catch (err) {}
+  window.location.href = '/index.html';
 }

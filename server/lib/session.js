@@ -53,16 +53,18 @@ function hasActiveDevice(userId, deviceId) {
   return !!stmt.get(userId, deviceId, now);
 }
 
-function createSession(userId, deviceId, ip, userAgent) {
+function createSession(userId, deviceId, ip, userAgent, bypassDeviceLimit = false) {
   // Check 2 devices limit
-  const isExistingDevice = hasActiveDevice(userId, deviceId);
-  if (!isExistingDevice) {
-    const activeDeviceCount = countActiveDevices(userId);
-    if (activeDeviceCount >= 2) {
-      return { 
-        error: 'DEVICE_LIMIT', 
-        message: 'Tài khoản đã đạt giới hạn 2 thiết bị đăng nhập. Vui lòng liên hệ quản trị viên để gỡ bớt thiết bị cũ.' 
-      };
+  if (!bypassDeviceLimit) {
+    const isExistingDevice = hasActiveDevice(userId, deviceId);
+    if (!isExistingDevice) {
+      const activeDeviceCount = countActiveDevices(userId);
+      if (activeDeviceCount >= 2) {
+        return { 
+          error: 'DEVICE_LIMIT', 
+          message: 'Tài khoản đã đạt giới hạn 2 thiết bị đăng nhập. Vui lòng liên hệ quản trị viên để gỡ bớt thiết bị cũ.' 
+        };
+      }
     }
   }
 
@@ -83,7 +85,7 @@ function getSession(sessionId) {
   const now = new Date().toISOString();
   const stmt = db.prepare(`
     SELECT s.id as session_id, s.device_id, s.ip as session_ip, s.created_at as session_created_at,
-           u.id as user_id, u.email, u.phone, u.is_verified, u.plan_expires, u.created_at as user_created_at
+           u.id as user_id, u.email, u.phone, u.full_name, u.is_verified, u.plan_expires, u.created_at as user_created_at
     FROM sessions s
     JOIN users u ON s.user_id = u.id
     WHERE s.id = ? AND s.expires_at > ?
@@ -125,6 +127,8 @@ function authMiddleware(req, res, next) {
   req.user = {
     id: session.user_id,
     email: session.email,
+    phone: session.phone,
+    full_name: session.full_name,
     is_verified: !!session.is_verified,
     plan_expires: session.plan_expires,
     created_at: session.user_created_at

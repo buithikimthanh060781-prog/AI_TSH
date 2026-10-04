@@ -24,11 +24,12 @@ router.post('/', (req, res) => {
   }
 
   const ip = getClientIp(req);
+  const isAdmin = !!(req.admin || (req.user && (req.user.email === 'admin' || req.user.phone === 'admin')));
   const userId = req.user ? req.user.id : null;
 
   if (req.user) {
     // Check if account is verified by Admin - must be verified before lookup
-    if (!req.user.is_verified) {
+    if (!req.user.is_verified && !isAdmin) {
       return res.status(403).json({
         error: 'REQUIRE_VERIFY',
         message: 'Tài khoản của bạn đang chờ Quản trị viên (Admin) xác thực và kích hoạt. Vui lòng liên hệ Admin qua Zalo/Hotline 0762294134 để được kích hoạt tài khoản trước khi tra cứu.'
