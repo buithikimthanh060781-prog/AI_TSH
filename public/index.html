@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thần Số Học Pythagoras — Khám Phá Bản Đồ Vận Mệnh 23 Chỉ Số</title>
+  <meta name="description" content="Tra cứu Thần Số Học Pythagoras chính xác: Bản đồ SVG 23 chỉ số, Đường đời, Sứ mệnh, Linh hồn, Nhân cách, 4 Đỉnh cao, 4 Thử thách và Nợ nghiệp.">
+  <link rel="stylesheet" href="css/style.css?v=5">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
+</head>
+<body>
+
+  <!-- Banner thông báo xác thực email -->
+  <div id="verify-banner" class="verify-banner"></div>
+
+  <!-- Header & Navigation -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="index.html" class="brand-logo">
+        <span class="brand-icon">✨</span>
+        <span>Thần Số Học Pythagoras</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#lookup" class="nav-link active">Tra cứu</a>
+        <a href="#map-section" class="nav-link">Bản đồ</a>
+        <a href="#indicators" class="nav-link">23 Chỉ số</a>
+        <a href="kien-thuc.html" class="nav-link">Kiến thức</a>
+        <a href="lienhe.html" class="nav-link">Liên hệ</a>
+      </nav>
+
+      <div class="header-actions" id="auth-nav">
+        <!-- Injected via JavaScript -->
+        <button type="button" class="btn btn-outline btn-sm" onclick="openAuthModal('login')">Đăng nhập</button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="openAuthModal('register')">Đăng ký miễn phí</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero & Lookup Section -->
+  <section class="hero-section" id="lookup">
+    <div class="container">
+      <div class="hero-badge">
+        <span>🔮 Khám Phá Tiềm Năng & Định Hướng Cuộc Đời</span>
+      </div>
+      <h1 class="hero-title">Bản Đồ Thần Số Học Pythagoras</h1>
+      <p class="hero-sub">
+        Giải mã trọn vẹn 23 chỉ số cốt lõi và các chu kỳ đỉnh cao cuộc đời từ họ tên và ngày sinh của bạn theo trường phái Pythagoras nguyên bản.
+      </p>
+
+      <!-- Biểu mẫu Tra cứu -->
+      <div class="lookup-card">
+        <div id="lookup-error" class="lookup-error"></div>
+        <form id="lookup-form" autocomplete="off">
+          <div class="form-group">
+            <label for="input-fullname" class="form-label">Họ và tên khai sinh của bạn</label>
+            <input type="text" id="input-fullname" class="form-control" placeholder="Ví dụ: Hoàng Sơ Hiền" required>
+            <div id="name-preview" class="name-preview"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Ngày / Tháng / Năm sinh (Dương lịch)</label>
+            <div class="date-grid">
+              <select id="input-day" class="form-control" required>
+                <option value="">Chọn ngày</option>
+              </select>
+              <select id="input-month" class="form-control" required>
+                <option value="">Chọn tháng</option>
+              </select>
+              <select id="input-year" class="form-control" required>
+                <option value="">Chọn năm</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-submit-lookup">
+            <span>Khám Phá Bản Đồ Ngay</span>
+            <span>⚡</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Results Section -->
+  <section class="results-section" id="results-section">
+    <div class="container">
+
+      <!-- Header Tóm tắt Kết quả & Thanh tác vụ -->
+      <div class="result-header-bar">
+        <div class="result-profile">
+          <div class="profile-avatar-num">
+            <span class="avatar-num-val" id="summary-duongdoi-val">--</span>
+            <span class="avatar-num-label">Đường đời</span>
+          </div>
+          <div class="profile-info">
+            <h3 id="summary-fullname">Họ Và Tên</h3>
+            <p id="summary-birthdate">Ngày sinh: --/--/----</p>
+          </div>
+        </div>
+
+        <div class="result-actions">
+          <button type="button" class="btn btn-outline btn-sm" onclick="exportResultImage()">
+            <span>📸 Lưu ảnh kết quả (PNG)</span>
+          </button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="window.print()">
+            <span>🖨️ In / Lưu PDF</span>
+          </button>
+          <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('lookup').scrollIntoView({behavior:'smooth'})">
+            <span>🔍 Tra cứu người khác</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 4 Chỉ số Cốt lõi Nổi bật -->
+      <div class="core-stats-grid">
+        <div class="core-stat-card">
+          <div class="core-stat-icon">🧭</div>
+          <div>
+            <div class="core-stat-name">Đường đời</div>
+            <div class="core-stat-val" id="summary-duongdoi-val2">22</div>
+          </div>
+        </div>
+        <div class="core-stat-card">
+          <div class="core-stat-icon">🎯</div>
+          <div>
+            <div class="core-stat-name">Sứ mệnh</div>
+            <div class="core-stat-val" id="summary-sumenh-val">7</div>
+          </div>
+        </div>
+        <div class="core-stat-card">
+          <div class="core-stat-icon">💖</div>
+          <div>
+            <div class="core-stat-name">Linh hồn</div>
+            <div class="core-stat-val" id="summary-linhhon-val">9</div>
+          </div>
+        </div>
+        <div class="core-stat-card">
+          <div class="core-stat-icon">🎭</div>
+          <div>
+            <div class="core-stat-name">Nhân cách</div>
+            <div class="core-stat-val" id="summary-nhancach-val">7</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Khối Bản Đồ SVG Trực Quan -->
+      <div class="map-view-grid" id="map-section">
+        <div class="map-card-wrapper">
+          <div class="section-heading-box">
+            <h2 class="section-title">
+              <span>🗺️</span>
+              <span>Bản Đồ Năng Lượng Thần Số Học</span>
+            </h2>
+            <p class="section-subtitle">
+              Sơ đồ hình học thiêng liêng thể hiện mối tương quan giữa các luồng năng lượng trong cuộc đời bạn.
+            </p>
+          </div>
+
+          <!-- Thanh Vận Trình Thời Gian & Chu Kỳ Vận Niên (Phương án A1) -->
+          <div class="transit-timeline-container" id="transit-timeline-container">
+            <!-- Injected dynamically via renderTransitBar() -->
+          </div>
+
+          <div class="svg-container" id="svg-map-container">
+            <!-- SVG Map injected here -->
+          </div>
+
+          <div class="map-tips">
+            <span class="map-tip-item">💡 Bấm 1 lần vào vòng tròn để đánh dấu đổi màu (xanh dương ⇄ xanh lá)</span>
+            <span class="map-tip-item">🔍 Bấm đúp (Double-click) để mở luận giải chi tiết chỉ số</span>
+            <span class="map-tip-item">🔒 Các chỉ số có icon khoá: Đăng ký miễn phí để mở</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sơ đồ Quy đổi Ký tự Pythagoras -->
+      <div class="breakdown-wrapper">
+        <div class="section-heading-box">
+          <h3 class="section-title">
+            <span>🔡</span>
+            <span>Sơ Đồ Phân Tích Ký Tự Họ Tên</span>
+          </h3>
+          <p class="section-subtitle">
+            Chi tiết từng chữ cái được quy đổi sang số theo Hệ Pythagoras, phân tách nguyên âm và phụ âm.
+          </p>
+        </div>
+        <div id="letter-breakdown-container">
+          <!-- Table injected here -->
+        </div>
+      </div>
+
+      <!-- Danh sách 23 Thẻ Chỉ Số -->
+      <div class="indicator-section" id="indicators">
+        <div class="section-heading-box text-center">
+          <h2 class="section-title">
+            <span>📊</span>
+            <span>Chi Tiết Toàn Bộ 23 Chỉ Số</span>
+          </h2>
+          <p class="section-subtitle">
+            Tra cứu đầy đủ các khía cạnh tính cách, năng lực tiềm ẩn, bài học đỉnh cao và nợ nghiệp cần hoá giải.
+          </p>
+        </div>
+
+        <!-- Thanh công cụ Lọc & Tìm kiếm -->
+        <div class="indicator-toolbar">
+          <div class="filter-tabs">
+            <button type="button" class="tab-filter-btn active" data-group="all">Tất cả (23)</button>
+            <button type="button" class="tab-filter-btn" data-group="cotLoi">Cốt lõi</button>
+            <button type="button" class="tab-filter-btn" data-group="boTro">Bổ trợ</button>
+            <button type="button" class="tab-filter-btn" data-group="dinhCao">4 Đỉnh cao</button>
+            <button type="button" class="tab-filter-btn" data-group="thuThach">4 Thử thách</button>
+            <button type="button" class="tab-filter-btn" data-group="dacBiet">Đặc biệt</button>
+          </div>
+
+          <div class="search-box">
+            <input type="text" id="indicator-search" class="form-control" placeholder="Tìm nhanh chỉ số...">
+          </div>
+        </div>
+
+        <!-- Lưới thẻ chỉ số -->
+        <div class="indicator-grid" id="indicator-cards-grid">
+          <!-- Cards injected here -->
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Educational & Reference Section -->
+  <section class="educational-section">
+    <div class="container">
+
+      <!-- Bảng Quy Đổi Hệ Pythagoras -->
+      <div class="pythagoras-table-box">
+        <div class="section-heading-box text-center">
+          <h3 class="section-title">
+            <span>📐</span>
+            <span>Bảng Quy Đổi Ký Tự Hệ Pythagoras</span>
+          </h3>
+          <p class="section-subtitle">
+            Bảng quy chiếu chuẩn hệ thống toán học Pythagoras từ chữ cái sang 9 con số nguyên bản.
+          </p>
+        </div>
+
+        <div class="pythagoras-grid">
+          <div class="pythagoras-cell"><span class="pythagoras-num">1</span><span class="pythagoras-chars">A, J, S</span></div>
+          <div class="pythagoras-cell"><span class="pythagoras-num">2</span><span class="pythagoras-chars">B, K, T</span></div>
+          <div class="pythagoras-cell"><span class="pythagoras-num">3</span><span class="pythagoras-chars">C, L, U</span></div>
+          <div class="pythagoras-cell"><span class="pythagoras-num">4</span><span class="pythagoras-chars">D, M, V</span></div>
+          <div class="pythagoras-cell"><span class="pythagoras-num">5</span><span class="pythagoras-chars">E, N, W</span></div>
+          <div class="pythagoras-cell"><span class="pythagoras-num">6</span><span class="pythagoras-chars">F, O, X</span></div>
+          <div class="pythagoras-cell"><span class="pythagoras-num">7</span><span class="pythagoras-chars">G, P, Y</span></div>
+          <div class="pythagoras-cell"><span class="pythagoras-num">8</span><span class="pythagoras-chars">H, Q, Z</span></div>
+          <div class="pythagoras-cell"><span class="pythagoras-num">9</span><span class="pythagoras-chars">I, R</span></div>
+        </div>
+      </div>
+
+      <!-- 4 Bước Khám Phá -->
+      <div class="section-heading-box text-center" style="margin-top: 60px;">
+        <h3 class="section-title">4 Bước Thấu Suốt Bản Thân Qua Thần Số Học</h3>
+        <p class="section-subtitle">Hành trình chuyển hoá nhận thức và nắm bắt cơ hội cuộc đời</p>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">01</div>
+          <h4>Nhận Diện Năng Lượng Gốc</h4>
+          <p>Hiểu rõ con số Đường đời, Sứ mệnh và Linh hồn để biết mình là ai, sở hữu thế mạnh bẩm sinh nào.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">02</div>
+          <h4>Lắp Ráp Mảnh Ghép Bản Đồ</h4>
+          <p>Quan sát sự tương tác giữa các chỉ số liên kết, chỉ số thiếu và sức mạnh tiềm thức để hoàn thiện nội tâm.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">03</div>
+          <h4>Đón Đầu 4 Chặng Đỉnh Cao</h4>
+          <p>Nắm bắt các cột mốc tuổi vàng và bài học thử thách tương ứng để chuẩn bị tài lực và tâm thế đón vận hội.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">04</div>
+          <h4>Hoá Giải Nợ Nghiệp</h4>
+          <p>Thấu suốt các bài học nợ nghiệp (13, 14, 16, 19) và áp dụng phương pháp rèn luyện thiết thực mỗi ngày.</p>
+        </div>
+      </div>
+
+      <!-- FAQ Section -->
+      <div class="faq-section" style="margin-top: 60px;">
+        <div class="section-heading-box text-center">
+          <h3 class="section-title">Câu Hỏi Thường Gặp</h3>
+          <p class="section-subtitle">Giải đáp các thắc mắc phổ biến về Thần Số Học Pythagoras</p>
+        </div>
+
+        <div class="faq-list">
+          <div class="faq-item active">
+            <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+              <span>Thần số học Pythagoras là gì và hoạt động ra sao?</span>
+              <span>▼</span>
+            </div>
+            <div class="faq-answer">
+              Thần số học Pythagoras nghiên cứu về sự tương tác giữa các tần số rung động của con số với bản đồ cuộc đời con người. Mỗi chữ cái trong tên và ngày tháng năm sinh đều tương ứng với một tần số năng lượng nhất định, phản ánh tính cách, bài học và cơ hội trong đời bạn.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+              <span>Làm thế nào để mở khoá trọn vẹn toàn bộ 23 chỉ số?</span>
+              <span>▼</span>
+            </div>
+            <div class="faq-answer">
+              Bạn chỉ cần bấm nút "Đăng ký miễn phí" và nhập email cùng mật khẩu (chỉ mất 15 giây). Hệ thống sẽ mở khoá ngay lập tức toàn bộ 23 chỉ số, bản đồ chi tiết, hỗ trợ lưu ảnh kết quả và in PDF hoàn toàn miễn phí.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+              <span>Các con số Bậc thầy (11, 22, 33) có ý nghĩa gì?</span>
+              <span>▼</span>
+            </div>
+            <div class="faq-answer">
+              Số 11, 22 và 33 là các Master Numbers mang năng lượng rung động kép và tiềm năng rất lớn. Người có số bậc thầy thường sở hữu trực giác mạnh mẽ, sứ mệnh phụng sự cao cả nhưng cũng phải vượt qua nhiều thử thách để kích hoạt hết tiềm năng.
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
+              <span>Nợ nghiệp (13, 14, 16, 19) có nguy hiểm không?</span>
+              <span>▼</span>
+            </div>
+            <div class="faq-answer">
+              Nợ nghiệp không phải là hình phạt hay điềm xấu, mà là bài học mà linh hồn bạn chưa hoàn thành trong quá khứ. Nhận diện được con số nợ nghiệp giúp bạn biết chính xác mình cần rèn luyện tính kỷ luật, khiêm nhường hay kiên nhẫn để chuyển hoá thành tựu rực rỡ.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-about">
+          <div class="brand-logo">
+            <span class="brand-icon">✨</span>
+            <span>Thần Số Học Pythagoras</span>
+          </div>
+          <p>
+            Ứng dụng tra cứu và phân tích bản đồ Thần số học chuẩn Pythagoras, mang lại cái nhìn sâu sắc và định hướng đúng đắn cho sự nghiệp, tình duyên và cuộc sống.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Liên Kết Nhanh</h4>
+          <ul class="footer-links">
+            <li><a href="#lookup">Tra cứu thần số học</a></li>
+            <li><a href="#map-section">Bản đồ năng lượng</a></li>
+            <li><a href="kien-thuc.html">Thư viện kiến thức</a></li>
+            <li><a href="lienhe.html">Liên hệ tư vấn</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Hỗ Trợ & Điều Khoản</h4>
+          <ul class="footer-links">
+            <li><a href="lienhe.html">Trung tâm trợ giúp</a></li>
+            <li><a href="admin-login.html">Cổng quản trị (Admin)</a></li>
+            <li><a href="forgot-password.html">Quên mật khẩu</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2026 Thần Số Học Pythagoras. Bảo lưu mọi quyền. Phát triển chuẩn theo thuật toán Pythagoras.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL: Luận giải chỉ số chi tiết -->
+  <div class="modal-backdrop" id="meaning-modal">
+    <div class="modal-card">
+      <button type="button" class="modal-close" onclick="closeMeaningModal()">&times;</button>
+      <div id="meaning-modal-body">
+        <!-- Content injected dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Đăng ký / Đăng nhập -->
+  <div class="modal-backdrop" id="auth-modal">
+    <div class="modal-card" style="max-width: 440px;">
+      <button type="button" class="modal-close" onclick="closeAuthModal()">&times;</button>
+
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab-btn active" id="tab-btn-register" onclick="switchAuthTab('register')">Đăng ký tài khoản</button>
+        <button type="button" class="auth-tab-btn" id="tab-btn-login" onclick="switchAuthTab('login')">Đăng nhập</button>
+      </div>
+
+      <!-- Form Đăng ký -->
+      <form id="auth-form-register" autocomplete="off">
+        <div id="reg-error" class="auth-error"></div>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px;">
+          Đăng ký miễn phí chỉ trong 15 giây để mở khoá toàn bộ 23 chỉ số và bản đồ chi tiết!
+        </p>
+        <div class="form-group">
+          <label class="form-label">Địa chỉ Email</label>
+          <input type="email" id="reg-email" class="form-control" placeholder="name@example.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mật khẩu (tối thiểu 6 ký tự)</label>
+          <input type="password" id="reg-password" class="form-control" placeholder="••••••••" minlength="6" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 10px;">
+          Mở Khoá Toàn Bộ 23 Chỉ Số
+        </button>
+      </form>
+
+      <!-- Form Đăng nhập -->
+      <form id="auth-form-login" style="display: none;" autocomplete="off">
+        <div id="login-error" class="auth-error"></div>
+        <div class="form-group">
+          <label class="form-label">Địa chỉ Email</label>
+          <input type="email" id="login-email" class="form-control" placeholder="name@example.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mật khẩu</label>
+          <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
+        </div>
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 14px;">
+          <a href="forgot-password.html" style="font-size: 0.85rem;">Quên mật khẩu?</a>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;">
+          Đăng Nhập
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: Lịch sử tra cứu -->
+  <div class="modal-backdrop" id="history-modal">
+    <div class="modal-card">
+      <button type="button" class="modal-close" onclick="closeHistoryModal()">&times;</button>
+      <h3 style="margin-bottom: 16px; font-size: 1.3rem;">📜 Lịch Sử Tra Cứu Của Bạn</h3>
+      <div id="history-modal-list">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js?v=2"></script>
+  <script src="js/main.js?v=5"></script>
+</body>
+</html>
