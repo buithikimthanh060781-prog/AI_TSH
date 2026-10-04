@@ -27,17 +27,12 @@ router.post('/', (req, res) => {
   const userId = req.user ? req.user.id : null;
 
   if (req.user) {
-    // Check if account is verified
+    // Check if account is verified by Admin - must be verified before lookup
     if (!req.user.is_verified) {
-      const countStmt = db.prepare('SELECT COUNT(*) as cnt FROM lookups WHERE user_id = ?');
-      const countRow = countStmt.get(req.user.id);
-      const count = countRow ? countRow.cnt : 0;
-      if (count >= 1) {
-        return res.status(403).json({
-          error: 'REQUIRE_VERIFY',
-          message: 'Tài khoản của bạn đang chờ Quản trị viên (Admin) xác thực/kích hoạt và đã sử dụng hết lượt tra cứu dùng thử. Vui lòng liên hệ Admin để được kích hoạt tài khoản sử dụng không giới hạn.'
-        });
-      }
+      return res.status(403).json({
+        error: 'REQUIRE_VERIFY',
+        message: 'Tài khoản của bạn đang chờ Quản trị viên (Admin) xác thực và kích hoạt. Vui lòng liên hệ Admin qua Zalo/Hotline 0762294134 để được kích hoạt tài khoản trước khi tra cứu.'
+      });
     }
 
     // Save lookup record

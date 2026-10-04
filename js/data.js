@@ -336,7 +336,7 @@ const TSH_DATA = {
     },
     {
       q: 'Làm sao để mở khoá toàn bộ 23 chỉ số?',
-      a: 'Bạn chỉ cần bấm nút "Đăng ký miễn phí" bằng email của mình (chỉ mất 15 giây). Hệ thống sẽ mở khoá ngay lập tức toàn bộ 23 chỉ số, bản đồ chi tiết và hỗ trợ xuất ảnh PNG, in PDF lưu lại trọn đời hoàn toàn miễn phí.'
+      a: 'Bạn chỉ cần bấm nút "Đăng ký" bằng số điện thoại của mình (chỉ mất 15 giây). Sau khi Admin kích hoạt tài khoản, hệ thống sẽ mở khoá toàn bộ 23 chỉ số, bản đồ chi tiết và hỗ trợ xuất ảnh PNG, in PDF lưu lại trọn đời.'
     },
     {
       q: 'Các số Bậc thầy (11, 22, 33) có ý nghĩa gì đặc biệt?',

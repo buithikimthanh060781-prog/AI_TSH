@@ -83,7 +83,7 @@ function getSession(sessionId) {
   const now = new Date().toISOString();
   const stmt = db.prepare(`
     SELECT s.id as session_id, s.device_id, s.ip as session_ip, s.created_at as session_created_at,
-           u.id as user_id, u.email, u.is_verified, u.plan_expires, u.created_at as user_created_at
+           u.id as user_id, u.email, u.phone, u.is_verified, u.plan_expires, u.created_at as user_created_at
     FROM sessions s
     JOIN users u ON s.user_id = u.id
     WHERE s.id = ? AND s.expires_at > ?

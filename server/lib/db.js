@@ -95,4 +95,15 @@ db.exec(`
   );
 `);
 
+// Migration: ensure phone and note columns exist in users table
+try {
+  db.exec('ALTER TABLE users ADD COLUMN phone TEXT;');
+} catch (e) {}
+try {
+  db.exec('CREATE INDEX IF NOT EXISTS idx_users_phone ON users(phone);');
+} catch (e) {}
+try {
+  db.exec('ALTER TABLE users ADD COLUMN note TEXT;');
+} catch (e) {}
+
 module.exports = db;

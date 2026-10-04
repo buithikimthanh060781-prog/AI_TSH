@@ -220,7 +220,7 @@
         </div>
 
         <div style="display: flex; gap: 10px; align-self: flex-start; margin-top: 4px;">
-          <input type="text" id="admin-search-user" class="form-control" placeholder="Tìm theo email..." style="width: 260px;" onkeydown="if(event.key==='Enter') loadUsers()">
+          <input type="text" id="admin-search-user" class="form-control" placeholder="Tìm theo SĐT hoặc email..." style="width: 260px;" onkeydown="if(event.key==='Enter') loadUsers()">
           <button type="button" class="btn btn-outline btn-sm" onclick="loadUsers()">Làm mới ↻</button>
         </div>
       </div>
@@ -230,7 +230,8 @@
           <thead>
             <tr>
               <th>ID</th>
-              <th>Email</th>
+              <th>SĐT / Email</th>
+              <th>Ghi chú</th>
               <th>Xác thực</th>
               <th>Thiết bị</th>
               <th>Lần login cuối</th>
@@ -240,7 +241,7 @@
           </thead>
           <tbody id="users-table-body">
             <tr>
-              <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 40px;">Đang tải danh sách người dùng...</td>
+              <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 40px;">Đang tải danh sách người dùng...</td>
             </tr>
           </tbody>
         </table>

@@ -3,74 +3,215 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Liên Hệ & Hỗ Trợ — Thần Số Học Pythagoras</title>
+  <title>Trung Tâm Liên Hệ & Hỗ Trợ — Thần Số Học Pythagoras</title>
   <link rel="stylesheet" href="css/style.css">
   <style>
     .contact-hero {
-      padding: 60px 0 30px;
+      padding: 50px 0 25px;
       text-align: center;
     }
     .contact-hero h1 {
-      font-size: 2.6rem;
-      margin-bottom: 12px;
-      background: linear-gradient(135deg, #0f172a 40%, var(--primary) 100%);
+      font-size: 2.4rem;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
-    .info-cards-grid {
+    .contact-support-container {
+      max-width: 960px;
+      margin: 20px auto 70px;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 20px;
-      margin-bottom: 50px;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      align-items: stretch;
     }
-    .info-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 24px;
-      text-align: center;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-    }
-    .info-icon {
-      font-size: 2.2rem;
-      margin-bottom: 12px;
-      display: inline-block;
-    }
-    .info-card h4 {
-      font-size: 1.1rem;
-      margin-bottom: 6px;
-      color: #0f172a;
-    }
-    .info-card p {
-      color: var(--text-muted);
-      font-size: 0.9rem;
-    }
-    .contact-layout {
-      display: grid;
-      grid-template-columns: 1.2fr 1fr;
-      gap: 40px;
-      margin-bottom: 60px;
-    }
-    .contact-form-box {
+    .support-card {
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-lg);
-      padding: 36px;
+      padding: 36px 30px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      position: relative;
     }
-    .map-frame-box {
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      border: 1px solid var(--border-color);
-      min-height: 400px;
+    .support-card-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--border-color);
     }
-    .char-count {
-      text-align: right;
-      font-size: 0.8rem;
+    .support-card-icon {
+      font-size: 2rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--primary);
+    }
+    .support-card-title {
+      font-size: 1.28rem;
+      margin: 0;
+      color: #f8fafc;
+      font-weight: 700;
+    }
+    .support-card-subtitle {
+      font-size: 0.86rem;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+    .phone-highlight-box {
+      background: var(--bg-card);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: var(--radius-md);
+      padding: 24px 20px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .phone-label {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+    .phone-number-display {
+      font-size: 2.3rem;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: #38bdf8;
+      display: block;
+      margin: 10px 0 6px;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .phone-number-display:hover {
+      color: #7dd3fc;
+    }
+    .phone-note {
+      font-size: 0.88rem;
       color: var(--text-dim);
-      margin-top: 4px;
+    }
+    .support-action-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: auto;
+    }
+    .btn-zalo {
+      background: #0068ff;
+      color: #ffffff;
+      padding: 14px 22px;
+      border-radius: 8px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      text-decoration: none;
+      transition: all 0.2s;
+      font-size: 1.05rem;
+    }
+    .btn-zalo:hover {
+      background: #0054cc;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(0, 104, 255, 0.35);
+    }
+    .btn-call {
+      background: var(--bg-card);
+      color: #f8fafc;
+      border: 1px solid var(--border-color);
+      padding: 14px 22px;
+      border-radius: 8px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      text-decoration: none;
+      transition: all 0.2s;
+      font-size: 1.05rem;
+    }
+    .btn-call:hover {
+      border-color: #38bdf8;
+      color: #38bdf8;
+      transform: translateY(-2px);
+    }
+    .bank-info-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin-bottom: 20px;
+    }
+    .bank-info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 0.92rem;
+      color: var(--text-muted);
+    }
+    .bank-info-row strong {
+      color: #f8fafc;
+    }
+    .bank-account-num {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #f59e0b;
+      letter-spacing: 1px;
+    }
+    .btn-copy-stk {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid #f59e0b;
+      color: #fbbf24;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-left: 10px;
+      transition: all 0.2s;
+    }
+    .btn-copy-stk:hover {
+      background: #f59e0b;
+      color: #0f172a;
+    }
+    .qr-image-wrapper {
+      text-align: center;
+      background: #ffffff;
+      padding: 16px;
+      border-radius: 12px;
+      margin: 0 auto;
+      max-width: 290px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+    .qr-image-wrapper img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      border-radius: 8px;
+    }
+    .qr-hint {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      margin-top: 12px;
     }
     @media (max-width: 768px) {
-      .contact-layout { grid-template-columns: 1fr; }
+      .contact-support-container {
+        grid-template-columns: 1fr;
+        padding: 0 16px;
+      }
+      .phone-number-display {
+        font-size: 1.9rem;
+      }
     }
   </style>
 </head>
@@ -98,89 +239,78 @@
     <section class="contact-hero">
       <h1>Trung Tâm Liên Hệ & Hỗ Trợ</h1>
       <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto;">
-        Đội ngũ chuyên gia Thần số học Pythagoras luôn sẵn sàng lắng nghe, giải đáp các thắc mắc và đồng hành cùng hành trình thấu suốt bản thân của bạn.
+        Hỗ trợ kích hoạt tài khoản, tư vấn Thần số học qua Zalo / Số điện thoại và thanh toán chuyển khoản ACB.
       </p>
     </section>
 
-    <!-- 4 Quick Info Cards -->
-    <div class="info-cards-grid">
-      <div class="info-card">
-        <span class="info-icon">📍</span>
-        <h4>Văn Phòng Chính</h4>
-        <p>Tòa nhà Landmark, 720A Điện Biên Phủ, Phường 22, Bình Thạnh, TP. Hồ Chí Minh</p>
+    <div class="contact-support-container">
+      <!-- Cột 1: Hỗ trợ qua Zalo & Số điện thoại -->
+      <div class="support-card">
+        <div class="support-card-header">
+          <div class="support-card-icon">📞</div>
+          <div>
+            <h3 class="support-card-title">Hỗ Trợ Zalo & Điện Thoại</h3>
+            <div class="support-card-subtitle">Kênh hỗ trợ và kích hoạt tài khoản 24/7</div>
+          </div>
+        </div>
+
+        <div class="phone-highlight-box">
+          <div class="phone-label">Số điện thoại & Zalo hỗ trợ</div>
+          <a href="tel:0762294134" class="phone-number-display">0762294134</a>
+          <div class="phone-note">Nhấn để gọi trực tiếp hoặc nhắn tin qua Zalo</div>
+        </div>
+
+        <div style="color: var(--text-muted); font-size: 0.92rem; line-height: 1.6; margin-bottom: 24px;">
+          <p style="margin-bottom: 8px;">✨ <strong>Hỗ trợ kích hoạt tài khoản:</strong> Sau khi đăng ký tài khoản thành viên, quý khách vui lòng liên hệ qua Zalo hoặc gọi đến số điện thoại trên để được Admin xác thực và mở khoá không giới hạn 23 chỉ số.</p>
+          <p>🔮 <strong>Tư vấn Thần số học:</strong> Giải đáp chi tiết các thắc mắc về bản đồ năng lượng, con số Đường đời, Sứ mệnh và các vận trình năm cá nhân.</p>
+        </div>
+
+        <div class="support-action-btns">
+          <a href="https://zalo.me/0762294134" target="_blank" rel="noopener noreferrer" class="btn-zalo">
+            💬 Nhắn Tin Qua Zalo (0762294134)
+          </a>
+          <a href="tel:0762294134" class="btn-call">
+            📞 Gọi Điện Thoại (0762294134)
+          </a>
+        </div>
       </div>
-      <div class="info-card">
-        <span class="info-icon">📞</span>
-        <h4>Hotline Tư Vấn</h4>
-        <p><strong>0988 123 456</strong><br>Hỗ trợ 24/7 qua Zalo & Điện thoại</p>
-      </div>
-      <div class="info-card">
-        <span class="info-icon">✉️</span>
-        <h4>Hòm Thư Điện Tử</h4>
-        <p><strong>hotro@thansohoc.vn</strong><br>Phản hồi trong vòng 2 giờ</p>
-      </div>
-      <div class="info-card">
-        <span class="info-icon">⏰</span>
-        <h4>Giờ Làm Việc</h4>
-        <p>Thứ Hai - Thứ Bảy: 08:00 - 21:00<br>Chủ Nhật: 09:00 - 18:00</p>
+
+      <!-- Cột 2: Thông tin tài khoản ACB -->
+      <div class="support-card">
+        <div class="support-card-header">
+          <div class="support-card-icon" style="background: rgba(245, 158, 11, 0.12); color: #f59e0b;">💳</div>
+          <div>
+            <h3 class="support-card-title">Tài Khoản Ngân Hàng ACB</h3>
+            <div class="support-card-subtitle">Quét mã VietQR chuyển khoản nhanh 24/7</div>
+          </div>
+        </div>
+
+        <div class="bank-info-box">
+          <div class="bank-info-row">
+            <span>Ngân hàng:</span>
+            <strong>ACB (Ngân hàng Á Châu)</strong>
+          </div>
+          <div class="bank-info-row">
+            <span>Chủ tài khoản:</span>
+            <strong>BUI THI KIM THANH</strong>
+          </div>
+          <div class="bank-info-row">
+            <span>Số tài khoản:</span>
+            <div style="display: flex; align-items: center;">
+              <span class="bank-account-num" id="stk-text">29688689</span>
+              <button type="button" class="btn-copy-stk" onclick="copyStk()">Sao chép</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="qr-image-wrapper">
+          <img src="images/taikhoanacb.png" alt="Mã QR chuyển tiền ACB - BUI THI KIM THANH - 29688689" loading="lazy">
+        </div>
+        <div class="qr-hint">
+          Mở ứng dụng ngân hàng bất kỳ để quét mã VietQR chuyển tiền tự động
+        </div>
       </div>
     </div>
-
-    <!-- Contact Form & Map Layout -->
-    <div class="contact-layout">
-      <!-- Contact Form -->
-      <div class="contact-form-box">
-        <h3 style="font-size: 1.4rem; margin-bottom: 8px;">Gửi Tin Nhắn Cho Chúng Tôi</h3>
-        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 24px;">
-          Để lại câu hỏi hoặc yêu cầu tư vấn, chúng tôi sẽ liên hệ lại với bạn sớm nhất.
-        </p>
-
-        <form id="contact-form" autocomplete="off">
-          <div class="form-group">
-            <label class="form-label">Họ và tên của bạn</label>
-            <input type="text" id="contact-name" class="form-control" placeholder="Nguyễn Văn A" required minlength="2">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Email nhận phản hồi</label>
-            <input type="email" id="contact-email" class="form-control" placeholder="name@example.com" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Số điện thoại liên hệ</label>
-            <input type="tel" id="contact-phone" class="form-control" placeholder="09xxxxxxxx" required pattern="[0-9]{10,11}">
-          </div>
-          <div class="form-group">
-            <label class="form-label">Nội dung câu hỏi / Góp ý</label>
-            <textarea id="contact-message" class="form-control" rows="4" placeholder="Nhập câu hỏi hoặc nội dung bạn cần hỗ trợ..." maxlength="500" required></textarea>
-            <div class="char-count" id="contact-char-count">0 / 500 ký tự</div>
-          </div>
-          <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;">Gửi Thông Điệp Ngay</button>
-        </form>
-      </div>
-
-      <!-- Embedded Google Map -->
-      <div class="map-frame-box">
-        <iframe 
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.2612711090333!2d106.71960931533423!3d10.791295261868352!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x317528a455555555%3A0x6b6c6b306b9b1234!2sLandmark%2081!5e0!3m2!1svi!2svn!4v1650000000000!5m2!1svi!2svn" 
-          width="100%" 
-          height="100%" 
-          style="border:0; min-height: 440px;" 
-          allowfullscreen="" 
-          loading="lazy">
-        </iframe>
-      </div>
-    </div>
-
-    <!-- FAQ Accordion -->
-    <section class="faq-section">
-      <div class="section-heading-box text-center">
-        <h3 class="section-title">Câu Hỏi Thường Gặp Khi Sử Dụng Dịch Vụ</h3>
-        <p class="section-subtitle">Giải đáp nhanh các vấn đề về tài khoản và tư vấn</p>
-      </div>
-
-      <div class="faq-list" id="faq-contact-list">
-        <!-- Rendered from data.js -->
-      </div>
-    </section>
   </main>
 
   <footer class="site-footer">
@@ -189,37 +319,20 @@
     </div>
   </footer>
 
-  <script src="js/data.js"></script>
   <script>
-    // Character Counter
-    const messageInput = document.getElementById('contact-message');
-    const charCount = document.getElementById('contact-char-count');
-    if (messageInput && charCount) {
-      messageInput.addEventListener('input', () => {
-        charCount.textContent = `${messageInput.value.length} / 500 ký tự`;
+    function copyStk() {
+      const stk = '29688689';
+      navigator.clipboard.writeText(stk).then(() => {
+        alert('Đã sao chép số tài khoản: ' + stk);
+      }).catch(() => {
+        const input = document.createElement('input');
+        input.value = stk;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+        alert('Đã sao chép số tài khoản: ' + stk);
       });
-    }
-
-    // Form Submit
-    document.getElementById('contact-form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      alert('Cảm ơn bạn đã liên hệ! Thông điệp của bạn đã được ghi nhận. Đội ngũ tư vấn sẽ liên hệ lại với bạn trong thời gian sớm nhất.');
-      e.target.reset();
-      if (charCount) charCount.textContent = '0 / 500 ký tự';
-    });
-
-    // Populate FAQ from data.js
-    if (window.TSH_DATA && window.TSH_DATA.faq) {
-      const container = document.getElementById('faq-contact-list');
-      container.innerHTML = window.TSH_DATA.faq.map((item, idx) => `
-        <div class="faq-item ${idx === 0 ? 'active' : ''}">
-          <div class="faq-question" onclick="this.parentElement.classList.toggle('active')">
-            <span>${item.q}</span>
-            <span>▼</span>
-          </div>
-          <div class="faq-answer">${item.a}</div>
-        </div>
-      `).join('');
     }
   </script>
 </body>

@@ -83,12 +83,22 @@ async function loadUsers() {
   }
 }
 
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function renderUsersTable(users) {
   const tbody = document.getElementById('users-table-body');
   if (!tbody) return;
 
   if (!users.length) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 40px;">Không tìm thấy tài khoản nào phù hợp.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 40px;">Không tìm thấy tài khoản nào phù hợp.</td></tr>';
     return;
   }
 
@@ -107,17 +117,24 @@ function renderUsersTable(users) {
       }
     }
 
+    const accountDisplay = u.phone || u.email;
+    const subAccount = (u.phone && u.email && u.phone !== u.email) ? `<div style="font-size:0.78rem; color:var(--text-muted);">${u.email}</div>` : '';
+
+    const noteHtml = u.note
+      ? `<div style="max-width: 220px; font-size: 0.82rem; color: #f59e0b; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.25); border-radius: 6px; padding: 4px 8px; word-break: break-word;" title="${escapeHtml(u.note)}">📝 ${escapeHtml(u.note)}</div>`
+      : '<span style="color: var(--text-dim); font-size: 0.8rem;">—</span>';
+
     const verifiedHtml = u.is_verified 
       ? `
         <div style="display: flex; align-items: center; gap: 6px;">
           <span class="badge-verified">✓ Đã xác thực</span>
-          <button type="button" class="btn-unverify-sm" onclick="quickToggleVerify(${u.id}, '${u.email}', 0)" title="Huỷ kích hoạt tài khoản">Huỷ</button>
+          <button type="button" class="btn-unverify-sm" onclick="quickToggleVerify(${u.id}, '${accountDisplay}', 0)" title="Huỷ kích hoạt tài khoản">Huỷ</button>
         </div>
       `
       : `
         <div style="display: flex; align-items: center; gap: 6px;">
           <span class="badge-pending">⏳ Chờ duyệt</span>
-          <button type="button" class="btn-verify-sm" onclick="openVerifyModal(${u.id}, '${u.email}')">✓ Kích hoạt</button>
+          <button type="button" class="btn-verify-sm" onclick="openVerifyModal(${u.id}, '${accountDisplay}')">✓ Kích hoạt</button>
         </div>
       `;
 
@@ -131,9 +148,11 @@ function renderUsersTable(users) {
       <tr class="${rowClass}">
         <td>#${u.id}</td>
         <td>
-          <strong>${u.email}</strong>
+          <strong>${accountDisplay}</strong>
+          ${subAccount}
           ${suspiciousBadge}
         </td>
+        <td>${noteHtml}</td>
         <td>${verifiedHtml}</td>
         <td>
           <span style="font-weight:600;">${u.active_devices || 0} / 2</span>
@@ -142,10 +161,10 @@ function renderUsersTable(users) {
         <td>${planText}</td>
         <td>
           <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-            ${!u.is_verified ? `<button type="button" class="btn btn-verify-sm" onclick="openVerifyModal(${u.id}, '${u.email}')">✓ Kích hoạt</button>` : ''}
-            <button type="button" class="btn btn-outline btn-action-sm" onclick="openExtendModal(${u.id}, '${u.email}')">Gia hạn</button>
-            <button type="button" class="btn btn-outline btn-action-sm" onclick="openDeviceModal(${u.id}, '${u.email}')">Thiết bị (${u.active_devices || 0})</button>
-            <button type="button" class="btn btn-outline btn-action-sm" style="color:#ef4444; border-color: rgba(239,68,68,0.4);" onclick="openDeleteModal(${u.id}, '${u.email}')">Xoá</button>
+            ${!u.is_verified ? `<button type="button" class="btn btn-verify-sm" onclick="openVerifyModal(${u.id}, '${accountDisplay}')">✓ Kích hoạt</button>` : ''}
+            <button type="button" class="btn btn-outline btn-action-sm" onclick="openExtendModal(${u.id}, '${accountDisplay}')">Gia hạn</button>
+            <button type="button" class="btn btn-outline btn-action-sm" onclick="openDeviceModal(${u.id}, '${accountDisplay}')">Thiết bị (${u.active_devices || 0})</button>
+            <button type="button" class="btn btn-outline btn-action-sm" style="color:#ef4444; border-color: rgba(239,68,68,0.4);" onclick="openDeleteModal(${u.id}, '${accountDisplay}')">Xoá</button>
           </div>
         </td>
       </tr>
@@ -241,8 +260,14 @@ async function saveDeviceLabel(deviceId) {
 function openVerifyModal(userId, email) {
   selectedUserId = userId;
   selectedUserEmail = email;
+  const user = allUsers.find(u => u.id === userId);
   const emailEl = document.getElementById('verify-modal-user-email');
-  if (emailEl) emailEl.textContent = `Tài khoản: ${email}`;
+  if (emailEl) {
+    const noteHtml = (user && user.note)
+      ? `<div style="margin-top: 10px; padding: 8px 12px; background: rgba(245, 158, 11, 0.12); border: 1px dashed #f59e0b; border-radius: 6px; font-size: 0.88rem; color: #fcd34d; text-align: left;">📝 <strong>Ghi chú từ khách hàng:</strong><br>${escapeHtml(user.note)}</div>`
+      : '';
+    emailEl.innerHTML = `Tài khoản: <strong>${email}</strong>${noteHtml}`;
+  }
   const modal = document.getElementById('verify-modal');
   if (modal) modal.classList.add('active');
 }

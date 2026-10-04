@@ -22,6 +22,12 @@ function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+function isValidPhone(phone) {
+  if (!phone) return false;
+  const cleaned = phone.replace(/[\s.-]/g, '');
+  return /^(0[2-9][0-9]{8,9}|[0-9]{10,11})$/.test(cleaned);
+}
+
 // GET /api/auth/me
 router.get('/me', (req, res) => {
   if (!req.user) {
@@ -30,7 +36,7 @@ router.get('/me', (req, res) => {
 
   const deviceCount = countActiveDevices(req.user.id);
 
-  // Check lookup count if unverified
+  // Check lookup count
   const lookupStmt = db.prepare('SELECT COUNT(*) as count FROM lookups WHERE user_id = ?');
   const lookupRow = lookupStmt.get(req.user.id);
   const lookupCount = lookupRow ? lookupRow.count : 0;
@@ -39,6 +45,7 @@ router.get('/me', (req, res) => {
     authenticated: true,
     user: {
       id: req.user.id,
+      phone: req.user.phone || req.user.email,
       email: req.user.email,
       is_verified: req.user.is_verified,
       plan_expires: req.user.plan_expires,
@@ -48,33 +55,34 @@ router.get('/me', (req, res) => {
   });
 });
 
-// POST /api/auth/register
+// POST /api/auth/register - Đăng ký bằng số điện thoại
 router.post('/register', async (req, res) => {
   try {
-    const { email, password } = req.body;
-    if (!email || !isValidEmail(email)) {
-      return res.status(400).json({ error: 'INVALID_EMAIL', message: 'Email không hợp lệ.' });
+    const { phone, email, password, note } = req.body;
+    const inputPhone = (phone || email || '').trim();
+    const userNote = (typeof note === 'string' ? note.trim().slice(0, 500) : null) || null;
+
+    if (!inputPhone || !isValidPhone(inputPhone)) {
+      return res.status(400).json({ error: 'INVALID_PHONE', message: 'Vui lòng nhập số điện thoại hợp lệ (10-11 chữ số).' });
     }
     if (!password || password.length < 6) {
       return res.status(400).json({ error: 'INVALID_PASSWORD', message: 'Mật khẩu phải từ 6 ký tự trở lên.' });
     }
 
-    const cleanEmail = email.trim().toLowerCase();
-    const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(cleanEmail);
+    const cleanPhone = inputPhone.replace(/[\s.-]/g, '');
+    const existing = db.prepare('SELECT id FROM users WHERE phone = ? OR email = ?').get(cleanPhone, cleanPhone);
     if (existing) {
-      return res.status(400).json({ error: 'EMAIL_EXISTS', message: 'Email này đã được đăng ký tài khoản.' });
+      return res.status(400).json({ error: 'PHONE_EXISTS', message: 'Số điện thoại này đã được đăng ký tài khoản.' });
     }
 
     const salt = await bcrypt.genSalt(10);
     const password_hash = await bcrypt.hash(password, salt);
-    const verify_token = crypto.randomBytes(24).toString('hex');
-    const verify_token_expires = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
     const insertStmt = db.prepare(`
-      INSERT INTO users (email, password_hash, is_verified, verify_token, verify_token_expires)
-      VALUES (?, ?, 0, ?, ?)
+      INSERT INTO users (email, phone, password_hash, is_verified, note)
+      VALUES (?, ?, ?, 0, ?)
     `);
-    const result = insertStmt.run(cleanEmail, password_hash, verify_token, verify_token_expires);
+    const result = insertStmt.run(cleanPhone, cleanPhone, password_hash, userNote);
     const userId = Number(result.lastInsertRowid);
 
     // Create session
@@ -91,19 +99,21 @@ router.post('/register', async (req, res) => {
       secure: process.env.NODE_ENV === 'production'
     });
 
-    // Log dev message
     console.log('\n=========================================');
-    console.log(`👤 [USER REGISTER] Tài khoản mới: ${cleanEmail} (ID: ${userId})`);
+    console.log(`👤 [USER REGISTER] Tài khoản mới: SĐT ${cleanPhone} (ID: ${userId})`);
+    if (userNote) console.log(`📝 [GHI CHÚ]: ${userNote}`);
     console.log(`⏳ Trạng thái: Đang chờ Quản trị viên (Admin) xác thực/kích hoạt.`);
     console.log('=========================================\n');
 
     return res.json({
       success: true,
-      message: 'Đăng ký tài khoản thành công! Tài khoản của bạn đang chờ Quản trị viên (Admin) xác thực/kích hoạt.',
+      message: 'Đăng ký tài khoản thành công! Tài khoản đang chờ Quản trị viên (Admin) xác thực. Vui lòng liên hệ Admin qua Zalo/SĐT 0762294134 để được kích hoạt.',
       user: {
         id: userId,
-        email: cleanEmail,
-        is_verified: false
+        phone: cleanPhone,
+        email: cleanPhone,
+        is_verified: false,
+        note: userNote
       }
     });
   } catch (err) {
@@ -112,23 +122,25 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// POST /api/auth/login
+// POST /api/auth/login - Đăng nhập bằng số điện thoại hoặc email
 router.post('/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      return res.status(400).json({ error: 'MISSING_FIELDS', message: 'Vui lòng nhập email và mật khẩu.' });
+    const { phone, email, identifier, password } = req.body;
+    const inputLogin = (phone || identifier || email || '').trim();
+
+    if (!inputLogin || !password) {
+      return res.status(400).json({ error: 'MISSING_FIELDS', message: 'Vui lòng nhập số điện thoại và mật khẩu.' });
     }
 
-    const cleanEmail = email.trim().toLowerCase();
-    const user = db.prepare('SELECT * FROM users WHERE email = ?').get(cleanEmail);
+    const cleanInput = inputLogin.replace(/[\s.-]/g, '');
+    const user = db.prepare('SELECT * FROM users WHERE phone = ? OR email = ? OR email = ?').get(cleanInput, cleanInput, inputLogin.toLowerCase());
     if (!user) {
-      return res.status(401).json({ error: 'INVALID_CREDENTIALS', message: 'Email hoặc mật khẩu không chính xác.' });
+      return res.status(401).json({ error: 'INVALID_CREDENTIALS', message: 'Số điện thoại hoặc mật khẩu không chính xác.' });
     }
 
     const match = await bcrypt.compare(password, user.password_hash);
     if (!match) {
-      return res.status(401).json({ error: 'INVALID_CREDENTIALS', message: 'Email hoặc mật khẩu không chính xác.' });
+      return res.status(401).json({ error: 'INVALID_CREDENTIALS', message: 'Số điện thoại hoặc mật khẩu không chính xác.' });
     }
 
     // Check device limit & create session
@@ -150,6 +162,7 @@ router.post('/login', async (req, res) => {
       message: 'Đăng nhập thành công!',
       user: {
         id: user.id,
+        phone: user.phone || user.email,
         email: user.email,
         is_verified: !!user.is_verified,
         plan_expires: user.plan_expires
@@ -158,6 +171,46 @@ router.post('/login', async (req, res) => {
   } catch (err) {
     console.error('Login error:', err);
     res.status(500).json({ error: 'SERVER_ERROR', message: 'Lỗi hệ thống khi đăng nhập.' });
+  }
+});
+
+// POST /api/auth/change-password - Người dùng tự đổi mật khẩu
+router.post('/change-password', async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: 'UNAUTHORIZED', message: 'Vui lòng đăng nhập để đổi mật khẩu.' });
+    }
+
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ error: 'MISSING_FIELDS', message: 'Vui lòng nhập mật khẩu hiện tại và mật khẩu mới.' });
+    }
+    if (newPassword.length < 6) {
+      return res.status(400).json({ error: 'INVALID_PASSWORD', message: 'Mật khẩu mới phải từ 6 ký tự trở lên.' });
+    }
+
+    const user = db.prepare('SELECT id, password_hash FROM users WHERE id = ?').get(req.user.id);
+    if (!user) {
+      return res.status(404).json({ error: 'USER_NOT_FOUND', message: 'Không tìm thấy tài khoản người dùng.' });
+    }
+
+    const match = await bcrypt.compare(currentPassword, user.password_hash);
+    if (!match) {
+      return res.status(400).json({ error: 'WRONG_CURRENT_PASSWORD', message: 'Mật khẩu hiện tại không chính xác.' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const newHash = await bcrypt.hash(newPassword, salt);
+
+    db.prepare('UPDATE users SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(newHash, user.id);
+
+    return res.json({
+      success: true,
+      message: 'Đổi mật khẩu thành công! Bạn có thể sử dụng mật khẩu mới cho các lần đăng nhập sau.'
+    });
+  } catch (err) {
+    console.error('Change password error:', err);
+    res.status(500).json({ error: 'SERVER_ERROR', message: 'Lỗi hệ thống khi đổi mật khẩu.' });
   }
 });
 

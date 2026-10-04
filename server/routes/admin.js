@@ -49,7 +49,7 @@ router.get('/users', requireAdmin, (req, res) => {
   const { q, status } = req.query;
   let sql = `
     SELECT 
-      u.id, u.email, u.is_verified, u.plan_expires, u.created_at,
+      u.id, u.email, u.phone, u.note, u.is_verified, u.plan_expires, u.created_at,
       MAX(s.created_at) as last_login,
       COUNT(DISTINCT s.device_id) as active_devices
     FROM users u
@@ -59,8 +59,8 @@ router.get('/users', requireAdmin, (req, res) => {
   const whereClauses = [];
 
   if (q && q.trim()) {
-    whereClauses.push(`u.email LIKE ?`);
-    params.push(`%${q.trim()}%`);
+    whereClauses.push(`(u.email LIKE ? OR u.phone LIKE ?)`);
+    params.push(`%${q.trim()}%`, `%${q.trim()}%`);
   }
 
   if (status === 'pending') {

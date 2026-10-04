@@ -32,7 +32,7 @@
       <div class="header-actions" id="auth-nav">
         <!-- Injected via JavaScript -->
         <button type="button" class="btn btn-outline btn-sm" onclick="openAuthModal('login')">Đăng nhập</button>
-        <button type="button" class="btn btn-primary btn-sm" onclick="openAuthModal('register')">Đăng ký miễn phí</button>
+        <button type="button" class="btn btn-primary btn-sm" onclick="openAuthModal('register')">Đăng ký</button>
       </div>
     </div>
   </header>
@@ -169,7 +169,7 @@
           <div class="map-tips">
             <span class="map-tip-item">💡 Bấm 1 lần vào vòng tròn để đánh dấu đổi màu (xanh dương ⇄ xanh lá)</span>
             <span class="map-tip-item">🔍 Bấm đúp (Double-click) để mở luận giải chi tiết chỉ số</span>
-            <span class="map-tip-item">🔒 Các chỉ số có icon khoá: Đăng ký miễn phí để mở</span>
+            <span class="map-tip-item">🔒 Các chỉ số có icon khoá: Đăng ký để mở</span>
           </div>
         </div>
       </div>
@@ -309,7 +309,7 @@
               <span>▼</span>
             </div>
             <div class="faq-answer">
-              Bạn chỉ cần bấm nút "Đăng ký miễn phí" và nhập email cùng mật khẩu (chỉ mất 15 giây). Hệ thống sẽ mở khoá ngay lập tức toàn bộ 23 chỉ số, bản đồ chi tiết, hỗ trợ lưu ảnh kết quả và in PDF hoàn toàn miễn phí.
+              Bạn chỉ cần bấm nút "Đăng ký" và nhập số điện thoại cùng mật khẩu. Sau khi Admin kích hoạt tài khoản, hệ thống sẽ mở khoá toàn bộ 23 chỉ số, bản đồ chi tiết, hỗ trợ lưu ảnh kết quả và in PDF.
             </div>
           </div>
 
@@ -402,18 +402,22 @@
       <form id="auth-form-register" autocomplete="off">
         <div id="reg-error" class="auth-error"></div>
         <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px;">
-          Đăng ký miễn phí chỉ trong 15 giây để mở khoá toàn bộ 23 chỉ số và bản đồ chi tiết!
+          Đăng ký bằng số điện thoại. Sau khi đăng ký, Admin sẽ xác thực tài khoản để mở khoá 23 chỉ số!
         </p>
         <div class="form-group">
-          <label class="form-label">Địa chỉ Email</label>
-          <input type="email" id="reg-email" class="form-control" placeholder="name@example.com" required>
+          <label class="form-label">Số điện thoại</label>
+          <input type="tel" id="reg-phone" class="form-control" placeholder="Ví dụ: 0762294134" pattern="[0-9]{10,11}" required>
         </div>
         <div class="form-group">
           <label class="form-label">Mật khẩu (tối thiểu 6 ký tự)</label>
           <input type="password" id="reg-password" class="form-control" placeholder="••••••••" minlength="6" required>
         </div>
+        <div class="form-group">
+          <label class="form-label">Ghi chú gửi Admin (không bắt buộc)</label>
+          <textarea id="reg-note" class="form-control" rows="2" placeholder="Ví dụ: Đã chuyển khoản ACB / Số Zalo liên hệ..." style="resize: vertical; font-size: 0.9rem;"></textarea>
+        </div>
         <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 10px;">
-          Mở Khoá Toàn Bộ 23 Chỉ Số
+          Đăng Ký Tài Khoản
         </button>
       </form>
 
@@ -421,15 +425,15 @@
       <form id="auth-form-login" style="display: none;" autocomplete="off">
         <div id="login-error" class="auth-error"></div>
         <div class="form-group">
-          <label class="form-label">Địa chỉ Email</label>
-          <input type="email" id="login-email" class="form-control" placeholder="name@example.com" required>
+          <label class="form-label">Số điện thoại (hoặc Email)</label>
+          <input type="text" id="login-phone" class="form-control" placeholder="Nhập số điện thoại..." required>
         </div>
         <div class="form-group">
           <label class="form-label">Mật khẩu</label>
           <input type="password" id="login-password" class="form-control" placeholder="••••••••" required>
         </div>
         <div style="display: flex; justify-content: flex-end; margin-bottom: 14px;">
-          <a href="forgot-password.html" style="font-size: 0.85rem;">Quên mật khẩu?</a>
+          <a href="lienhe.html" style="font-size: 0.85rem; color: #38bdf8;">Quên mật khẩu? Liên hệ Admin</a>
         </div>
         <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;">
           Đăng Nhập
@@ -449,8 +453,35 @@
     </div>
   </div>
 
+  <!-- MODAL: Đổi Mật Khẩu -->
+  <div class="modal-backdrop" id="change-password-modal">
+    <div class="modal-card" style="max-width: 420px;">
+      <button type="button" class="modal-close" onclick="closeChangePasswordModal()">&times;</button>
+      <h3 style="margin-bottom: 16px; font-size: 1.3rem;">🔑 Đổi Mật Khẩu</h3>
+      
+      <form id="change-password-form" autocomplete="off">
+        <div id="change-pass-error" class="auth-error"></div>
+        <div class="form-group">
+          <label class="form-label">Mật khẩu hiện tại</label>
+          <input type="password" id="cp-current" class="form-control" placeholder="••••••••" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mật khẩu mới (tối thiểu 6 ký tự)</label>
+          <input type="password" id="cp-new" class="form-control" placeholder="••••••••" minlength="6" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Xác nhận mật khẩu mới</label>
+          <input type="password" id="cp-confirm" class="form-control" placeholder="••••••••" minlength="6" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 10px;">
+          Cập Nhật Mật Khẩu
+        </button>
+      </form>
+    </div>
+  </div>
+
   <!-- Scripts -->
   <script src="js/data.js?v=2"></script>
-  <script src="js/main.js?v=6"></script>
+  <script src="js/main.js?v=7"></script>
 </body>
 </html>

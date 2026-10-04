@@ -294,11 +294,14 @@ function updateAuthUI() {
   if (!authNav) return;
 
   if (currentUser) {
+    const userDisplay = currentUser.phone || currentUser.email || 'Thành viên';
+    const userAvatar = (userDisplay && userDisplay.length > 0) ? userDisplay.slice(0, 1).toUpperCase() : '📱';
+
     authNav.innerHTML = `
       <div class="user-menu-wrap">
         <button type="button" class="btn-user-badge" id="btn-user-menu">
-          <span class="user-avatar">${currentUser.email.slice(0, 1).toUpperCase()}</span>
-          <span class="user-email">${currentUser.email}</span>
+          <span class="user-avatar">${userAvatar}</span>
+          <span class="user-email">${userDisplay}</span>
           <span class="chevron-down">▼</span>
         </button>
         <div class="user-dropdown" id="user-dropdown">
@@ -308,7 +311,8 @@ function updateAuthUI() {
               : '<span style="color: #f59e0b; font-weight: 600;">⏳ Chờ Admin xác thực</span>'}
           </div>
           <a href="javascript:void(0)" onclick="openHistoryModal()"><span class="icon">📜</span> Lịch sử tra cứu</a>
-          ${currentUser.is_verified ? '' : '<a href="lienhe.html"><span class="icon">📞</span> Liên hệ kích hoạt nhanh</a>'}
+          <a href="javascript:void(0)" onclick="openChangePasswordModal()"><span class="icon">🔑</span> Đổi mật khẩu</a>
+          ${currentUser.is_verified ? '' : '<a href="lienhe.html"><span class="icon">📞</span> Liên hệ kích hoạt (0762294134)</a>'}
           <div class="dropdown-divider"></div>
           <a href="javascript:void(0)" onclick="handleLogout()"><span class="icon">🚪</span> Đăng xuất</a>
         </div>
@@ -332,8 +336,8 @@ function updateAuthUI() {
           <div class="banner-content container">
             <span class="banner-icon">⏳</span>
             <div class="banner-text">
-              <strong>Tài khoản đang chờ Admin xác thực:</strong> Bạn đang được trải nghiệm 1 lượt tra cứu dùng thử. Vui lòng liên hệ Quản trị viên để được duyệt và kích hoạt tài khoản sử dụng không giới hạn.
-              <a href="lienhe.html" class="btn-resend-inline" style="margin-left: 8px;">Liên hệ Admin &rarr;</a>
+              <strong>Tài khoản đang chờ Admin xác thực:</strong> Bạn cần được Quản trị viên kích hoạt tài khoản trước khi tra cứu đầy đủ 23 chỉ số.
+              <a href="lienhe.html" class="btn-resend-inline" style="margin-left: 8px;">Liên hệ Admin (0762294134) &rarr;</a>
             </div>
           </div>
         `;
@@ -344,7 +348,7 @@ function updateAuthUI() {
   } else {
     authNav.innerHTML = `
       <button type="button" class="btn btn-outline btn-sm" onclick="openAuthModal('login')">Đăng nhập</button>
-      <button type="button" class="btn btn-primary btn-sm" onclick="openAuthModal('register')">Đăng ký miễn phí</button>
+      <button type="button" class="btn btn-primary btn-sm" onclick="openAuthModal('register')">Đăng ký</button>
     `;
     if (verifyBanner) verifyBanner.style.display = 'none';
   }
@@ -362,7 +366,7 @@ function renderSvgMap(data) {
   const container = document.getElementById('svg-map-container');
   if (!container) return;
 
-  const isUnlocked = !!currentUser;
+  const isUnlocked = !!(currentUser && currentUser.is_verified);
 
   // Tính toán chu kỳ thời gian theo năm đang chọn trên Thanh Vận Trình
   const selectedYear = currentSelectedTransitYear || new Date().getFullYear();
@@ -837,8 +841,12 @@ function resetTransitYear() {
 
 // Xử lý Click vòng tròn nốt bản đồ (đổi màu xanh dương ⇄ xanh lá)
 function handleNodeClick(el, key, isFree) {
-  if (!currentUser && !isFree) {
-    openAuthModal('register');
+  if (!isFree && (!currentUser || !currentUser.is_verified)) {
+    if (!currentUser) {
+      openAuthModal('register');
+    } else {
+      alert('Tài khoản của bạn đang chờ Quản trị viên (Admin) xác thực/kích hoạt. Vui lòng liên hệ Admin qua Zalo/SĐT 0762294134 để được duyệt trước khi mở khoá chỉ số này.');
+    }
     return;
   }
   const circle = el.querySelector('circle.node-circle') || el.querySelector('circle');
@@ -879,8 +887,12 @@ function handleShapeClick(el, defaultFill, toggleFill, defaultStroke, toggleStro
 
 // Xử lý Double Click mở modal diễn giải
 function handleNodeDblClick(key, val, isFree) {
-  if (!currentUser && !isFree) {
-    openAuthModal('register');
+  if (!isFree && (!currentUser || !currentUser.is_verified)) {
+    if (!currentUser) {
+      openAuthModal('register');
+    } else {
+      alert('Tài khoản của bạn đang chờ Quản trị viên (Admin) xác thực/kích hoạt. Vui lòng liên hệ Admin qua Zalo/SĐT 0762294134 để được duyệt trước khi mở khoá chỉ số này.');
+    }
     return;
   }
   openMeaningModal(key, val);
@@ -939,7 +951,7 @@ function renderCards(data) {
   const container = document.getElementById('indicator-cards-grid');
   if (!container) return;
 
-  const isUnlocked = !!currentUser;
+  const isUnlocked = !!(currentUser && currentUser.is_verified);
   const searchInput = document.getElementById('indicator-search');
   const query = searchInput ? boDau(searchInput.value) : '';
 
@@ -999,11 +1011,23 @@ function renderCards(data) {
       const rawText = !isLocked && item.rawVal ? `<span class="raw-val">(${item.rawVal})</span>` : '';
       const extraText = !isLocked && item.extra ? `<div class="card-extra">${item.extra}</div>` : '';
 
+      const lockAction = currentUser
+        ? `alert('Tài khoản của bạn đang chờ Quản trị viên (Admin) xác thực/kích hoạt. Vui lòng liên hệ Admin qua Zalo/SĐT 0762294134 để được kích hoạt trước khi mở khoá 23 chỉ số.')`
+        : `openAuthModal('register')`;
+
+      const lockBadge = currentUser
+        ? '<span class="lock-badge">🔒 Chờ Admin duyệt</span>'
+        : '<span class="lock-badge">🔒 Đăng ký để mở</span>';
+
+      const lockBtn = currentUser
+        ? '<button type="button" class="btn-unlock-card">Chờ Admin kích hoạt →</button>'
+        : '<button type="button" class="btn-unlock-card">Đăng ký để mở khoá →</button>';
+
       return `
-        <div class="indicator-card ${isLocked ? 'is-locked' : ''}" onclick="${isLocked ? `openAuthModal('register')` : `openMeaningModal('${item.key}', '${item.val}')`}">
+        <div class="indicator-card ${isLocked ? 'is-locked' : ''}" onclick="${isLocked ? lockAction : `openMeaningModal('${item.key}', '${item.val}')`}">
           <div class="card-head">
             <span class="card-tag ${def.group}">${getGroupName(def.group)}</span>
-            ${isLocked ? '<span class="lock-badge">🔒 Đăng ký để mở</span>' : '<span class="status-badge">Đã mở</span>'}
+            ${isLocked ? lockBadge : '<span class="status-badge">Đã mở</span>'}
           </div>
           <div class="card-body">
             <h4 class="card-title">${def.name}</h4>
@@ -1016,7 +1040,7 @@ function renderCards(data) {
           </div>
           <div class="card-footer">
             ${isLocked 
-              ? '<button type="button" class="btn-unlock-card">Mở khoá miễn phí →</button>' 
+              ? lockBtn 
               : '<button type="button" class="btn-detail-card">Xem chi tiết luận giải →</button>'}
           </div>
         </div>
@@ -1122,6 +1146,24 @@ function openAuthModal(tab = 'register') {
 
 function closeAuthModal() {
   const modal = document.getElementById('auth-modal');
+  if (modal) modal.classList.remove('active');
+}
+
+// Modal Đổi Mật Khẩu
+function openChangePasswordModal() {
+  const modal = document.getElementById('change-password-modal');
+  const errBox = document.getElementById('change-pass-error');
+  const form = document.getElementById('change-password-form');
+  if (errBox) {
+    errBox.style.display = 'none';
+    errBox.textContent = '';
+  }
+  if (form) form.reset();
+  if (modal) modal.classList.add('active');
+}
+
+function closeChangePasswordModal() {
+  const modal = document.getElementById('change-password-modal');
   if (modal) modal.classList.remove('active');
 }
 
@@ -1338,6 +1380,12 @@ async function handleLookupSubmit(e) {
     return;
   }
 
+  // Kiểm tra tài khoản chưa được kích hoạt
+  if (currentUser && !currentUser.is_verified) {
+    showLookupError('Tài khoản của bạn đang chờ Quản trị viên kích hoạt. Vui lòng liên hệ Admin qua Zalo hoặc số điện thoại 0762294134 để được kích hoạt trước khi tra cứu.');
+    return;
+  }
+
   // Send to server to record lookup & check unverified quota
   const birthDateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
   try {
@@ -1398,6 +1446,8 @@ function showLookupError(msg) {
 }
 
 function renderResultView(data) {
+  const isUnlocked = !!(currentUser && currentUser.is_verified);
+
   // Update header summary
   const summaryName = document.getElementById('summary-fullname');
   const summaryDate = document.getElementById('summary-birthdate');
@@ -1412,8 +1462,8 @@ function renderResultView(data) {
   if (summaryDuongDoi) summaryDuongDoi.textContent = data.duongDoi;
   if (summaryDuongDoi2) summaryDuongDoi2.textContent = data.duongDoi;
   if (summarySuMenh) summarySuMenh.textContent = data.suMenh;
-  if (summaryLinhHon) summaryLinhHon.textContent = currentUser ? data.linhHon : '🔒';
-  if (summaryNhanCach) summaryNhanCach.textContent = currentUser ? data.nhanCach : '🔒';
+  if (summaryLinhHon) summaryLinhHon.textContent = isUnlocked ? data.linhHon : '🔒';
+  if (summaryNhanCach) summaryNhanCach.textContent = isUnlocked ? data.nhanCach : '🔒';
 
   // Render Map, Transit Timeline, Letter Breakdown, Cards
   renderTransitBar(data);
@@ -1601,20 +1651,31 @@ document.addEventListener('DOMContentLoaded', () => {
   if (regForm) {
     regForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = document.getElementById('reg-email').value;
-      const pass = document.getElementById('reg-password').value;
+      const phoneInput = document.getElementById('reg-phone');
+      const phone = phoneInput ? phoneInput.value.trim() : '';
+      const pass = document.getElementById('reg-password')?.value;
+      const noteInput = document.getElementById('reg-note');
+      const note = noteInput ? noteInput.value.trim() : '';
       const errBox = document.getElementById('reg-error');
       if (errBox) errBox.style.display = 'none';
+
+      if (!phone || !/^[0-9]{10,11}$/.test(phone)) {
+        if (errBox) {
+          errBox.textContent = 'Vui lòng nhập số điện thoại hợp lệ (10-11 chữ số).';
+          errBox.style.display = 'block';
+        }
+        return;
+      }
 
       try {
         const res = await fetch('/api/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password: pass })
+          body: JSON.stringify({ phone, password: pass, note })
         });
         if (res.ok) {
           const data = await res.json();
-          alert(data.message || 'Đăng ký tài khoản thành công! Tài khoản của bạn đang chờ Quản trị viên (Admin) duyệt và kích hoạt.');
+          alert(data.message || 'Đăng ký tài khoản thành công! Vui lòng liên hệ Admin qua Zalo/SĐT 0762294134 để được kích hoạt tài khoản.');
           closeAuthModal();
           await checkAuth();
           return;
@@ -1627,14 +1688,14 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
       } catch (err) {
-        // Có thể là môi trường GitHub Pages tĩnh
+        // Fallback cho GitHub Pages tĩnh hoặc khi chạy offline
       }
 
-      // Fallback cho GitHub Pages tĩnh hoặc khi chạy offline
-      const staticUser = { email, is_verified: 0 };
+      // Fallback
+      const staticUser = { phone, email: phone, is_verified: 0 };
       try { localStorage.setItem('tsh_user', JSON.stringify(staticUser)); } catch (e) {}
       currentUser = staticUser;
-      alert('Đăng ký tài khoản thành công! Tài khoản của bạn đang chờ Quản trị viên (Admin) duyệt và kích hoạt.');
+      alert('Đăng ký tài khoản thành công! Vui lòng liên hệ Admin qua Zalo/SĐT 0762294134 để được kích hoạt tài khoản.');
       closeAuthModal();
       updateAuthUI();
     });
@@ -1644,8 +1705,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (logForm) {
     logForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = document.getElementById('login-email').value;
-      const pass = document.getElementById('login-password').value;
+      const loginInput = document.getElementById('login-phone') || document.getElementById('login-email');
+      const phone = loginInput ? loginInput.value.trim() : '';
+      const pass = document.getElementById('login-password')?.value;
       const errBox = document.getElementById('login-error');
       if (errBox) errBox.style.display = 'none';
 
@@ -1653,7 +1715,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const res = await fetch('/api/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password: pass })
+          body: JSON.stringify({ phone, email: phone, password: pass })
         });
         if (res.ok) {
           closeAuthModal();
@@ -1662,7 +1724,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (res.status !== 404) {
           const data = await res.json();
           if (errBox) {
-            errBox.textContent = data.message || 'Email hoặc mật khẩu không đúng.';
+            errBox.textContent = data.message || 'Số điện thoại hoặc mật khẩu không đúng.';
             errBox.style.display = 'block';
           }
           return;
@@ -1672,11 +1734,63 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // Fallback cho GitHub Pages tĩnh hoặc khi chạy offline
-      const staticUser = { email, is_verified: 1 };
+      const staticUser = { phone, email: phone, is_verified: 0 };
       try { localStorage.setItem('tsh_user', JSON.stringify(staticUser)); } catch (e) {}
       currentUser = staticUser;
       closeAuthModal();
       updateAuthUI();
+    });
+  }
+
+  // Đổi Mật Khẩu Form
+  const cpForm = document.getElementById('change-password-form');
+  if (cpForm) {
+    cpForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const currentPassword = document.getElementById('cp-current')?.value;
+      const newPassword = document.getElementById('cp-new')?.value;
+      const confirmPassword = document.getElementById('cp-confirm')?.value;
+      const errBox = document.getElementById('change-pass-error');
+      if (errBox) errBox.style.display = 'none';
+
+      if (!newPassword || newPassword.length < 6) {
+        if (errBox) {
+          errBox.textContent = 'Mật khẩu mới phải có tối thiểu 6 ký tự.';
+          errBox.style.display = 'block';
+        }
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        if (errBox) {
+          errBox.textContent = 'Mật khẩu mới và xác nhận mật khẩu không khớp nhau.';
+          errBox.style.display = 'block';
+        }
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/auth/change-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ currentPassword, newPassword })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert('Đổi mật khẩu thành công!');
+          closeChangePasswordModal();
+        } else {
+          if (errBox) {
+            errBox.textContent = data.message || 'Không thể đổi mật khẩu.';
+            errBox.style.display = 'block';
+          }
+        }
+      } catch (err) {
+        if (errBox) {
+          errBox.textContent = 'Không thể kết nối đến máy chủ.';
+          errBox.style.display = 'block';
+        }
+      }
     });
   }
 
