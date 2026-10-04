@@ -18,6 +18,9 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     email TEXT UNIQUE NOT NULL,
+    phone TEXT,
+    full_name TEXT,
+    note TEXT,
     password_hash TEXT NOT NULL,
     is_verified INTEGER DEFAULT 0,
     verify_token TEXT,

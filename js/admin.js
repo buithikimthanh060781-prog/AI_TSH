@@ -122,7 +122,7 @@ function renderUsersTable(users) {
 
     const displayName = u.full_name || u.note || '';
     const nameHtml = displayName 
-      ? `<strong style="color: #f8fafc; font-size: 0.92rem;">${escapeHtml(displayName)}</strong>`
+      ? `<strong style="color: #0f172a; font-size: 0.92rem;">${escapeHtml(displayName)}</strong>`
       : '<span style="color: var(--text-dim); font-size: 0.82rem;">—</span>';
 
     const verifiedHtml = u.is_verified 
@@ -149,11 +149,11 @@ function renderUsersTable(users) {
       <tr class="${rowClass}">
         <td>#${u.id}</td>
         <td>
-          <strong>${accountDisplay}</strong>
+          <strong style="color: #0f172a;">${accountDisplay}</strong>
           ${subAccount}
           ${suspiciousBadge}
         </td>
-        <td>${noteHtml}</td>
+        <td>${nameHtml}</td>
         <td>${verifiedHtml}</td>
         <td>
           <span style="font-weight:600;">${u.active_devices || 0} / 2</span>

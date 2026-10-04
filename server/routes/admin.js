@@ -75,74 +75,85 @@ router.get('/me', requireAdmin, (req, res) => {
 
 // GET /api/admin/users
 router.get('/users', requireAdmin, (req, res) => {
-  const { q, status } = req.query;
-  let sql = `
-    SELECT 
-      u.id, u.email, u.phone, u.full_name, u.note, u.is_verified, u.plan_expires, u.created_at,
-      MAX(s.created_at) as last_login,
-      COUNT(DISTINCT s.device_id) as active_devices
-    FROM users u
-    LEFT JOIN sessions s ON u.id = s.user_id AND s.expires_at > datetime('now')
-  `;
-  const params = [];
-  const whereClauses = [];
+  try {
+    const { q, status } = req.query;
+    let sql = `
+      SELECT 
+        u.id, u.email, u.phone, u.full_name, u.note, u.is_verified, u.plan_expires, u.created_at,
+        MAX(s.created_at) as last_login,
+        COUNT(DISTINCT s.device_id) as active_devices
+      FROM users u
+      LEFT JOIN sessions s ON u.id = s.user_id AND s.expires_at > datetime('now')
+    `;
+    const params = [];
+    const whereClauses = [];
 
-  if (q && q.trim()) {
-    whereClauses.push(`(u.email LIKE ? OR u.phone LIKE ? OR u.full_name LIKE ?)`);
-    params.push(`%${q.trim()}%`, `%${q.trim()}%`, `%${q.trim()}%`);
-  }
-
-  if (status === 'pending') {
-    whereClauses.push(`u.is_verified = 0`);
-  } else if (status === 'verified') {
-    whereClauses.push(`u.is_verified = 1`);
-  }
-
-  if (whereClauses.length > 0) {
-    sql += ` WHERE ` + whereClauses.join(' AND ');
-  }
-
-  sql += ` GROUP BY u.id ORDER BY u.id DESC`;
-
-  const users = db.prepare(sql).all(...params);
-
-  // Thống kê tổng số lượng người dùng
-  const statsRow = db.prepare(`
-    SELECT 
-      COUNT(*) as total,
-      COALESCE(SUM(CASE WHEN is_verified = 1 THEN 1 ELSE 0 END), 0) as verified,
-      COALESCE(SUM(CASE WHEN is_verified = 0 THEN 1 ELSE 0 END), 0) as pending
-    FROM users
-  `).get();
-
-  // Check suspicious flag for each user: 2 devices with different IPs within 6 hours
-  const suspiciousStmt = db.prepare(`
-    SELECT s1.user_id 
-    FROM sessions s1
-    JOIN sessions s2 ON s1.user_id = s2.user_id 
-      AND s1.device_id != s2.device_id 
-      AND s1.ip != s2.ip
-      AND ABS(strftime('%s', s1.created_at) - strftime('%s', s2.created_at)) <= 21600
-    WHERE s1.expires_at > datetime('now') AND s2.expires_at > datetime('now')
-    GROUP BY s1.user_id
-  `);
-  const suspiciousRows = suspiciousStmt.all();
-  const suspiciousUserIds = new Set(suspiciousRows.map(r => r.user_id));
-
-  const enrichedUsers = users.map(u => ({
-    ...u,
-    is_suspicious: suspiciousUserIds.has(u.id)
-  }));
-
-  res.json({ 
-    success: true, 
-    users: enrichedUsers,
-    stats: {
-      total: statsRow ? statsRow.total : 0,
-      verified: statsRow ? statsRow.verified : 0,
-      pending: statsRow ? statsRow.pending : 0
+    if (q && q.trim()) {
+      whereClauses.push(`(u.email LIKE ? OR u.phone LIKE ? OR u.full_name LIKE ?)`);
+      params.push(`%${q.trim()}%`, `%${q.trim()}%`, `%${q.trim()}%`);
     }
-  });
+
+    if (status === 'pending') {
+      whereClauses.push(`u.is_verified = 0`);
+    } else if (status === 'verified') {
+      whereClauses.push(`u.is_verified = 1`);
+    }
+
+    if (whereClauses.length > 0) {
+      sql += ` WHERE ` + whereClauses.join(' AND ');
+    }
+
+    sql += ` GROUP BY u.id ORDER BY u.id DESC`;
+
+    const users = db.prepare(sql).all(...params);
+
+    // Thống kê tổng số lượng người dùng
+    const statsRow = db.prepare(`
+      SELECT 
+        COUNT(*) as total,
+        COALESCE(SUM(CASE WHEN is_verified = 1 THEN 1 ELSE 0 END), 0) as verified,
+        COALESCE(SUM(CASE WHEN is_verified = 0 THEN 1 ELSE 0 END), 0) as pending
+      FROM users
+    `).get();
+
+    // Check suspicious flag for each user: 2 devices with different IPs within 6 hours
+    const suspiciousStmt = db.prepare(`
+      SELECT s1.user_id 
+      FROM sessions s1
+      JOIN sessions s2 ON s1.user_id = s2.user_id 
+        AND s1.device_id != s2.device_id 
+        AND s1.ip != s2.ip
+        AND ABS(strftime('%s', s1.created_at) - strftime('%s', s2.created_at)) <= 21600
+      WHERE s1.expires_at > datetime('now') AND s2.expires_at > datetime('now')
+      GROUP BY s1.user_id
+    `);
+    const suspiciousRows = suspiciousStmt.all();
+    const suspiciousUserIds = new Set(suspiciousRows.map(r => r.user_id));
+
+    const enrichedUsers = users.map(u => ({
+      ...u,
+      is_suspicious: suspiciousUserIds.has(u.id)
+    }));
+
+    res.json({ 
+      success: true, 
+      users: enrichedUsers,
+      stats: {
+        total: statsRow ? statsRow.total : 0,
+        verified: statsRow ? statsRow.verified : 0,
+        pending: statsRow ? statsRow.pending : 0
+      }
+    });
+  } catch (err) {
+    console.error('Lỗi khi tải danh sách người dùng:', err);
+    res.status(500).json({ 
+      success: false, 
+      error: 'SERVER_ERROR', 
+      message: 'Lỗi tải danh sách người dùng: ' + err.message,
+      users: [],
+      stats: { total: 0, verified: 0, pending: 0 }
+    });
+  }
 });
 
 // POST /api/admin/users/:id/verify - Xác thực / kích hoạt tài khoản bởi Admin

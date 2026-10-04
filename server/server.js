@@ -9,6 +9,9 @@ const { adminAuthMiddleware, requireAdmin } = require('./lib/adminSession');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Reverse proxy support for Render / Cloud hosting
+app.set('trust proxy', 1);
+
 // Security & parsing middleware
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
