@@ -5,6 +5,7 @@
 let allUsers = [];
 let selectedUserId = null;
 let selectedUserEmail = null;
+let currentFilter = 'all';
 
 async function checkAdmin() {
   try {
@@ -19,16 +20,61 @@ async function checkAdmin() {
   }
 }
 
+function setFilter(filter) {
+  currentFilter = filter;
+  ['all', 'pending', 'verified'].forEach(f => {
+    const el = document.getElementById(`tab-filter-${f}`);
+    if (el) {
+      if (f === filter) el.classList.add('active');
+      else el.classList.remove('active');
+    }
+  });
+  loadUsers();
+}
+
 async function loadUsers() {
   const tbody = document.getElementById('users-table-body');
   const searchInput = document.getElementById('admin-search-user');
   const q = searchInput ? searchInput.value.trim() : '';
 
   try {
-    const url = q ? `/api/admin/users?q=${encodeURIComponent(q)}` : '/api/admin/users';
+    const params = new URLSearchParams();
+    if (q) params.set('q', q);
+    if (currentFilter !== 'all') params.set('status', currentFilter);
+
+    const url = `/api/admin/users?${params.toString()}`;
     const res = await fetch(url);
     const data = await res.json();
     allUsers = data.users || [];
+
+    // Cập nhật số liệu trên các tab
+    if (data.stats) {
+      const countAll = document.getElementById('count-all');
+      const countPending = document.getElementById('count-pending');
+      const countVerified = document.getElementById('count-verified');
+      const btnVerifyAll = document.getElementById('btn-verify-all');
+
+      if (countAll) countAll.textContent = data.stats.total;
+      if (countPending) {
+        countPending.textContent = data.stats.pending;
+        if (data.stats.pending > 0) {
+          countPending.style.display = 'inline-block';
+        } else {
+          countPending.style.display = 'inline-block';
+        }
+      }
+      if (countVerified) countVerified.textContent = data.stats.verified;
+
+      if (btnVerifyAll) {
+        if (data.stats.pending > 0) {
+          btnVerifyAll.style.display = 'inline-flex';
+          btnVerifyAll.textContent = `✓ Kích hoạt tất cả (${data.stats.pending})`;
+        } else {
+          btnVerifyAll.style.display = 'none';
+        }
+      }
+    }
+
     renderUsersTable(allUsers);
   } catch (err) {
     if (tbody) {
@@ -42,7 +88,7 @@ function renderUsersTable(users) {
   if (!tbody) return;
 
   if (!users.length) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 40px;">Không có tài khoản nào.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 40px;">Không tìm thấy tài khoản nào phù hợp.</td></tr>';
     return;
   }
 
@@ -61,29 +107,42 @@ function renderUsersTable(users) {
       }
     }
 
-    const verifiedText = u.is_verified 
-      ? '<span style="color: #10b981; font-weight:600;">✓ Đã xác thực</span>' 
-      : '<span style="color: #f59e0b;">Chờ xác thực</span>';
+    const verifiedHtml = u.is_verified 
+      ? `
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span class="badge-verified">✓ Đã xác thực</span>
+          <button type="button" class="btn-unverify-sm" onclick="quickToggleVerify(${u.id}, '${u.email}', 0)" title="Huỷ kích hoạt tài khoản">Huỷ</button>
+        </div>
+      `
+      : `
+        <div style="display: flex; align-items: center; gap: 6px;">
+          <span class="badge-pending">⏳ Chờ duyệt</span>
+          <button type="button" class="btn-verify-sm" onclick="openVerifyModal(${u.id}, '${u.email}')">✓ Kích hoạt</button>
+        </div>
+      `;
 
     const suspiciousBadge = u.is_suspicious 
       ? '<span class="suspicious-badge">⚠ Nghi vấn (2 IP)</span>' 
       : '';
 
+    const rowClass = u.is_verified ? '' : 'row-pending';
+
     return `
-      <tr>
+      <tr class="${rowClass}">
         <td>#${u.id}</td>
         <td>
           <strong>${u.email}</strong>
           ${suspiciousBadge}
         </td>
-        <td>${verifiedText}</td>
+        <td>${verifiedHtml}</td>
         <td>
           <span style="font-weight:600;">${u.active_devices || 0} / 2</span>
         </td>
         <td>${lastLogin}</td>
         <td>${planText}</td>
         <td>
-          <div style="display: flex; gap: 6px;">
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            ${!u.is_verified ? `<button type="button" class="btn btn-verify-sm" onclick="openVerifyModal(${u.id}, '${u.email}')">✓ Kích hoạt</button>` : ''}
             <button type="button" class="btn btn-outline btn-action-sm" onclick="openExtendModal(${u.id}, '${u.email}')">Gia hạn</button>
             <button type="button" class="btn btn-outline btn-action-sm" onclick="openDeviceModal(${u.id}, '${u.email}')">Thiết bị (${u.active_devices || 0})</button>
             <button type="button" class="btn btn-outline btn-action-sm" style="color:#ef4444; border-color: rgba(239,68,68,0.4);" onclick="openDeleteModal(${u.id}, '${u.email}')">Xoá</button>
@@ -175,6 +234,89 @@ async function saveDeviceLabel(deviceId) {
     alert(data.message || 'Đã lưu nhãn thành công!');
   } catch (err) {
     alert('Không thể lưu nhãn thiết bị.');
+  }
+}
+
+// Modal & Thao tác Xác thực tài khoản
+function openVerifyModal(userId, email) {
+  selectedUserId = userId;
+  selectedUserEmail = email;
+  const emailEl = document.getElementById('verify-modal-user-email');
+  if (emailEl) emailEl.textContent = `Tài khoản: ${email}`;
+  const modal = document.getElementById('verify-modal');
+  if (modal) modal.classList.add('active');
+}
+
+function closeVerifyModal() {
+  const modal = document.getElementById('verify-modal');
+  if (modal) modal.classList.remove('active');
+}
+
+async function submitVerify(planDays) {
+  try {
+    const payload = { verified: true };
+    if (planDays > 0) payload.planDays = planDays;
+
+    const res = await fetch(`/api/admin/users/${selectedUserId}/verify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    alert(data.message || 'Đã xác thực và kích hoạt tài khoản thành công!');
+    closeVerifyModal();
+    loadUsers();
+  } catch (err) {
+    alert('Không thể xác thực tài khoản.');
+  }
+}
+
+async function submitVerifyUnlimited() {
+  try {
+    const res = await fetch(`/api/admin/users/${selectedUserId}/verify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ verified: true, unlimited: true })
+    });
+    const data = await res.json();
+    alert(data.message || 'Đã xác thực và cấp gói Vĩnh viễn thành công!');
+    closeVerifyModal();
+    loadUsers();
+  } catch (err) {
+    alert('Không thể xác thực tài khoản.');
+  }
+}
+
+async function quickToggleVerify(userId, email, status) {
+  if (status === 0) {
+    if (!confirm(`Bạn có chắc muốn huỷ xác thực tài khoản ${email}? Người dùng sẽ bị giới hạn lượt tra cứu.`)) return;
+  }
+  try {
+    const res = await fetch(`/api/admin/users/${userId}/verify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ verified: status === 1 })
+    });
+    const data = await res.json();
+    alert(data.message || 'Đã cập nhật trạng thái xác thực.');
+    loadUsers();
+  } catch (err) {
+    alert('Không thể cập nhật trạng thái xác thực.');
+  }
+}
+
+async function verifyAllPending() {
+  if (!confirm('Bạn có chắc muốn xác thực và kích hoạt TẤT CẢ các tài khoản đang chờ duyệt?')) return;
+  try {
+    const res = await fetch('/api/admin/users/verify-all', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    const data = await res.json();
+    alert(data.message || 'Đã kích hoạt toàn bộ tài khoản đang chờ.');
+    loadUsers();
+  } catch (err) {
+    alert('Không thể kích hoạt hàng loạt.');
   }
 }
 
