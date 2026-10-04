@@ -28,10 +28,19 @@ function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+function cleanPhoneNumber(phone) {
+  if (!phone) return '';
+  const trimmed = String(phone).trim();
+  const hasPlus = trimmed.startsWith('+');
+  const digits = trimmed.replace(/\D/g, '');
+  return hasPlus ? `+${digits}` : digits;
+}
+
 function isValidPhone(phone) {
   if (!phone) return false;
-  const cleaned = phone.replace(/[\s.-]/g, '');
-  return /^(0[2-9][0-9]{8,9}|[0-9]{10,11})$/.test(cleaned);
+  const cleaned = cleanPhoneNumber(phone);
+  // Tiêu chuẩn quốc tế E.164: từ 8 đến 15 chữ số (tuỳ chọn dấu + ở đầu)
+  return /^\+?[0-9]{8,15}$/.test(cleaned);
 }
 
 // Đảm bảo có tài khoản Admin trong bảng users để Admin có đầy đủ quyền tra cứu thành viên VIP
@@ -107,14 +116,17 @@ router.post('/register', async (req, res) => {
     const userNote = (typeof note === 'string' ? note.trim().slice(0, 500) : null) || null;
 
     if (!inputPhone || !isValidPhone(inputPhone)) {
-      return res.status(400).json({ error: 'INVALID_PHONE', message: 'Vui lòng nhập số điện thoại hợp lệ (10-11 chữ số).' });
+      return res.status(400).json({ error: 'INVALID_PHONE', message: 'Vui lòng nhập số điện thoại hợp lệ (8-15 chữ số, hỗ trợ số quốc tế có dấu +).' });
     }
     if (!password || password.length < 6) {
       return res.status(400).json({ error: 'INVALID_PASSWORD', message: 'Mật khẩu phải từ 6 ký tự trở lên.' });
     }
 
-    const cleanPhone = inputPhone.replace(/[\s.-]/g, '');
-    const existing = db.prepare('SELECT id FROM users WHERE phone = ? OR email = ?').get(cleanPhone, cleanPhone);
+    const cleanPhone = cleanPhoneNumber(inputPhone);
+    const withoutPlus = cleanPhone.replace(/^\+/, '');
+    const withPlus = cleanPhone.startsWith('+') ? cleanPhone : `+${cleanPhone}`;
+
+    const existing = db.prepare('SELECT id FROM users WHERE phone = ? OR phone = ? OR phone = ? OR email = ?').get(cleanPhone, withoutPlus, withPlus, cleanPhone);
     if (existing) {
       return res.status(400).json({ error: 'PHONE_EXISTS', message: 'Số điện thoại này đã được đăng ký tài khoản.' });
     }
@@ -180,12 +192,17 @@ router.post('/login', async (req, res) => {
     const adminUser = process.env.ADMIN_USERNAME || 'admin';
     const adminPass = process.env.ADMIN_PASSWORD || 'admin123456';
     const cleanInput = inputLogin.replace(/[\s.-]/g, '');
+    const cleanPhone = cleanPhoneNumber(inputLogin);
+    const withoutPlus = cleanPhone.replace(/^\+/, '');
+    const withPlus = cleanPhone.startsWith('+') ? cleanPhone : `+${cleanPhone}`;
 
     // 1. Kiểm tra tài khoản Quản trị viên (Admin)
     const isAdminLogin = (
       cleanInput.toLowerCase() === adminUser.toLowerCase() ||
       cleanInput.toLowerCase() === 'admin' ||
-      cleanInput === '0762294134'
+      cleanInput === '0762294134' ||
+      cleanPhone === '+84762294134' ||
+      cleanPhone === '0762294134'
     ) && password === adminPass;
 
     if (isAdminLogin) {
@@ -233,8 +250,11 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    // 2. Đăng nhập thành viên bình thường
-    const user = db.prepare('SELECT * FROM users WHERE phone = ? OR email = ? OR email = ?').get(cleanInput, cleanInput, inputLogin.toLowerCase());
+    // 2. Đăng nhập thành viên bình thường (hỗ trợ số quốc tế có hoặc không có mã +)
+    const user = db.prepare(`
+      SELECT * FROM users 
+      WHERE phone = ? OR email = ? OR phone = ? OR phone = ? OR phone = ? OR email = ? OR email = ?
+    `).get(cleanInput, cleanInput, cleanPhone, withoutPlus, withPlus, cleanPhone, inputLogin.toLowerCase());
     if (!user) {
       return res.status(401).json({ error: 'INVALID_CREDENTIALS', message: 'Số điện thoại hoặc mật khẩu không chính xác.' });
     }

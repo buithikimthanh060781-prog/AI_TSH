@@ -1674,9 +1674,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      if (!phone || !/^[0-9]{10,11}$/.test(phone)) {
+      const cleanedPhone = phone.replace(/[\s.-]/g, '');
+      if (!cleanedPhone || !/^\+?[0-9]{8,15}$/.test(cleanedPhone)) {
         if (errBox) {
-          errBox.textContent = 'Vui lòng nhập số điện thoại hợp lệ (10-11 chữ số).';
+          errBox.textContent = 'Vui lòng nhập số điện thoại hợp lệ (8-15 chữ số, hỗ trợ số quốc tế có dấu +).';
           errBox.style.display = 'block';
         }
         return;
@@ -1686,7 +1687,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const res = await fetch('/api/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone, password: pass, fullName })
+          body: JSON.stringify({ phone: cleanedPhone, password: pass, fullName })
         });
         if (res.ok) {
           const data = await res.json();
@@ -1707,7 +1708,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // Fallback
-      const staticUser = { phone, email: phone, full_name: fullName, is_verified: 0 };
+      const staticUser = { phone: cleanedPhone, email: cleanedPhone, full_name: fullName, is_verified: 0 };
       try { localStorage.setItem('tsh_user', JSON.stringify(staticUser)); } catch (e) {}
       currentUser = staticUser;
       alert('Đăng ký tài khoản thành công! Vui lòng liên hệ Admin qua Zalo/SĐT 0762294134 để được kích hoạt tài khoản.');
