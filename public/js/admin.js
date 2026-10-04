@@ -392,11 +392,11 @@ async function submitExtendUnlimited() {
 }
 
 // Modal Xoá
-function openDeleteModal(userId, email) {
+function openDeleteModal(userId, account) {
   selectedUserId = userId;
-  selectedUserEmail = email;
-  document.getElementById('delete-modal-user-email').textContent = email;
-  document.getElementById('delete-confirm-email').value = '';
+  selectedUserEmail = account;
+  const labelEl = document.getElementById('delete-modal-user-email');
+  if (labelEl) labelEl.textContent = account;
   document.getElementById('delete-modal').classList.add('active');
 }
 
@@ -406,13 +406,19 @@ function closeDeleteModal() {
 
 document.getElementById('delete-user-form').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const confirmEmail = document.getElementById('delete-confirm-email').value.trim();
+  if (!selectedUserId) return;
+
+  const btnSubmit = document.getElementById('btn-confirm-delete') || e.target.querySelector('button[type="submit"]');
+  if (btnSubmit) {
+    btnSubmit.disabled = true;
+    btnSubmit.textContent = 'Đang xoá...';
+  }
 
   try {
     const res = await fetch(`/api/admin/users/${selectedUserId}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ confirmEmail })
+      body: JSON.stringify({ confirmAccount: selectedUserEmail })
     });
     const data = await res.json();
     if (!res.ok) {
@@ -424,6 +430,11 @@ document.getElementById('delete-user-form').addEventListener('submit', async (e)
     loadUsers();
   } catch (err) {
     alert('Lỗi kết nối máy chủ.');
+  } finally {
+    if (btnSubmit) {
+      btnSubmit.disabled = false;
+      btnSubmit.textContent = '🗑️ Xác Nhận Xoá';
+    }
   }
 });
 

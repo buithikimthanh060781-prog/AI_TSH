@@ -256,22 +256,43 @@ router.post('/users/:id/extend', requireAdmin, (req, res) => {
   res.json({ success: true, message: 'Đã cập nhật hạn dùng thành công.', plan_expires: newExpiry });
 });
 
-// DELETE /api/admin/users/:id - Xoá người dùng
+// DELETE /api/admin/users/:id - Xoá người dùng (Hỗ trợ cả SĐT và Email)
 router.delete('/users/:id', requireAdmin, (req, res) => {
-  const userId = parseInt(req.params.id, 10);
-  const { confirmEmail } = req.body;
+  try {
+    const userId = parseInt(req.params.id, 10);
+    const { confirmEmail, confirmAccount } = req.body;
 
-  const user = db.prepare('SELECT id, email FROM users WHERE id = ?').get(userId);
-  if (!user) {
-    return res.status(404).json({ error: 'USER_NOT_FOUND', message: 'Không tìm thấy người dùng.' });
+    const user = db.prepare('SELECT id, email, phone FROM users WHERE id = ?').get(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'USER_NOT_FOUND', message: 'Không tìm thấy người dùng.' });
+    }
+
+    // Chặn không cho xoá tài khoản Admin
+    if (user.email === 'admin' || user.phone === 'admin') {
+      return res.status(403).json({ error: 'CANNOT_DELETE_ADMIN', message: 'Không thể xoá tài khoản Quản trị viên (Admin).' });
+    }
+
+    const inputConfirm = (confirmAccount || confirmEmail || '').trim();
+    if (inputConfirm) {
+      if (inputConfirm !== user.email && inputConfirm !== user.phone) {
+        return res.status(400).json({ error: 'CONFIRM_MISMATCH', message: 'Tài khoản xác nhận không khớp.' });
+      }
+    }
+
+    // Xoá dữ liệu phiên và liên kết
+    try {
+      db.prepare('DELETE FROM sessions WHERE user_id = ?').run(userId);
+      db.prepare('DELETE FROM lookups WHERE user_id = ?').run(userId);
+      db.prepare('DELETE FROM device_labels WHERE user_id = ?').run(userId);
+      db.prepare('DELETE FROM password_resets WHERE user_id = ?').run(userId);
+    } catch (e) {}
+
+    db.prepare('DELETE FROM users WHERE id = ?').run(userId);
+    res.json({ success: true, message: `Đã xoá tài khoản ${user.phone || user.email} thành công.` });
+  } catch (err) {
+    console.error('Lỗi khi xoá người dùng:', err);
+    res.status(500).json({ error: 'SERVER_ERROR', message: 'Lỗi máy chủ khi xoá người dùng: ' + err.message });
   }
-
-  if (confirmEmail !== user.email) {
-    return res.status(400).json({ error: 'CONFIRM_MISMATCH', message: 'Email xác nhận không khớp.' });
-  }
-
-  db.prepare('DELETE FROM users WHERE id = ?').run(userId);
-  res.json({ success: true, message: `Đã xoá tài khoản ${user.email}.` });
 });
 
 // GET /api/admin/users/:id/devices - Xem thiết bị & cảnh báo bất thường
