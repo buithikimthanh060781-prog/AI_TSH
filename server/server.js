@@ -136,14 +136,22 @@ function seedDatabase() {
   }
 }
 
-seedDatabase();
+async function startApp() {
+  try {
+    const { restoreDatabaseFromCloud } = require('./lib/dbSync');
+    await restoreDatabaseFromCloud();
+  } catch (e) {}
 
-// Update package.json start script
-app.listen(PORT, () => {
-  console.log(`\n======================================================`);
-  console.log(`🌟 THẦN SỐ HỌC PYTHAGORAS SERVER ĐANG CHẠY!`);
-  console.log(`🚀 Landing Page: http://localhost:${PORT}`);
-  console.log(`🛡️  Admin Panel:  http://localhost:${PORT}/admin.html`);
-  console.log(`   (Username: ${process.env.ADMIN_USERNAME || 'admin'}, Password: ${process.env.ADMIN_PASSWORD || 'admin123456'})`);
-  console.log(`======================================================\n`);
-});
+  seedDatabase();
+
+  app.listen(PORT, () => {
+    console.log(`\n======================================================`);
+    console.log(`🌟 THẦN SỐ HỌC PYTHAGORAS SERVER ĐANG CHẠY!`);
+    console.log(`🚀 Landing Page: http://localhost:${PORT}`);
+    console.log(`🛡️  Admin Panel:  http://localhost:${PORT}/admin.html`);
+    console.log(`   (Username: ${process.env.ADMIN_USERNAME || 'admin'}, Password: ${process.env.ADMIN_PASSWORD || 'admin123456'})`);
+    console.log(`======================================================\n`);
+  });
+}
+
+startApp();

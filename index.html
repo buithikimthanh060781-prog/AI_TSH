@@ -73,6 +73,13 @@
             </div>
           </div>
 
+          <div style="margin: 10px 0 16px; display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" id="lookup-incognito" style="accent-color: #0284c7; width: 16px; height: 16px; cursor: pointer;">
+            <label for="lookup-incognito" style="font-size: 0.85rem; color: var(--text-muted); cursor: pointer; user-select: none;">
+              🔒 Tra cứu riêng tư (Bảo mật: Không lưu thông tin vào lịch sử tra cứu)
+            </label>
+          </div>
+
           <button type="submit" class="btn btn-primary btn-submit-lookup">
             <span>Khám Phá Bản Đồ Ngay</span>
             <span>⚡</span>
@@ -390,7 +397,7 @@
 
   <!-- MODAL: Đăng ký / Đăng nhập -->
   <div class="modal-backdrop" id="auth-modal">
-    <div class="modal-card" style="max-width: 440px;">
+    <div class="modal-card" style="max-width: 480px;">
       <button type="button" class="modal-close" onclick="closeAuthModal()">&times;</button>
 
       <div class="auth-tabs">
@@ -416,6 +423,28 @@
           <label class="form-label">Mật khẩu (tối thiểu 6 ký tự)</label>
           <input type="password" id="reg-password" class="form-control" placeholder="••••••••" minlength="6" required>
         </div>
+
+        <!-- Khối điều khoản tuân thủ an toàn & bảo mật thông tin -->
+        <div class="terms-privacy-box">
+          <div style="font-weight: 600; color: #0284c7; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+            <span>🛡️</span> Tuân thủ An toàn & Bảo mật Thông tin
+          </div>
+          
+          <label style="display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px; cursor: pointer; color: #334155; line-height: 1.45;">
+            <input type="checkbox" id="reg-agree-privacy" style="margin-top: 2px; accent-color: #0284c7; width: 16px; height: 16px; cursor: pointer;" required>
+            <span>
+              Tôi đồng ý với <a href="javascript:void(0)" onclick="openPrivacyPolicyModal()" style="color: #0284c7; font-weight: 600; text-decoration: underline;">Chính sách bảo mật dữ liệu cá nhân</a> (Thông tin cá nhân chỉ dùng quản lý tài khoản, cam kết không tiết lộ cho bên thứ ba theo Nghị định 13/2023/NĐ-CP).
+            </span>
+          </label>
+
+          <label style="display: flex; align-items: flex-start; gap: 8px; margin-bottom: 2px; cursor: pointer; color: #334155; line-height: 1.45;">
+            <input type="checkbox" id="reg-agree-usage" style="margin-top: 2px; accent-color: #0284c7; width: 16px; height: 16px; cursor: pointer;" required>
+            <span>
+              Tôi cam kết sử dụng thông tin tra cứu đúng mục đích cá nhân hợp pháp, không vi phạm quyền riêng tư và an toàn thông tin của người khác.
+            </span>
+          </label>
+        </div>
+
         <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; margin-top: 10px;">
           Đăng Ký Tài Khoản
         </button>
@@ -442,11 +471,97 @@
     </div>
   </div>
 
+  <!-- MODAL: Chính sách bảo mật & Điều khoản an toàn thông tin -->
+  <div class="modal-backdrop" id="privacy-policy-modal">
+    <div class="modal-card" style="max-width: 620px; max-height: 88vh; display: flex; flex-direction: column;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 14px;">
+        <h3 style="font-size: 1.25rem; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 8px;">
+          <span>🛡️</span> Chính Sách Bảo Mật & An Toàn Thông Tin
+        </h3>
+        <button type="button" class="modal-close" style="position: static;" onclick="closePrivacyPolicyModal()">&times;</button>
+      </div>
+      <div style="overflow-y: auto; padding-right: 6px; font-size: 0.9rem; line-height: 1.6; color: #334155;">
+        <div style="background: #eff6ff; border-left: 4px solid #0284c7; padding: 10px 12px; border-radius: 4px; margin-bottom: 14px; font-size: 0.88rem; color: #1e40af;">
+          ⚖️ <strong>Cam kết tuân thủ:</strong> Hệ thống thực hiện nghiêm ngặt quy định pháp luật Việt Nam về An toàn thông tin mạng và Nghị định số 13/2023/NĐ-CP về Bảo vệ dữ liệu cá nhân.
+        </div>
+
+        <h4 style="font-size: 0.95rem; color: #0f172a; margin: 12px 0 4px; display: flex; align-items: center; gap: 6px;">
+          <span>1.</span> Mục đích thu thập & phạm vi dữ liệu
+        </h4>
+        <p style="margin-bottom: 8px;">
+          Hệ thống chỉ thu thập thông tin cơ bản gồm Họ và tên và Số điện thoại khi người dùng đăng ký. Dữ liệu này được sử dụng độc quyền để định danh tài khoản, cấp quyền truy cập các chỉ số và liên hệ hỗ trợ kích hoạt khi người dùng yêu cầu.
+        </p>
+
+        <h4 style="font-size: 0.95rem; color: #0f172a; margin: 12px 0 4px; display: flex; align-items: center; gap: 6px;">
+          <span>2.</span> Cam kết bảo mật & Không chia sẻ dữ liệu
+        </h4>
+        <p style="margin-bottom: 8px;">
+          - Mật khẩu tài khoản được mã hóa một chiều chuẩn mật mã học (bcrypt), ngay cả quản trị viên cũng không thể nhìn thấy mật khẩu gốc.<br>
+          - Tuyệt đối <strong>KHÔNG</strong> bán, trao đổi, cho thuê hoặc tiết lộ dữ liệu cá nhân của người dùng cho bất kỳ bên thứ ba nào vì mục đích thương mại.<br>
+          - Máy chủ lưu trữ được cấu hình bảo mật và sao lưu an toàn.
+        </p>
+
+        <h4 style="font-size: 0.95rem; color: #0f172a; margin: 12px 0 4px; display: flex; align-items: center; gap: 6px;">
+          <span>3.</span> Bảo vệ dữ liệu người được tra cứu (Khách hàng tra cứu)
+        </h4>
+        <p style="margin-bottom: 8px;">
+          - Để bảo vệ an toàn thông tin cá nhân của người được tra cứu (khách hàng, người thân), hệ thống tích hợp giải pháp <strong>che dữ liệu nhận dạng (Data Masking)</strong> trên lịch sử tra cứu để ngăn ngừa việc nhìn lén màn hình.<br>
+          - Cung cấp tùy chọn <strong>Tra cứu riêng tư</strong> (không lưu thông tin vào lịch sử tra cứu).<br>
+          - Người dùng có toàn quyền xóa từng bản ghi hoặc xóa sạch toàn bộ lịch sử tra cứu bất kỳ lúc nào để bảo vệ quyền riêng tư.
+        </p>
+
+        <h4 style="font-size: 0.95rem; color: #0f172a; margin: 12px 0 4px; display: flex; align-items: center; gap: 6px;">
+          <span>4.</span> Trách nhiệm của thành viên sử dụng
+        </h4>
+        <p style="margin-bottom: 8px;">
+          - Thành viên tự chịu trách nhiệm bảo quản thông tin đăng nhập tài khoản của mình.<br>
+          - Cam kết sử dụng thông tin tra cứu cho mục đích cá nhân, học tập, tham khảo chính đáng; không sử dụng dữ liệu tra cứu vào các mục đích lừa đảo, xúc phạm danh dự, nhân phẩm hoặc vi phạm pháp luật.
+        </p>
+
+        <h4 style="font-size: 0.95rem; color: #0f172a; margin: 12px 0 4px; display: flex; align-items: center; gap: 6px;">
+          <span>5.</span> Quyền của chủ thể dữ liệu (Khách hàng)
+        </h4>
+        <p style="margin-bottom: 8px;">
+          Quý khách có đầy đủ các quyền theo quy định: Quyền biết, quyền truy cập, quyền chỉnh sửa và quyền yêu cầu xóa bỏ vĩnh viễn dữ liệu cá nhân của mình khỏi hệ thống.
+        </p>
+      </div>
+      <div style="border-top: 1px solid var(--border-color); padding-top: 12px; margin-top: 14px; display: flex; justify-content: flex-end; gap: 10px;">
+        <button type="button" class="btn btn-secondary" onclick="closePrivacyPolicyModal()" style="padding: 8px 16px; font-size: 0.88rem; background: #e2e8f0; color: #334155; border: none; border-radius: 6px; cursor: pointer;">
+          Đóng
+        </button>
+        <button type="button" class="btn btn-primary" onclick="acceptPrivacyAndClose()" style="padding: 8px 18px; font-size: 0.88rem;">
+          Tôi Đã Hiểu Và Đồng Ý
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL: Lịch sử tra cứu -->
   <div class="modal-backdrop" id="history-modal">
-    <div class="modal-card">
+    <div class="modal-card" style="max-width: 580px;">
       <button type="button" class="modal-close" onclick="closeHistoryModal()">&times;</button>
-      <h3 style="margin-bottom: 16px; font-size: 1.3rem;">📜 Lịch Sử Tra Cứu Của Bạn</h3>
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color);">
+        <h3 style="font-size: 1.25rem; margin: 0; display: flex; align-items: center; gap: 8px;">
+          <span>📜</span> Lịch Sử Tra Cứu Của Bạn
+        </h3>
+      </div>
+
+      <!-- Thanh trạng thái an toàn & bảo mật thông tin -->
+      <div id="history-security-bar" class="history-security-bar">
+        <div style="display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: #166534; font-weight: 500;">
+          <span id="history-sec-icon">🛡️</span>
+          <span id="history-sec-status">Chế độ bảo mật: Đang che thông tin cá nhân</span>
+        </div>
+        <div style="display: flex; gap: 6px;">
+          <button type="button" id="btn-toggle-mask" class="btn btn-sm" onclick="toggleHistoryMasking()" style="font-size: 0.8rem; padding: 4px 10px; background: #ffffff; border: 1px solid #86efac; color: #15803d; border-radius: 6px; cursor: pointer; font-weight: 500;">
+            👁️ Hiện đầy đủ
+          </button>
+          <button type="button" class="btn btn-sm" onclick="clearAllLookupHistory()" style="font-size: 0.8rem; padding: 4px 10px; background: #fff1f2; border: 1px solid #fecdd3; color: #e11d48; border-radius: 6px; cursor: pointer; font-weight: 500;">
+            🗑️ Xóa tất cả
+          </button>
+        </div>
+      </div>
+
       <div id="history-modal-list">
         <!-- Injected dynamically -->
       </div>

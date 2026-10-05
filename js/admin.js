@@ -266,10 +266,21 @@ function openVerifyModal(userId, email) {
   if (emailEl) {
     const customerName = user && (user.full_name || user.note);
     const nameHtml = customerName
-      ? `<div style="margin-top: 8px; padding: 6px 12px; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 6px; font-size: 0.92rem; color: #38bdf8; text-align: left;">👤 Họ và tên: <strong>${escapeHtml(customerName)}</strong></div>`
+      ? `<div style="margin-top: 8px; padding: 6px 12px; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 6px; font-size: 0.92rem; color: #0284c7; text-align: left;">👤 Họ và tên: <strong>${escapeHtml(customerName)}</strong></div>`
       : '';
     emailEl.innerHTML = `Tài khoản: <strong>${email}</strong>${nameHtml}`;
   }
+
+  // Pre-fill verify custom date (mặc định +30 ngày từ hôm nay)
+  const dateInput = document.getElementById('verify-custom-date');
+  if (dateInput) {
+    const todayStr = new Date().toISOString().split('T')[0];
+    dateInput.min = todayStr;
+    const defaultDate = new Date();
+    defaultDate.setDate(defaultDate.getDate() + 30);
+    dateInput.value = defaultDate.toISOString().split('T')[0];
+  }
+
   const modal = document.getElementById('verify-modal');
   if (modal) modal.classList.add('active');
 }
@@ -291,6 +302,30 @@ async function submitVerify(planDays) {
     });
     const data = await res.json();
     alert(data.message || 'Đã xác thực và kích hoạt tài khoản thành công!');
+    closeVerifyModal();
+    loadUsers();
+  } catch (err) {
+    alert('Không thể xác thực tài khoản.');
+  }
+}
+
+async function submitVerifyCustomDate() {
+  const dateInput = document.getElementById('verify-custom-date');
+  const chosenDate = dateInput ? dateInput.value : '';
+  if (!chosenDate) {
+    alert('Vui lòng chọn ngày hết hạn kích hoạt.');
+    return;
+  }
+
+  const customDateIso = new Date(chosenDate + 'T23:59:59').toISOString();
+  try {
+    const res = await fetch(`/api/admin/users/${selectedUserId}/verify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ verified: true, customDate: customDateIso })
+    });
+    const data = await res.json();
+    alert(data.message || `Đã kích hoạt tài khoản đến ngày ${new Date(chosenDate).toLocaleDateString('vi-VN')} thành công!`);
     closeVerifyModal();
     loadUsers();
   } catch (err) {
@@ -351,7 +386,50 @@ async function verifyAllPending() {
 function openExtendModal(userId, email) {
   selectedUserId = userId;
   selectedUserEmail = email;
-  document.getElementById('extend-modal-user-email').textContent = `Tài khoản: ${email}`;
+  const user = allUsers.find(u => u.id === userId);
+
+  const emailEl = document.getElementById('extend-modal-user-email');
+  if (emailEl) {
+    let currentPlanInfo = 'Miễn phí';
+    if (user && user.plan_expires === 'unlimited') {
+      currentPlanInfo = '<span style="color: var(--accent-gold); font-weight:700;">🌟 Vĩnh viễn (Trọn đời)</span>';
+    } else if (user && user.plan_expires) {
+      const exp = new Date(user.plan_expires);
+      const isExpired = exp < new Date();
+      currentPlanInfo = isExpired 
+        ? `<span style="color: #ef4444; font-weight:600;">Đã hết hạn (${exp.toLocaleDateString('vi-VN')})</span>`
+        : `<span style="color: #0284c7; font-weight:700;">Đến ${exp.toLocaleDateString('vi-VN')}</span>`;
+    }
+    const customerName = user && (user.full_name || user.note);
+    const nameLine = customerName ? ` — <strong>${escapeHtml(customerName)}</strong>` : '';
+    emailEl.innerHTML = `Tài khoản: <strong>${email}</strong>${nameLine}<br><small style="color:var(--text-muted); display:inline-block; margin-top:4px;">Hạn hiện tại: ${currentPlanInfo}</small>`;
+  }
+
+  // Pre-fill date picker
+  const dateInput = document.getElementById('extend-custom-date');
+  if (dateInput) {
+    const todayStr = new Date().toISOString().split('T')[0];
+    dateInput.min = todayStr;
+    if (user && user.plan_expires && user.plan_expires !== 'unlimited') {
+      try {
+        const expDate = new Date(user.plan_expires);
+        if (expDate > new Date()) {
+          dateInput.value = expDate.toISOString().split('T')[0];
+        } else {
+          const d = new Date();
+          d.setDate(d.getDate() + 30);
+          dateInput.value = d.toISOString().split('T')[0];
+        }
+      } catch (e) {
+        dateInput.value = todayStr;
+      }
+    } else {
+      const d = new Date();
+      d.setDate(d.getDate() + 30);
+      dateInput.value = d.toISOString().split('T')[0];
+    }
+  }
+
   document.getElementById('extend-modal').classList.add('active');
 }
 
@@ -368,6 +446,30 @@ async function submitExtend(days) {
     });
     const data = await res.json();
     alert(data.message || 'Đã gia hạn thành công!');
+    closeExtendModal();
+    loadUsers();
+  } catch (err) {
+    alert('Không thể gia hạn.');
+  }
+}
+
+async function submitExtendCustomDate() {
+  const dateInput = document.getElementById('extend-custom-date');
+  const chosenDate = dateInput ? dateInput.value : '';
+  if (!chosenDate) {
+    alert('Vui lòng chọn ngày hết hạn.');
+    return;
+  }
+
+  const customDateIso = new Date(chosenDate + 'T23:59:59').toISOString();
+  try {
+    const res = await fetch(`/api/admin/users/${selectedUserId}/extend`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ customDate: customDateIso })
+    });
+    const data = await res.json();
+    alert(data.message || `Đã gia hạn đến ngày ${new Date(chosenDate).toLocaleDateString('vi-VN')} thành công!`);
     closeExtendModal();
     loadUsers();
   } catch (err) {

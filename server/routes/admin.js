@@ -159,7 +159,7 @@ router.get('/users', requireAdmin, (req, res) => {
 // POST /api/admin/users/:id/verify - Xác thực / kích hoạt tài khoản bởi Admin
 router.post('/users/:id/verify', requireAdmin, (req, res) => {
   const userId = parseInt(req.params.id, 10);
-  const { verified, planDays, unlimited } = req.body;
+  const { verified, planDays, customDate, unlimited } = req.body;
 
   const user = db.prepare('SELECT id, email, plan_expires FROM users WHERE id = ?').get(userId);
   if (!user) {
@@ -171,6 +171,8 @@ router.post('/users/:id/verify', requireAdmin, (req, res) => {
   let newExpiry = user.plan_expires;
   if (isVerified && unlimited) {
     newExpiry = 'unlimited';
+  } else if (isVerified && customDate) {
+    newExpiry = new Date(customDate).toISOString();
   } else if (isVerified && planDays) {
     const numDays = parseInt(planDays, 10);
     let baseTime = Date.now();
@@ -197,6 +199,11 @@ router.post('/users/:id/verify', requireAdmin, (req, res) => {
     ? `Đã xác thực và kích hoạt tài khoản ${user.email} thành công!` 
     : `Đã huỷ xác thực tài khoản ${user.email}.`;
 
+  try {
+    const { scheduleCloudBackup } = require('../lib/dbSync');
+    scheduleCloudBackup();
+  } catch (e) {}
+
   res.json({ 
     success: true, 
     message: statusMsg,
@@ -215,6 +222,11 @@ router.post('/users/verify-all', requireAdmin, (req, res) => {
         updated_at = CURRENT_TIMESTAMP 
     WHERE is_verified = 0
   `).run();
+
+  try {
+    const { scheduleCloudBackup } = require('../lib/dbSync');
+    scheduleCloudBackup();
+  } catch (e) {}
 
   const count = info.changes || 0;
   res.json({
@@ -253,6 +265,11 @@ router.post('/users/:id/extend', requireAdmin, (req, res) => {
 
   db.prepare('UPDATE users SET plan_expires = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(newExpiry, userId);
 
+  try {
+    const { scheduleCloudBackup } = require('../lib/dbSync');
+    scheduleCloudBackup();
+  } catch (e) {}
+
   res.json({ success: true, message: 'Đã cập nhật hạn dùng thành công.', plan_expires: newExpiry });
 });
 
@@ -288,6 +305,12 @@ router.delete('/users/:id', requireAdmin, (req, res) => {
     } catch (e) {}
 
     db.prepare('DELETE FROM users WHERE id = ?').run(userId);
+
+    try {
+      const { scheduleCloudBackup } = require('../lib/dbSync');
+      scheduleCloudBackup();
+    } catch (e) {}
+
     res.json({ success: true, message: `Đã xoá tài khoản ${user.phone || user.email} thành công.` });
   } catch (err) {
     console.error('Lỗi khi xoá người dùng:', err);

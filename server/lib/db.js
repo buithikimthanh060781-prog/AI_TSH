@@ -111,5 +111,8 @@ try {
 try {
   db.exec('ALTER TABLE users ADD COLUMN full_name TEXT;');
 } catch (e) {}
+try {
+  db.exec('ALTER TABLE users ADD COLUMN terms_accepted_at TEXT;');
+} catch (e) {}
 
 module.exports = db;

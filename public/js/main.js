@@ -1393,13 +1393,16 @@ async function handleLookupSubmit(e) {
     return;
   }
 
-  // Send to server to record lookup & check unverified quota
+  // Check private lookup mode
+  const isIncognito = !!document.getElementById('lookup-incognito')?.checked;
   const birthDateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+  // Send to server to record lookup & check unverified quota
   try {
     const res = await fetch('/api/lookups', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fullName, birthDate: birthDateStr })
+      body: JSON.stringify({ fullName, birthDate: birthDateStr, noHistory: isIncognito })
     });
     const resData = await res.json();
     if (!res.ok) {
@@ -1416,17 +1419,19 @@ async function handleLookupSubmit(e) {
   const result = tinhThanSoHoc(fullName, day, month, year);
   currentResult = result;
 
-  // Save to localStorage
-  try {
-    localStorage.setItem('tsh_last_lookup', JSON.stringify({ fullName, day, month, year }));
-    const historyList = JSON.parse(localStorage.getItem('tsh_lookup_history') || '[]');
-    historyList.unshift({
-      full_name: fullName,
-      birth_date: birthDateStr,
-      created_at: new Date().toISOString()
-    });
-    localStorage.setItem('tsh_lookup_history', JSON.stringify(historyList.slice(0, 30)));
-  } catch (e) {}
+  // Save to localStorage only if not incognito (bảo mật riêng tư)
+  if (!isIncognito) {
+    try {
+      localStorage.setItem('tsh_last_lookup', JSON.stringify({ fullName, day, month, year }));
+      const historyList = JSON.parse(localStorage.getItem('tsh_lookup_history') || '[]');
+      historyList.unshift({
+        full_name: fullName,
+        birth_date: birthDateStr,
+        created_at: new Date().toISOString()
+      });
+      localStorage.setItem('tsh_lookup_history', JSON.stringify(historyList.slice(0, 30)));
+    } catch (e) {}
+  }
 
   // Reset transit selected year to current actual year on new lookup
   currentSelectedTransitYear = new Date().getFullYear();
@@ -1479,54 +1484,186 @@ function renderResultView(data) {
   renderCards(data);
 }
 
+// ============================================================================
+// Bảo Mật An Toàn Thông Tin & Quản Lý Lịch Sử Tra Cứu (Privacy & Security)
+// ============================================================================
+
+// Hàm che tên để bảo vệ danh tính cá nhân (Data Masking)
+function maskName(fullName) {
+  if (!fullName) return '';
+  return fullName.trim().split(/\s+/).map(w => {
+    const len = w.length;
+    if (len <= 1) return w;
+    if (len === 2) return w[0] + '*';
+    if (len === 3) return w[0] + '*' + w[2];
+    if (len === 4) return w[0] + '**' + w[3];
+    return w.slice(0, 2) + '*'.repeat(Math.min(3, len - 3)) + w[len - 1];
+  }).join(' ');
+}
+
+// Hàm che ngày sinh (chỉ hiển thị năm hoặc định dạng che)
+function maskBirthDate(dateStr) {
+  if (!dateStr) return '';
+  const p1 = dateStr.split('-');
+  if (p1.length === 3 && p1[0].length === 4) {
+    return '**/**/' + p1[0];
+  }
+  const p2 = dateStr.split('/');
+  if (p2.length === 3 && p2[2].length === 4) {
+    return '**/**/' + p2[2];
+  }
+  return '**/**/****';
+}
+
+let isHistoryMasked = true;
+let currentHistoryItems = [];
+
 // Modal Lịch sử tra cứu
 async function openHistoryModal() {
   const modal = document.getElementById('history-modal');
   const list = document.getElementById('history-modal-list');
   if (!modal || !list) return;
 
-  list.innerHTML = '<div class="loading-state">Đang tải lịch sử...</div>';
+  list.innerHTML = '<div class="loading-state" style="text-align: center; padding: 20px; color: var(--text-muted);">Đang tải lịch sử tra cứu...</div>';
   modal.classList.add('active');
 
-  let historyItems = [];
+  currentHistoryItems = [];
   try {
     const res = await fetch('/api/lookups');
     if (res.ok) {
       const data = await res.json();
       if (data.history && data.history.length) {
-        historyItems = data.history;
+        currentHistoryItems = data.history;
       }
     }
   } catch (err) {}
 
-  if (!historyItems.length) {
+  if (!currentHistoryItems.length) {
     try {
-      historyItems = JSON.parse(localStorage.getItem('tsh_lookup_history') || '[]');
+      currentHistoryItems = JSON.parse(localStorage.getItem('tsh_lookup_history') || '[]');
     } catch (e) {}
   }
 
-  if (historyItems.length) {
-    list.innerHTML = historyItems.map(item => {
+  renderHistoryItems();
+}
+
+function renderHistoryItems() {
+  const list = document.getElementById('history-modal-list');
+  const secStatus = document.getElementById('history-sec-status');
+  const secIcon = document.getElementById('history-sec-icon');
+  const toggleBtn = document.getElementById('btn-toggle-mask');
+
+  if (toggleBtn) {
+    toggleBtn.innerHTML = isHistoryMasked ? '👁️ Hiện đầy đủ' : '🔒 Che bảo mật';
+  }
+  if (secStatus) {
+    secStatus.textContent = isHistoryMasked
+      ? 'Chế độ bảo mật: Đang che thông tin cá nhân'
+      : '⚠️ Đang hiển thị thông tin đầy đủ';
+    secStatus.style.color = isHistoryMasked ? '#166534' : '#b45309';
+  }
+  if (secIcon) {
+    secIcon.textContent = isHistoryMasked ? '🛡️' : '⚠️';
+  }
+
+  if (!list) return;
+
+  if (currentHistoryItems.length) {
+    list.innerHTML = currentHistoryItems.map((item, idx) => {
       const d = new Date(item.created_at);
       const timeStr = d.toLocaleDateString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+      const displayName = isHistoryMasked ? maskName(item.full_name) : item.full_name;
+      const displayDate = isHistoryMasked ? maskBirthDate(item.birth_date) : item.birth_date;
+      const safeName = (item.full_name || '').replace(/'/g, "\\'");
+      const safeBirth = (item.birth_date || '').replace(/'/g, "\\'");
+
       return `
-        <div class="history-item" onclick="rerunHistoryLookup('${item.full_name}', '${item.birth_date}')">
-          <div class="history-info">
-            <strong>${item.full_name}</strong>
-            <span>Ngày sinh: ${item.birth_date} • ${timeStr}</span>
+        <div class="history-item" style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+          <div class="history-info" onclick="rerunHistoryLookup('${safeName}', '${safeBirth}')" style="flex: 1; cursor: pointer;">
+            <strong title="${isHistoryMasked ? 'Đang che bảo mật thông tin' : item.full_name}">${displayName}</strong>
+            <span>Ngày sinh: ${displayDate} • ${timeStr}</span>
           </div>
-          <button type="button" class="btn-rerun">Tra cứu lại ↻</button>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <button type="button" class="btn-rerun" onclick="rerunHistoryLookup('${safeName}', '${safeBirth}')">
+              Tra cứu lại ↻
+            </button>
+            <button type="button" class="btn-delete-history" onclick="deleteHistoryItem(${item.id || 'null'}, ${idx}, event)" title="Xóa bản ghi này">
+              🗑️
+            </button>
+          </div>
         </div>
       `;
     }).join('');
   } else {
-    list.innerHTML = '<div class="empty-state">Chưa có lịch sử tra cứu nào.</div>';
+    list.innerHTML = '<div class="empty-state" style="text-align: center; padding: 24px 10px; color: var(--text-muted);">Chưa có lịch sử tra cứu nào (hoặc đã được dọn sạch).</div>';
   }
+}
+
+function toggleHistoryMasking() {
+  isHistoryMasked = !isHistoryMasked;
+  renderHistoryItems();
+}
+
+async function deleteHistoryItem(id, idx, event) {
+  if (event) event.stopPropagation();
+  if (!confirm('Bạn có chắc chắn muốn xóa bản ghi tra cứu này không?')) return;
+
+  if (id) {
+    try {
+      await fetch(`/api/lookups/${id}`, { method: 'DELETE' });
+    } catch (e) {}
+  }
+
+  if (idx >= 0 && idx < currentHistoryItems.length) {
+    const item = currentHistoryItems[idx];
+    currentHistoryItems.splice(idx, 1);
+    try {
+      let localList = JSON.parse(localStorage.getItem('tsh_lookup_history') || '[]');
+      localList = localList.filter(x => !(x.full_name === item.full_name && x.birth_date === item.birth_date));
+      localStorage.setItem('tsh_lookup_history', JSON.stringify(localList));
+    } catch (e) {}
+  }
+
+  renderHistoryItems();
+}
+
+async function clearAllLookupHistory() {
+  if (!confirm('Bạn có chắc chắn muốn xóa TOÀN BỘ lịch sử tra cứu để bảo mật an toàn thông tin không?')) return;
+
+  try {
+    await fetch('/api/lookups', { method: 'DELETE' });
+  } catch (e) {}
+
+  try {
+    localStorage.removeItem('tsh_lookup_history');
+  } catch (e) {}
+
+  currentHistoryItems = [];
+  renderHistoryItems();
 }
 
 function closeHistoryModal() {
   const modal = document.getElementById('history-modal');
   if (modal) modal.classList.remove('active');
+}
+
+// Modal Chính sách bảo mật & Điều khoản an toàn thông tin
+function openPrivacyPolicyModal() {
+  const modal = document.getElementById('privacy-policy-modal');
+  if (modal) modal.classList.add('active');
+}
+
+function closePrivacyPolicyModal() {
+  const modal = document.getElementById('privacy-policy-modal');
+  if (modal) modal.classList.remove('active');
+}
+
+function acceptPrivacyAndClose() {
+  const chkPrivacy = document.getElementById('reg-agree-privacy');
+  const chkUsage = document.getElementById('reg-agree-usage');
+  if (chkPrivacy) chkPrivacy.checked = true;
+  if (chkUsage) chkUsage.checked = true;
+  closePrivacyPolicyModal();
 }
 
 function rerunHistoryLookup(fullName, birthDateStr) {
@@ -1683,11 +1820,22 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      // Kiểm tra tuân thủ điều khoản an toàn & bảo mật thông tin
+      const agreePrivacy = document.getElementById('reg-agree-privacy');
+      const agreeUsage = document.getElementById('reg-agree-usage');
+      if (!agreePrivacy?.checked || !agreeUsage?.checked) {
+        if (errBox) {
+          errBox.textContent = 'Vui lòng đọc và tích chọn đồng ý với các điều khoản bảo mật an toàn thông tin trước khi đăng ký.';
+          errBox.style.display = 'block';
+        }
+        return;
+      }
+
       try {
         const res = await fetch('/api/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: cleanedPhone, password: pass, fullName })
+          body: JSON.stringify({ phone: cleanedPhone, password: pass, fullName, termsAccepted: true })
         });
         if (res.ok) {
           const data = await res.json();
@@ -1833,3 +1981,15 @@ document.addEventListener('DOMContentLoaded', () => {
     alert('🎉 Chúc mừng! Tài khoản của bạn đã được xác thực thành công. Bạn có thể tra cứu không giới hạn!');
   }
 });
+
+// Explicit window bindings for modal & privacy controls
+window.openHistoryModal = openHistoryModal;
+window.closeHistoryModal = closeHistoryModal;
+window.rerunHistoryLookup = rerunHistoryLookup;
+window.toggleHistoryMasking = toggleHistoryMasking;
+window.deleteHistoryItem = deleteHistoryItem;
+window.clearAllLookupHistory = clearAllLookupHistory;
+window.openPrivacyPolicyModal = openPrivacyPolicyModal;
+window.closePrivacyPolicyModal = closePrivacyPolicyModal;
+window.acceptPrivacyAndClose = acceptPrivacyAndClose;
+

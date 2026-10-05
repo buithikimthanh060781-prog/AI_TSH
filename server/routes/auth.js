@@ -110,10 +110,17 @@ router.get('/me', (req, res) => {
 // POST /api/auth/register - Đăng ký bằng họ tên và số điện thoại
 router.post('/register', async (req, res) => {
   try {
-    const { phone, email, password, fullName, full_name, name, note } = req.body;
+    const { phone, email, password, fullName, full_name, name, note, termsAccepted, agreePrivacy, agreeUsage } = req.body;
     const inputPhone = (phone || email || '').trim();
     const userFullName = (fullName || full_name || name || '').trim().slice(0, 100) || null;
     const userNote = (typeof note === 'string' ? note.trim().slice(0, 500) : null) || null;
+
+    if (!(termsAccepted || (agreePrivacy && agreeUsage))) {
+      return res.status(400).json({
+        error: 'TERMS_NOT_ACCEPTED',
+        message: 'Vui lòng đọc và tích chọn đồng ý với các điều khoản bảo mật an toàn thông tin trước khi đăng ký.'
+      });
+    }
 
     if (!inputPhone || !isValidPhone(inputPhone)) {
       return res.status(400).json({ error: 'INVALID_PHONE', message: 'Vui lòng nhập số điện thoại hợp lệ (8-15 chữ số, hỗ trợ số quốc tế có dấu +).' });
@@ -133,13 +140,20 @@ router.post('/register', async (req, res) => {
 
     const salt = await bcrypt.genSalt(10);
     const password_hash = await bcrypt.hash(password, salt);
+    const nowIso = new Date().toISOString();
 
     const insertStmt = db.prepare(`
-      INSERT INTO users (email, phone, password_hash, is_verified, full_name, note)
-      VALUES (?, ?, ?, 0, ?, ?)
+      INSERT INTO users (email, phone, password_hash, is_verified, full_name, note, terms_accepted_at)
+      VALUES (?, ?, ?, 0, ?, ?, ?)
     `);
-    const result = insertStmt.run(cleanPhone, cleanPhone, password_hash, userFullName, userNote);
+    const result = insertStmt.run(cleanPhone, cleanPhone, password_hash, userFullName, userNote, nowIso);
     const userId = Number(result.lastInsertRowid);
+
+    // Auto-backup to cloud if configured
+    try {
+      const { scheduleCloudBackup } = require('../lib/dbSync');
+      scheduleCloudBackup();
+    } catch (e) {}
 
     // Create session
     const ip = getClientIp(req);
