@@ -713,14 +713,24 @@ a:hover {
 
 .transit-item-personal .transit-name {
   color: #b45309;
+  font-size: 0.88rem;
+  line-height: 1.25;
+  white-space: normal;
 }
 
 .transit-item-personal .transit-tagline {
   color: #78350f;
+  font-size: 0.78rem;
+  line-height: 1.3;
+  margin-top: 2px;
+  word-break: break-word;
 }
 
 .transit-item-personal .transit-keywords {
   color: #d97706;
+  font-size: 0.72rem;
+  line-height: 1.25;
+  margin-top: 2px;
 }
 
 .transit-item-sub {

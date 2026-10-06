@@ -113,13 +113,14 @@ function tinhThanSoHoc(hoTen, ngay, thang, nam) {
   const linhHon = RM(tongNguyenAm);
   const truocLinhHon = tongNguyenAm;
 
-  // 4. Nhân cách
-  const tongPhuAm = wordStats.reduce((sum, ws) => sum + RM(ws.tongPA), 0);
-  const nhanCach = RM(tongPhuAm);
+  // 4. Nhân cách (nếu là master thì rút gọn về 1 - 9)
+  const tongPhuAm = wordStats.reduce((sum, ws) => sum + RN(ws.tongPA), 0);
+  const nhanCach = RN(tongPhuAm);
   const truocNhanCach = tongPhuAm;
 
-  // 5. Trưởng thành
-  const truocTruongThanh = duongDoi + suMenh;
+  // 5. Trưởng thành = đường đời + sứ mệnh (Nếu đường đời là master thì rút gọn số master)
+  const duongDoiRutGon = (duongDoi === 11 || duongDoi === 22 || duongDoi === 33) ? RN(duongDoi) : duongDoi;
+  const truocTruongThanh = duongDoiRutGon + suMenh;
   const truongThanh = RM(truocTruongThanh);
 
   // 6. Ngày sinh
@@ -149,10 +150,10 @@ function tinhThanSoHoc(hoTen, ngay, thang, nam) {
     }
   }
 
-  // Đam mê: tần suất >= 2
+  // Đam mê: xuất hiện lớn hơn 2 lần (tần suất > 2)
   const damMe = Object.keys(freq)
     .map(Number)
-    .filter(num => freq[num] >= 2)
+    .filter(num => freq[num] > 2)
     .sort((a, b) => {
       if (freq[b] !== freq[a]) return freq[b] - freq[a];
       return a - b;
@@ -392,21 +393,23 @@ function renderSvgMap(data) {
     const haloEl = hasHalo ? `<circle cx="${x}" cy="${y}" r="${r + 20}" fill="url(#halo-glow)" class="halo-circle" pointer-events="none" />` : '';
 
     // Label positioning
-    let labelY = y + r + 16;
+    const isTruongThanh = key === 'truongThanh';
+    let labelY = isTruongThanh ? (y + r + 13) : (y + r + 16);
     if (labelPos === 'top') {
       labelY = y - r - 8;
     }
 
     const fillLabel = labelColor === 'red' ? '#dc2626' : '#000000';
+    const labelFontSize = isTruongThanh ? 9.5 : 12;
     let labelSvg = '';
     if (label.includes('\n')) {
       const parts = label.split('\n');
       labelSvg = `
-        <text x="${x}" y="${labelY}" text-anchor="middle" font-size="12" font-weight="bold" fill="${fillLabel}">${parts[0]}</text>
-        <text x="${x}" y="${labelY + 14}" text-anchor="middle" font-size="12" font-weight="bold" fill="${fillLabel}">${parts[1]}</text>
+        <text x="${x}" y="${labelY}" text-anchor="middle" font-size="${labelFontSize}" font-weight="bold" fill="${fillLabel}">${parts[0]}</text>
+        <text x="${x}" y="${labelY + 14}" text-anchor="middle" font-size="${labelFontSize}" font-weight="bold" fill="${fillLabel}">${parts[1]}</text>
       `;
     } else {
-      labelSvg = `<text x="${x}" y="${labelY}" text-anchor="middle" font-size="12" font-weight="bold" fill="${fillLabel}">${label}</text>`;
+      labelSvg = `<text x="${x}" y="${labelY}" text-anchor="middle" font-size="${labelFontSize}" font-weight="bold" fill="${fillLabel}">${label}</text>`;
     }
 
     // Number text position (if rawVal exists, put rawVal in tiny font under main val)
@@ -441,13 +444,13 @@ function renderSvgMap(data) {
     ? (data.chiSoThieu.length ? data.chiSoThieu.join(', ') : '0') 
     : '🔒';
 
-  // Passion numbers string
+  // Passion numbers string (chỉ lấy các số xuất hiện > 2 lần)
   const passionStr = isUnlocked 
     ? (data.damMe.length ? data.damMe.slice(0, 4).join(', ') : '0') 
     : '🔒';
 
-  // Debt numbers string
-  const debtStr = data.noNghiep.length ? data.noNghiep.join(', ') : 'Không có';
+  // Debt numbers string (nợ nghiệp không có thì để trống)
+  const debtStr = data.noNghiep.length ? data.noNghiep.join(', ') : '';
 
   const svgHtml = `
     <svg viewBox="0 0 600 640" class="tsh-svg" id="tsh-interactive-svg" xmlns="http://www.w3.org/2000/svg">
@@ -584,18 +587,18 @@ function renderSvgMap(data) {
       <text x="378" y="312" font-size="11" font-weight="bold" fill="#000000" text-anchor="middle">(${data.chang[3].year})</text>
 
       <!-- HỌ TÊN VÀ NGÀY SINH TRUNG TÂM -->
-      <text x="300" y="342" font-size="15" font-weight="800" fill="#1a4480" text-anchor="middle">${data.tenChuan}</text>
+      <text x="300" y="342" font-size="${data.tenChuan.length > 22 ? 12 : (data.tenChuan.length > 16 ? 13.5 : 15)}" font-weight="800" fill="#1a4480" text-anchor="middle">${data.tenChuan}</text>
       <text x="300" y="360" font-size="13" font-weight="700" fill="#1a4480" text-anchor="middle">${data.ngay}/${data.thang}/${data.nam}</text>
 
       <!-- 4. KHU VỰC THIẾU & ĐAM MÊ (CLICK ĐỔI MÀU) -->
-      <!-- Vòng cung Chỉ số thiếu to hơn (R=42, r=26): Click đổi màu viền và nền -->
+      <!-- Vòng cung Chỉ số thiếu: Chữ Thiếu đưa vào bên trong vành vòng cung -->
       <g>
-        <path d="M 143 400 A 42 42 0 0 1 227 400 L 211 400 A 26 26 0 0 0 159 400 Z" 
+        <path d="M 141 400 A 44 44 0 0 1 229 400 L 209 400 A 24 24 0 0 0 161 400 Z" 
               fill="#ffffff" stroke="#000000" stroke-width="1.6" 
               class="toggle-shape-btn" 
               onclick="handleShapeClick(this, '#ffffff', '#fef08a', '#000000', '#dc2626')" />
-        <text x="185" y="388" font-size="12" font-weight="bold" fill="#000000" text-anchor="middle" pointer-events="none">Thiếu</text>
-        <text x="185" y="418" font-size="13" font-weight="bold" fill="#000000" text-anchor="middle">${missingStr}</text>
+        <text x="185" y="370" font-size="11.5" font-weight="bold" fill="#000000" text-anchor="middle" pointer-events="none">Thiếu</text>
+        <text x="185" y="416" font-size="12.5" font-weight="bold" fill="#000000" text-anchor="middle">${missingStr}</text>
       </g>
 
       <!-- Hình Bầu Dục Đam mê: Click đổi màu xanh dương ⇄ xanh lá -->
@@ -605,22 +608,22 @@ function renderSvgMap(data) {
         <text x="195" y="517" font-size="12" font-weight="bold" fill="#dc2626" text-anchor="middle">Đ.Mê</text>
       </g>
 
-      <!-- 5. KHU VỰC CHU KỲ CÁ NHÂN (CHUẨN 3 Ô THEO ẢNH MẪU BẢN ĐỒ.PNG: NĂM CN, THÁNG CN, NGÀY CN) -->
+      <!-- 5. KHU VỰC CHU KỲ CÁ NHÂN (NẰM GỌN GÀNG TRONG VÙNG TỨ GIÁC: LINH HỒN, SỨ MỆNH, NHÂN CÁCH, LK) -->
       <g id="group-chu-ky">
-        <!-- Năm CN (Năm cá nhân) -->
-        <text x="438" y="342" font-size="12" font-weight="bold" fill="#000000" text-anchor="end">Năm CN:</text>
-        <rect id="svg-rect-nam-cn" x="445" y="327" width="30" height="21" fill="#4a90e2" rx="2" class="rect-toggle-btn" onclick="handleRectClick(this, '#4a90e2', '#2e7d32')" />
-        <text id="svg-text-nam-cn" x="460" y="342" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle" pointer-events="none">${personalYearVal}</text>
+        <!-- Năm CN: Nằm gọn trong vùng tứ giác, không chạm vào đường xiên Sứ mệnh - Linh hồn -->
+        <text x="444" y="343" font-size="11" font-weight="bold" fill="#000000" text-anchor="end">Năm CN:</text>
+        <rect id="svg-rect-nam-cn" x="448" y="332" width="28" height="21" fill="#4a90e2" rx="3" class="rect-toggle-btn" onclick="handleRectClick(this, '#4a90e2', '#2e7d32')" />
+        <text id="svg-text-nam-cn" x="462" y="346" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle" pointer-events="none">${personalYearVal}</text>
 
-        <!-- Tháng CN (Tháng cá nhân) -->
-        <text x="438" y="373" font-size="12" font-weight="bold" fill="#000000" text-anchor="end">Tháng CN:</text>
-        <rect id="svg-rect-thang-cn" x="445" y="358" width="30" height="21" fill="#4a90e2" rx="2" class="rect-toggle-btn" onclick="handleRectClick(this, '#4a90e2', '#2e7d32')" />
-        <text id="svg-text-thang-cn" x="460" y="373" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle" pointer-events="none">${personalMonthVal}</text>
+        <!-- Tháng CN -->
+        <text x="444" y="372" font-size="11" font-weight="bold" fill="#000000" text-anchor="end">Tháng CN:</text>
+        <rect id="svg-rect-thang-cn" x="448" y="361" width="28" height="21" fill="#4a90e2" rx="3" class="rect-toggle-btn" onclick="handleRectClick(this, '#4a90e2', '#2e7d32')" />
+        <text id="svg-text-thang-cn" x="462" y="375" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle" pointer-events="none">${personalMonthVal}</text>
 
-        <!-- Ngày CN (Ngày cá nhân) -->
-        <text x="438" y="404" font-size="12" font-weight="bold" fill="#000000" text-anchor="end">Ngày CN:</text>
-        <rect id="svg-rect-ngay-cn" x="445" y="389" width="30" height="21" fill="#4a90e2" rx="2" class="rect-toggle-btn" onclick="handleRectClick(this, '#4a90e2', '#2e7d32')" />
-        <text id="svg-text-ngay-cn" x="460" y="404" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle" pointer-events="none">${personalDayVal}</text>
+        <!-- Ngày CN -->
+        <text x="444" y="401" font-size="11" font-weight="bold" fill="#000000" text-anchor="end">Ngày CN:</text>
+        <rect id="svg-rect-ngay-cn" x="448" y="390" width="28" height="21" fill="#4a90e2" rx="3" class="rect-toggle-btn" onclick="handleRectClick(this, '#4a90e2', '#2e7d32')" />
+        <text id="svg-text-ngay-cn" x="462" y="404" font-size="13" font-weight="bold" fill="#ffffff" text-anchor="middle" pointer-events="none">${personalDayVal}</text>
       </g>
 
       <!-- 6. CÁC VÒNG TRÒN NỐT CHÍNH (CÓ HÀO QUANG VÀNG VÀ TƯƠNG TÁC) -->
@@ -985,7 +988,7 @@ function renderCards(data) {
     { key: 'thuThach2', val: data.thuThach[1].val },
     { key: 'thuThach3', val: data.thuThach[2].val },
     { key: 'thuThach4', val: data.thuThach[3].val },
-    { key: 'noNghiep', val: data.noNghiep.length ? data.noNghiep.join(', ') : 'Không có' }
+    { key: 'noNghiep', val: data.noNghiep.length ? data.noNghiep.join(', ') : '' }
   ];
 
   const cardsHtml = indicatorList
