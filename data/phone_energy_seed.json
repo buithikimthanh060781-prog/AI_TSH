@@ -1,0 +1,902 @@
+{
+  "nlso": [
+    {
+      "ma_so": "11",
+      "tu_truong": "PHỤC VỊ",
+      "cap_do": 1
+    },
+    {
+      "ma_so": "22",
+      "tu_truong": "PHỤC VỊ",
+      "cap_do": 1
+    },
+    {
+      "ma_so": "88",
+      "tu_truong": "PHỤC VỊ",
+      "cap_do": 2
+    },
+    {
+      "ma_so": "99",
+      "tu_truong": "PHỤC VỊ",
+      "cap_do": 2
+    },
+    {
+      "ma_so": "77",
+      "tu_truong": "PHỤC VỊ",
+      "cap_do": 3
+    },
+    {
+      "ma_so": "66",
+      "tu_truong": "PHỤC VỊ",
+      "cap_do": 3
+    },
+    {
+      "ma_so": "44",
+      "tu_truong": "PHỤC VỊ",
+      "cap_do": 4
+    },
+    {
+      "ma_so": "33",
+      "tu_truong": "PHỤC VỊ",
+      "cap_do": 4
+    },
+    {
+      "ma_so": "13",
+      "tu_truong": "THIÊN Y",
+      "cap_do": 1
+    },
+    {
+      "ma_so": "31",
+      "tu_truong": "THIÊN Y",
+      "cap_do": 1
+    },
+    {
+      "ma_so": "68",
+      "tu_truong": "THIÊN Y",
+      "cap_do": 2
+    },
+    {
+      "ma_so": "86",
+      "tu_truong": "THIÊN Y",
+      "cap_do": 2
+    },
+    {
+      "ma_so": "94",
+      "tu_truong": "THIÊN Y",
+      "cap_do": 3
+    },
+    {
+      "ma_so": "49",
+      "tu_truong": "THIÊN Y",
+      "cap_do": 3
+    },
+    {
+      "ma_so": "72",
+      "tu_truong": "THIÊN Y",
+      "cap_do": 4
+    },
+    {
+      "ma_so": "27",
+      "tu_truong": "THIÊN Y",
+      "cap_do": 4
+    },
+    {
+      "ma_so": "14",
+      "tu_truong": "SINH KHÍ",
+      "cap_do": 1
+    },
+    {
+      "ma_so": "41",
+      "tu_truong": "SINH KHÍ",
+      "cap_do": 1
+    },
+    {
+      "ma_so": "67",
+      "tu_truong": "SINH KHÍ",
+      "cap_do": 2
+    },
+    {
+      "ma_so": "76",
+      "tu_truong": "SINH KHÍ",
+      "cap_do": 2
+    },
+    {
+      "ma_so": "93",
+      "tu_truong": "SINH KHÍ",
+      "cap_do": 3
+    },
+    {
+      "ma_so": "39",
+      "tu_truong": "SINH KHÍ",
+      "cap_do": 3
+    },
+    {
+      "ma_so": "82",
+      "tu_truong": "SINH KHÍ",
+      "cap_do": 4
+    },
+    {
+      "ma_so": "28",
+      "tu_truong": "SINH KHÍ",
+      "cap_do": 4
+    },
+    {
+      "ma_so": "19",
+      "tu_truong": "DIÊN NIÊN",
+      "cap_do": 1
+    },
+    {
+      "ma_so": "91",
+      "tu_truong": "DIÊN NIÊN",
+      "cap_do": 1
+    },
+    {
+      "ma_so": "78",
+      "tu_truong": "DIÊN NIÊN",
+      "cap_do": 2
+    },
+    {
+      "ma_so": "87",
+      "tu_truong": "DIÊN NIÊN",
+      "cap_do": 2
+    },
+    {
+      "ma_so": "43",
+      "tu_truong": "DIÊN NIÊN",
+      "cap_do": 3
+    },
+    {
+      "ma_so": "34",
+      "tu_truong": "DIÊN NIÊN",
+      "cap_do": 3
+    },
+    {
+      "ma_so": "26",
+      "tu_truong": "DIÊN NIÊN",
+      "cap_do": 4
+    },
+    {
+      "ma_so": "62",
+      "tu_truong": "DIÊN NIÊN",
+      "cap_do": 4
+    },
+    {
+      "ma_so": "16",
+      "tu_truong": "LỤC SÁT",
+      "cap_do": 1
+    },
+    {
+      "ma_so": "61",
+      "tu_truong": "LỤC SÁT",
+      "cap_do": 1
+    },
+    {
+      "ma_so": "74",
+      "tu_truong": "LỤC SÁT",
+      "cap_do": 2
+    },
+    {
+      "ma_so": "47",
+      "tu_truong": "LỤC SÁT",
+      "cap_do": 2
+    },
+    {
+      "ma_so": "38",
+      "tu_truong": "LỤC SÁT",
+      "cap_do": 3
+    },
+    {
+      "ma_so": "83",
+      "tu_truong": "LỤC SÁT",
+      "cap_do": 3
+    },
+    {
+      "ma_so": "92",
+      "tu_truong": "LỤC SÁT",
+      "cap_do": 4
+    },
+    {
+      "ma_so": "29",
+      "tu_truong": "LỤC SÁT",
+      "cap_do": 4
+    },
+    {
+      "ma_so": "12",
+      "tu_truong": "TUYỆT MỆNH",
+      "cap_do": 1
+    },
+    {
+      "ma_so": "21",
+      "tu_truong": "TUYỆT MỆNH",
+      "cap_do": 1
+    },
+    {
+      "ma_so": "69",
+      "tu_truong": "TUYỆT MỆNH",
+      "cap_do": 2
+    },
+    {
+      "ma_so": "96",
+      "tu_truong": "TUYỆT MỆNH",
+      "cap_do": 2
+    },
+    {
+      "ma_so": "37",
+      "tu_truong": "TUYỆT MỆNH",
+      "cap_do": 3
+    },
+    {
+      "ma_so": "73",
+      "tu_truong": "TUYỆT MỆNH",
+      "cap_do": 3
+    },
+    {
+      "ma_so": "84",
+      "tu_truong": "TUYỆT MỆNH",
+      "cap_do": 4
+    },
+    {
+      "ma_so": "48",
+      "tu_truong": "TUYỆT MỆNH",
+      "cap_do": 4
+    },
+    {
+      "ma_so": "17",
+      "tu_truong": "HỌA HẠI",
+      "cap_do": 1
+    },
+    {
+      "ma_so": "71",
+      "tu_truong": "HỌA HẠI",
+      "cap_do": 1
+    },
+    {
+      "ma_so": "98",
+      "tu_truong": "HỌA HẠI",
+      "cap_do": 2
+    },
+    {
+      "ma_so": "89",
+      "tu_truong": "HỌA HẠI",
+      "cap_do": 2
+    },
+    {
+      "ma_so": "64",
+      "tu_truong": "HỌA HẠI",
+      "cap_do": 3
+    },
+    {
+      "ma_so": "46",
+      "tu_truong": "HỌA HẠI",
+      "cap_do": 3
+    },
+    {
+      "ma_so": "32",
+      "tu_truong": "HỌA HẠI",
+      "cap_do": 4
+    },
+    {
+      "ma_so": "23",
+      "tu_truong": "HỌA HẠI",
+      "cap_do": 4
+    },
+    {
+      "ma_so": "18",
+      "tu_truong": "NGŨ QUỶ",
+      "cap_do": 1
+    },
+    {
+      "ma_so": "81",
+      "tu_truong": "NGŨ QUỶ",
+      "cap_do": 1
+    },
+    {
+      "ma_so": "97",
+      "tu_truong": "NGŨ QUỶ",
+      "cap_do": 2
+    },
+    {
+      "ma_so": "79",
+      "tu_truong": "NGŨ QUỶ",
+      "cap_do": 2
+    },
+    {
+      "ma_so": "36",
+      "tu_truong": "NGŨ QUỶ",
+      "cap_do": 3
+    },
+    {
+      "ma_so": "63",
+      "tu_truong": "NGŨ QUỶ",
+      "cap_do": 3
+    },
+    {
+      "ma_so": "42",
+      "tu_truong": "NGŨ QUỶ",
+      "cap_do": 4
+    },
+    {
+      "ma_so": "24",
+      "tu_truong": "NGŨ QUỶ",
+      "cap_do": 4
+    }
+  ],
+  "ket_luan": [
+    {
+      "stt": 1,
+      "ma_gop": "SINH KHÍ + THIÊN Y",
+      "tu_truong_1": "SINH KHÍ",
+      "tu_truong_2": "THIÊN Y",
+      "diem": 10,
+      "mo_ta": "quý nhân mang tiền tới, kích cưới, thăng tiến, nhiều cơ hội sinh cơ\nThông qua quý nhân mà mang tiền tài đến, nhờ quý nhân mà có cơ hội kiếm tiền, phát tài\nCó hiện tượng kết hôn, có tình cảm, hạnh phúc. Kích cưới, hồi sinh tình yêu."
+    },
+    {
+      "stt": 2,
+      "ma_gop": "THIÊN Y + THIÊN Y",
+      "tu_truong_1": "THIÊN Y",
+      "tu_truong_2": "THIÊN Y",
+      "diem": 7,
+      "mo_ta": "tụ tập năng lượng Tài Phú, có hiện tượng kết hôn, kíchcưới ,bát Phương Tài\nTụ tập nhiều năng lượng tiền tài và hôn nhân tình cảm tốt đẹp, ngày càng nhiều\nCó thể kích cưới, dẫn đến hôn nhân, hôn nhân lại rất tốt đẹp\nKiếm được tiền, liên tục và ngày càng nhiều tiền"
+    },
+    {
+      "stt": 3,
+      "ma_gop": "DIÊN NIÊN + THIÊN Y",
+      "tu_truong_1": "DIÊN NIÊN",
+      "tu_truong_2": "THIÊN Y",
+      "diem": 10,
+      "mo_ta": "dựa vào năng lực kiếm ra tiền…\n#diên niên lớn+thiên y lớn:913,786,\nnăng lực chuyên nghiệp cao.chức vụ cao. tạo ra tiền vì giỏi(913.786)\nCông việc năng lực tốt đem đến nhiều tiền, khối lượng công vịệc lớn áp lực lớn nhưng được trả công xứng đáng, kiếm được nhiều tiền\n#diên niên nhỏ+thiên y lớn:268,431\nđịa vị không lớn, công việc khônggồng gánh quá vẫn có tiền, không áp lực, nhàn nhàn vẫn có tiền, nhẹ nhõm kiếm nhiều tiền\nCông việc năng lực bình thường lại đem lại nhiều tiền, công việc đem lại nhiều may mắn.\n#diên niên lớn +thiêny nhỏ:\ncông việc vất vả thu hoạch ít, làm 10 được 1, 2.\nvất vả mới ra tiền Công việc nhiều, năng lực tốt, áp lực lớn tuy nhiên công sức bỏ ra đôi lúc chưa xứng đáng."
+    },
+    {
+      "stt": 4,
+      "ma_gop": "HỌA HẠI + THIÊN Y",
+      "tu_truong_1": "HỌA HẠI",
+      "tu_truong_2": "THIÊN Y",
+      "diem": 9,
+      "mo_ta": "thông qua khẩu tài mà kiếm ra tiền\ncác loại công việc như bán hàng diễn thuyết nói ra tiền mở miệng ra tiền (giáo viên luật sư diễn giả bán hàng ....)lấy miếng làm nghiệp…."
+    },
+    {
+      "stt": 5,
+      "ma_gop": "PHỤC VỊ + THIÊN Y",
+      "tu_truong_1": "PHỤC VỊ",
+      "tu_truong_2": "THIÊN Y",
+      "diem": 9,
+      "mo_ta": "thông qua kiên nhẫn kiên trì chờ đợi màtạo ra tài phú lớn"
+    },
+    {
+      "stt": 6,
+      "ma_gop": "LỤC SÁT + THIÊN Y",
+      "tu_truong_1": "LỤC SÁT",
+      "tu_truong_2": "THIÊN Y",
+      "diem": 9,
+      "mo_ta": "thông qua ngành dịch vụ mà kiếm tiền hợp công việc tỉ mỉ dịch vụ liên quan nữ giới( spa mỹ phẩm quần áo thời trang,... dịch vụ liên quan vận tải"
+    },
+    {
+      "stt": 7,
+      "ma_gop": "NGŨ QUỶ + THIÊNY",
+      "tu_truong_1": "NGŨ QUỶ",
+      "tu_truong_2": "THIÊNY",
+      "diem": 9,
+      "mo_ta": "thông qua ý tưởng tài hoa mà kiếm tiền công việc cần cường độ linh hoạt hoạt động não kích cưới rất nhanh.\nhoặc công việc liên quan mệnh lý tông giáo ra tiền\nThông qua ý tưởng tài hoa tài năng hơn người mà kiếm tiền công việc cần sự linh hoạt động não thông minh sáng tạo kiếm được khoản tiền lớn tim và não ảnh hưởng cẩn thận đột quỵ nên phải giữ sức khoẻ phương diện này nếu trong sdt có qúa nhiều cặp này.\nKích cưới nếu chưa có lập gia đình kích đào hoa tình cảm rất tốt.\nphát tài nhanh chóng tền gì cũng dám kiếm cho nên cần phải xem xét phương diện pháp luật.\nPhải luôn giữ giá trị đạo đức và pháp luật không rất dễ có tai ương lao ngục.\nThường hay làm công việc liên quan đến thức đêm trực đêm internet dựa vào kiến thức mà kiếm tiền lập kế hoạch mà kiếm tiền."
+    },
+    {
+      "stt": 8,
+      "ma_gop": "TUYỆT MỆNH + THIÊN Y",
+      "tu_truong_1": "TUYỆT MỆNH",
+      "tu_truong_2": "THIÊN Y",
+      "diem": 11,
+      "mo_ta": "thông qua cố gắng phấn đấu mà kiếm tiền hoặc làm đầu tư quản lý tài sản làm đầu tư ra tiền bất động sản lô đề bóng bánh đầu tư mạo hiểm\nThông qua sự cố gắng nỗ lực bản thân lớn để kiếm ra số tiền lớn\nđầu tư để kiếm tiền đầu tư lớn nhận được kết quả cũng thắng lớn\nNgười làm đại sự càng làm càng có tiền tổ hợp lợi cho đánh bạc: mua sổ xố đầu tư cổ phiếu."
+    },
+    {
+      "stt": 9,
+      "ma_gop": "THIÊN Y + 0",
+      "tu_truong_1": "THIÊN Y",
+      "tu_truong_2": "0",
+      "diem": 9,
+      "mo_ta": "điều tốt đẹp của Thiên y không còn nữa mà bị ẩn tàng đi 1 lúc nào đó bị phản lại.\nDễ mắc kẹt tiền mua nhà mắc nợ cho mượn tiền không đòi dc\ntình cảm có vấn đề ngoại tình khó phát hiện bên ngoài khác xa thựctế vc ngoài tưởng Happy nhưng nhạt không tưởng tưởng là người có tiền nhàn nhã nhưng thực tế nợ nần tài sản hao mòn thất thoát kẹt tiền mắc nợ\nẨn giấu đi tiền tài.tiền tài tuy kiếm ra nhiều nhưng hay bị mắc kẹt\nMua nhà mắc nợ đôi khi bị giựt nợ bị lừa đảo mà mất tiền của\nTình cảm có nguy cơ tan vỡ rạn nứt có thể ẩn giấu người tình tay ba rất kín kẽ ngoại tình sớm muộn chia tay ẩn tàng ly hôn\nKhông nên đi đầu tư vì có thể không những không kiếm được tiền mà còn có thể bị lừa bị lỗ đầu tư thất bại,"
+    },
+    {
+      "stt": 10,
+      "ma_gop": "SINH KHÍ + SINH KHÍ",
+      "tu_truong_1": "SINH KHÍ",
+      "tu_truong_2": "SINH KHÍ",
+      "diem": 10,
+      "mo_ta": "tụ tập tăng cường năng lượng quý nhân\nTấn cấp, thăng tiến,dễ được đề bạt tiến cử,có nhiều nguồn tiền\nQuý nhân giúp đỡ, gặp dữ hóa lành, vui vẻ lạc quan."
+    },
+    {
+      "stt": 11,
+      "ma_gop": "THIÊN Y + SINH KHÍ",
+      "tu_truong_1": "THIÊN Y",
+      "tu_truong_2": "SINH KHÍ",
+      "diem": 7,
+      "mo_ta": "hiểu bằng hữu, đối với bạn hào phóng, nhân duyên tốt, thích giúp người,tài vận bất bại,...âm phước lớn.\nCó nhiều bằng hữu bạn bè thân tín, với bản tính hào phóng kết nạp được rất nhiều nhân duyên tốt,\nCó hôn nhân, đoạn hôn nhân này lại vô cùng vui vẻ tốt đẹp"
+    },
+    {
+      "stt": 12,
+      "ma_gop": "SINH KHÍ + PHỤC VỊ",
+      "tu_truong_1": "SINH KHÍ",
+      "tu_truong_2": "PHỤC VỊ",
+      "diem": 9,
+      "mo_ta": "Sinh khí tụ tập mạnh lên.quý nhân hiển lộ.Ngày càng trở lên vui vẻ, quý nhân rất nhiều"
+    },
+    {
+      "stt": 13,
+      "ma_gop": "PHỤC VỊ + SINH KHÍ",
+      "tu_truong_1": "PHỤC VỊ",
+      "tu_truong_2": "SINH KHÍ",
+      "diem": 8,
+      "mo_ta": "Sinh khí tụ tập mạnh lên.quý nhân hiển lộ.Ngày càng trở lên vui vẻ, quý nhân rất nhiều"
+    },
+    {
+      "stt": 14,
+      "ma_gop": "DIÊN NIÊN + SINH KHÍ",
+      "tu_truong_1": "DIÊN NIÊN",
+      "tu_truong_2": "SINH KHÍ",
+      "diem": 10,
+      "mo_ta": "Học tập vui vẻ, công việc vui vẻ happy, không cảm thấy áp lực, lợi cho Học hành, yêu việc. Đi làm dễ là lãnh đạo chủ chốt"
+    },
+    {
+      "stt": 15,
+      "ma_gop": "LỤC SÁT + SINH KHÍ",
+      "tu_truong_1": "LỤC SÁT",
+      "tu_truong_2": "SINH KHÍ",
+      "diem": 8,
+      "mo_ta": "Nhân duyên tốt giao tiếp khéo tinh tế có quan hệ xã hội tốt tính nết nhiệt tình vui vẻ có mối quan hệ rất tốt."
+    },
+    {
+      "stt": 16,
+      "ma_gop": "HỌA HẠI + SINH KHÍ",
+      "tu_truong_1": "HỌA HẠI",
+      "tu_truong_2": "SINH KHÍ",
+      "diem": 9,
+      "mo_ta": "khẩu tài tốt lời nói có giá trị nói người mê người thích nói tâm phục khẩu phục duyên ăn nói lời nói có giá trị ăn nói dễ nghe làm người ta yêu quý vui vẻ"
+    },
+    {
+      "stt": 17,
+      "ma_gop": "NGŨ QUỶ + SINH KHÍ",
+      "tu_truong_1": "NGŨ QUỶ",
+      "tu_truong_2": "SINH KHÍ",
+      "diem": 8,
+      "mo_ta": "có thể nghĩ được nhiều ý tưởng tốt ra phương án hữu dụng ý tưởng sáng tạo...."
+    },
+    {
+      "stt": 18,
+      "ma_gop": "TUYỆT MỆNH + SINH KHÍ",
+      "tu_truong_1": "TUYỆT MỆNH",
+      "tu_truong_2": "SINH KHÍ",
+      "diem": 12,
+      "mo_ta": "rất vui vẻ đầu tư vui vẻ có thành tựu Cảm Xúc Thăng Hoa ngoại giao tốt."
+    },
+    {
+      "stt": 19,
+      "ma_gop": "SINH KHÍ + 0",
+      "tu_truong_1": "SINH KHÍ",
+      "tu_truong_2": "0",
+      "diem": 10,
+      "mo_ta": "dễ gặp tiểu nhân ẩn mình; có tiêu cực quý nhân ẩn giấu đi hầu hết lại dính phải tiểu nhân ngầm có nhiều ngăn trở ẩn vui vẻ gặp quý nhân hóa tiểu nhân"
+    },
+    {
+      "stt": 20,
+      "ma_gop": "THIÊN Y + NGŨ QUỶ",
+      "tu_truong_1": "THIÊN Y",
+      "tu_truong_2": "NGŨ QUỶ",
+      "diem": 8,
+      "mo_ta": "vì suy nghĩ hay thất thường, hay có suy nghĩ không chắc chắn >hao tài tốn của, tình cảm có vấn đề.\nTiền vào ra không ổn định, lên xuống lớn, tài chính không an toàn lưu động lớn, không đọng được (nát đào hoa, lao đao), dàn trải, dễ gánh nợ trả nợ dùm,...chi tiêu vô hình lớn,...\nKiếm được tiền nhưng lại vì nguyên nhân bất ngờ khiến tiền bị tổn thất hết.\nHôn nhân không thuận, tình duyên trắc trở, chiêu cảm vấn đề dẫn tới mình là người chủ động ly hôn or có thể do bản thân ngoại tình, có người thứ 3"
+    },
+    {
+      "stt": 21,
+      "ma_gop": "SINH KHÍ + NGŨ QUỶ",
+      "tu_truong_1": "SINH KHÍ",
+      "tu_truong_2": "NGŨ QUỶ",
+      "diem": 10,
+      "mo_ta": "khéo đưa đẩy,vui vẻ thất thường,....không đọc vị được, khó lường, khó nắm bắt"
+    },
+    {
+      "stt": 22,
+      "ma_gop": "DIÊN NIÊN + NGŨ QUỶ",
+      "tu_truong_1": "DIÊN NIÊN",
+      "tu_truong_2": "NGŨ QUỶ",
+      "diem": 10,
+      "mo_ta": "công việc biến động, biến báo, dễ thay đổi việc công việc, lên xuống thất thường, không yêu nghề, chân trong chân ngoài nhiều ý tưởng không thực tế\nDễ lao lực thức khuya tim đột tử\nVừa làm việc vừa nghĩ linh tinh, công việc vừa làm vừa nghĩ, suy nghĩ nhiều. suy nghĩ thâm ngầm, thường hay làm công việc ngoại giao, không có lợi cho quan vận"
+    },
+    {
+      "stt": 23,
+      "ma_gop": "NGŨ QUỶ + NGŨ QUỶ",
+      "tu_truong_1": "NGŨ QUỶ",
+      "tu_truong_2": "NGŨ QUỶ",
+      "diem": 8,
+      "mo_ta": "có tài hoa nhưng không ổn định, phản ứng nhanh, nhưng hay gặp trắc trở, không ổn định và rất hay thay đổi, nhất là trong ý nghĩ.\nÝ nghĩ hay thay đổi, khó thực hiện ý tưởng,nghĩ nhiều, bay bổng, tham bát bỏ mâm. làm thuê thì luôn bất mãn vì không được coi trọng, vì cảm thấy có tài nhưng không vận dụng được.\nDự định bay bổng nhưng không làm được hoặc giỏi công việc ngoại giao\nThường xuyên thức đêm làm việc,tính cách rất khôn khéo thông minh,rất tâm cơ tính toán\nNếu làm nhân viên thường hay không được nhìn nhận,trong mắt người khác không được trân trọng,cảm giác tài năng của mình bị bạc đãi nên rất ấm ức.\nHôn nhân thường hay thay đổi đa nghi,dễ ly hôn bệnh thường hay liên quan đến tim\nChi tiêu bạo tay,rất dễ nợ và vỡ nợ tán tài nhanh"
+    },
+    {
+      "stt": 24,
+      "ma_gop": "HỌA HẠI + NGŨ QUỶ",
+      "tu_truong_1": "HỌA HẠI",
+      "tu_truong_2": "NGŨ QUỶ",
+      "diem": 9,
+      "mo_ta": "Suy nghĩ nhiều,suy nghĩ rối ren dẫn đến gây ra cãi vã to khắc khẩu liên tục cẩn thận bệnh tim\nNói rất nhiều,xu hướng nói tào lao,sĩ diện ,hay biểu đạt lời nói kỳ dị khiến người khác không hiểu được lan man dài dòng nói từ giữa nói ra..(soi xét.,nhìn vào chi tiết....."
+    },
+    {
+      "stt": 25,
+      "ma_gop": "LỤC SÁT + NGŨ QUỶ",
+      "tu_truong_1": "LỤC SÁT",
+      "tu_truong_2": "NGŨ QUỶ",
+      "diem": 9,
+      "mo_ta": "Cảm xúc biến hoá vô hạn cảm xúc biến hóa khôn lường luôn luôn không cảm giác an toàn cả nể cả nghĩ\nHôn nhân không thuận tình duyên trắc trở nát đào hoa ảnh hưởng hôn nhân"
+    },
+    {
+      "stt": 26,
+      "ma_gop": "TUYỆT MỆNH + NGŨ QUỶ",
+      "tu_truong_1": "TUYỆT MỆNH",
+      "tu_truong_2": "NGŨ QUỶ",
+      "diem": 12,
+      "mo_ta": "tham vọng lớn,rất kích động,xung động có ý nghĩ kì dị,tự làm hại bản thân,có hại đến nhân mạng\nNỗ lực liều lĩnh thông minh phản ứng nhanh có sự biến hoá thích đầu tư dễ xuất tiền phá tài dễ mắc nợ lao đao\nCông việc hay biến động thay đổi mất việc chuyển việc liên tục\nTình cảm không ổn định lung lay vui đó mà giận đó cứ thay đổi xoành xoạch.\nChú ý gan mật dễ phát bệnh ngoài ý muốn dễ có bệnh ung thư bệnh nan y...."
+    },
+    {
+      "stt": 27,
+      "ma_gop": "NGŨ QUỶ + 0",
+      "tu_truong_1": "NGŨ QUỶ",
+      "tu_truong_2": "0",
+      "diem": 9,
+      "mo_ta": "Hay do dự suy nghĩ viển vông không thực thi được hay thay đổi nghi ngờ không quyết đoán\nMắc nợ từng đống dễ ngoại tình thất thường\nHuyết áp khó ngủ tim phẫu thuật mổ xẻ dễ xuất gia tu hành\nBiểu thị ly hôn mà lại là người khác chủ động chứ mình bị động bị dồn vào thế bị ép."
+    },
+    {
+      "stt": 28,
+      "ma_gop": "PHỤC VỊ + NGŨ QUỶ",
+      "tu_truong_1": "PHỤC VỊ",
+      "tu_truong_2": "NGŨ QUỶ",
+      "diem": 8,
+      "mo_ta": "làm tính chất ngũ quỷ mạnh lên"
+    },
+    {
+      "stt": 29,
+      "ma_gop": "THIÊN Y + TUYỆT MỆNH",
+      "tu_truong_1": "THIÊN Y",
+      "tu_truong_2": "TUYỆT MỆNH",
+      "diem": 8,
+      "mo_ta": "có tiền sẽ đi đầu tư, số tiền lớn nhưng suy nghĩ hay không chặt chẽ mà khiến phá tài mất tiền của, xung động tiêu phí đầu tư tiêu hao phá tài, tiêu thoáng tay, cảm xúc\ndễ phá tài, đầu tư dễ mất hết, phá tài\ndễ đổ vỡ tình cảm, tình cảm không tốt, không hài hòa"
+    },
+    {
+      "stt": 30,
+      "ma_gop": "SINH KHÍ + TUYỆT MỆNH",
+      "tu_truong_1": "SINH KHÍ",
+      "tu_truong_2": "TUYỆT MỆNH",
+      "diem": 9,
+      "mo_ta": "có quá nhiều kế hoạch nhưng không thực hiện .thực hiện không thành công\ncó nhiều mục tiêu, vui vẻ phấn đấu vìmộng tưởng lớn nhưng không nhất định có thể thực hiện được, bao đồng , trở mặt,....."
+    },
+    {
+      "stt": 31,
+      "ma_gop": "DIÊN NIÊN + TUYỆT MỆNH",
+      "tu_truong_1": "DIÊN NIÊN",
+      "tu_truong_2": "TUYỆT MỆNH",
+      "diem": 10,
+      "mo_ta": "không muốn làm việc, tâm tình làm việc không có, không có tâm tình học tập\ncó nỗ lựcnhưng không thành tựu, có ý thức học nhưng kết quả không có , phần lớn gặp khó khăn trắc trở ,nhiều xuất hiện khó khăn trong công việc\nmối quan hệ. tình cảm không tốt .quan hệ giữa người với người không tốt. (âm dương sai chỗ Nếu nữ dùng nhiều 912.196….)"
+    },
+    {
+      "stt": 32,
+      "ma_gop": "TUYỆT MỆNH + TUYỆT MỆNH",
+      "tu_truong_1": "TUYỆT MỆNH",
+      "tu_truong_2": "TUYỆT MỆNH",
+      "diem": 11,
+      "mo_ta": "sơ ý chủ quan, dễ kích động, suy nghĩ cực đoan, tiêu cực dễ phá tiền tài, cứ đánh bài bạc là thua, không giữ của được\nkhông dễ quản lý tài sản, tiền tới mau đi mau"
+    },
+    {
+      "stt": 33,
+      "ma_gop": "PHỤC VỊ + TUYỆT MỆNH",
+      "tu_truong_1": "PHỤC VỊ",
+      "tu_truong_2": "TUYỆT MỆNH",
+      "diem": 8,
+      "mo_ta": "nhân đôi tính tuyệt mệnh lên"
+    },
+    {
+      "stt": 34,
+      "ma_gop": "LỤC SÁT + TUYỆT MỆNH",
+      "tu_truong_1": "LỤC SÁT",
+      "tu_truong_2": "TUYỆT MỆNH",
+      "diem": 9,
+      "mo_ta": "luôn có cảm xúc vất vả cố gắng luôncó cảm giác bị chèn ép ức chế tâm tình tệ nghĩ tiêucực vất vả(169_612-384…)\ntình cảm không thuận"
+    },
+    {
+      "stt": 35,
+      "ma_gop": "HỌA HẠI + TUYỆT MỆNH",
+      "tu_truong_1": "HỌA HẠI",
+      "tu_truong_2": "TUYỆT MỆNH",
+      "diem": 8,
+      "mo_ta": "nói chuyện thường hay kích động người khác gây tổn thương đến người khác\nva chạm tai nạn mâu thuẫn dễ phẫu thuật họa huyết quang cắt mổ cơ thể...."
+    },
+    {
+      "stt": 36,
+      "ma_gop": "NGŨ QUỶ + TUYỆT MỆNH",
+      "tu_truong_1": "NGŨ QUỶ",
+      "tu_truong_2": "TUYỆT MỆNH",
+      "diem": 9,
+      "mo_ta": "nhanh nhẹn nắm bắt thông tin thường hay nhìn ra và biết nắm bắt thời cơ cơ hội hoặc thông tin tốt cố gắng thực hiện. nhưng tài vận thất thường.\ncông việc dễ thay đổi hoặc chuyển việc or thất nghiệp liên miên cv không bền vững or di chuyển liên tục.\nDám liều dễ chiêu cảm bệnh ung thư dễ ung thư gan thận (ung thư họng nq+tm+hh)\nDễ bị bệnh ung thư nợ đống,..."
+    },
+    {
+      "stt": 37,
+      "ma_gop": "TUYỆT MÊNH + 0",
+      "tu_truong_1": "TUYỆT MÊNH",
+      "tu_truong_2": "0",
+      "diem": 11,
+      "mo_ta": "mua nhà mắc nợ nợ ngập hoặc cho vaykhông đòi được dễ thất bại dễ ngoại tình đầu tư thất bại\nÂm thầm nhưng đến khi phát ra lại cực kì bạo phát không gì đỡ nổi ẩn tàng mối nguy hiểm rất lớn đã phát ra là lên đến đỉnh điểm.\nĐôi khi phá sản bất thình lình đầu tư bỗng nhiên thua lỗ mất sạch quyết định quá cảm tính dẫn đến hậu quả khôn lường.\nHôn nhân đang tốt đẹp bỗng nhiên sóng gió ly hôn bất ngờ dễ ly hôn\nTai nạn xe cộ chết ngoài ý muốn hoặc âm thầm phát ung thư\nMọi thứ hầu hết phải đánh đổi bằng sự lao lực của bản thân mà thành khổ cực khó nhọc rất ít quý nhân.\nNếu đã khó mang thai càng khó hơn con cái khó khăn hoặc nuôi con cái cực khổ nhất là những lúc thời vận đến đoạn từ trường xấu này thì thật xấu càng thêm xấu.\nĐầu tư thất bại to nhỏ tuỳ từ trường nhưng đầu tư sẽ lợi bất cập hại."
+    },
+    {
+      "stt": 38,
+      "ma_gop": "THIÊN Y + LỤC SÁT",
+      "tu_truong_1": "THIÊN Y",
+      "tu_truong_2": "LỤC SÁT",
+      "diem": 9,
+      "mo_ta": "Dễ vì phụ nữ, chưng diện, hưởng dịch vụ mà phá tiền phá tài, xấu cho hôn nhân, thường hay vui vẻ với nữ nhân ảnh hưởng đến tình cảm hoặc hôn nhân. Phá tiền tài mạnh\nTiêu tiền cho làm đẹp hoặc gia đình\nKhông có lợi cho học tập, vì quan tâm đến tiền và tình cảm, sắc đẹp chưng diện nhiều mà chểnh mảng học hành\nPhá tài vì nữ giới hoặc người thứ ba, hoặc hao tổn không có điểm dừng ,bị âm nợ hao tài vì việc nhà việc cửa, tình cảm ảnh hưởng nát đào hoa, hôn nhân xấu .tiền dùng tại nữ nhân gia đình cửa hàng đồ trang điểm quần áo việc nhà....k quản lí dc tài chính.thích là nhích.."
+    },
+    {
+      "stt": 39,
+      "ma_gop": "SINH KHÍ + LỤC SÁT",
+      "tu_truong_1": "SINH KHÍ",
+      "tu_truong_2": "LỤC SÁT",
+      "diem": 9,
+      "mo_ta": "Vui mà hóa buồn, Bằng Hữu thành kẻ thù, khéo léo chinh phục người khác ,giỏi chốt sale ,mật ngọt chết ruồi.Khéo léo\nLúc đầu thì rất vui nhưng lúc sau lại phiền muộn, quý nhân dễ biến thành tiểu nhân, trở mặt thành thù, dễ bị lừa gạt, đâm sau lưng\nBạn bè dễ biến thành người yêu, tình nhân."
+    },
+    {
+      "stt": 40,
+      "ma_gop": "DIÊN NIÊN + LỤC SÁT",
+      "tu_truong_1": "DIÊN NIÊN",
+      "tu_truong_2": "LỤC SÁT",
+      "diem": 10,
+      "mo_ta": "Làm việc học tập không vui ,công việc làm không vui ,u sầu, làm việc không quả quyết, sức lực kém. vô cùng mâu thuẫn trong đầu, tiến thoái lưỡng nan,không làm vì đam mê...\nCông việc có thể phải lưỡng lự không quả quyết được, áp lực công việc."
+    },
+    {
+      "stt": 41,
+      "ma_gop": "PHỤC VỊ + LỤC SÁT",
+      "tu_truong_1": "PHỤC VỊ",
+      "tu_truong_2": "LỤC SÁT",
+      "diem": 8,
+      "mo_ta": "Lúc nào cũng nhìn thấy sự khó khăn, rào cản, suy nghĩ lúc nào cũng tiêu cực, sợ sệt rất nhiều, dù 1 việc dễ ẹc nhưng đối với người này vẫn cứ là khó khăn, lý do và rào cản,\nTính cách này khó có thể thành công, họ luôn luôn sợ hãi thu mình lại mà đánh mất rất nhiều cơ hội.\nRất hay lề mề.\nĐàn ông hay nghiện thuốc, nội tâm yếu ớt, trống rỗng, đa sầu đa cảm, rất dễ dàng bị khủng hoảng.\nKhông thuận lợi cho tình duyên, hôn nhân"
+    },
+    {
+      "stt": 42,
+      "ma_gop": "LỤC SÁT + LỤC SÁT",
+      "tu_truong_1": "LỤC SÁT",
+      "tu_truong_2": "LỤC SÁT",
+      "diem": 8,
+      "mo_ta": "Tăng cường cảm giác u buồn bệnh tự kỉ cảm xúc không ổn định mối quan hệ đang vui tự dưng chuyển biến xấu có tình cảm nhiều nhưng cũng không hạnh phúc tốt đẹp\nNát đào hoa tình cảm rồi cũng không thành quan hệ nhân mạch đột nhiên chuyển biến xấu mưa dập gió vuì nhạy cảm …."
+    },
+    {
+      "stt": 43,
+      "ma_gop": "HỌA HẠI + LỤC SÁT",
+      "tu_truong_1": "HỌA HẠI",
+      "tu_truong_2": "LỤC SÁT",
+      "diem": 9,
+      "mo_ta": "Nói chuyện quá thẳng thắn quá trực tiếp rồi hối hận .vì sĩ diện mà hao tài phá tài .cho vay ngại đòi. nhiều thị phi cực nhưng lại yếu đương đầu hay đau khổ .dạ dày có vấn đề.\nNói ra không cần người khác đáp lại làm cho người khác buồn bực im lặng cảm xúc không tốt dùng miệng lưỡi để người khác phải ức chế bực tức rất nhiều xéo xắt\nNói năng chua ngoa tuy tâm thiện nhưng lời lẽ rất mất lòng người khác từ đấy mà hảo tâm không được báo đáp nên thành ra rất buồn bực không vui vì nhân duyên nhân thế với những người khác.\nThường tự mình mang đến thị phi cho bản thân\nThường cảm thấy hối hận vì lời nói của mình dễ nói hớ nói nhầm nói chuyện dù vui cũng dễ làm người ta hiểu nhầm. Nhiều khi chính vì nói thằng quá mà đâm ra hối hận vì làm cho đối phương buồn bã cho dù đó là ý rất tốt.\nCoi trọng sĩ diện nghĩa khí khẩu xà tâm Phật nóng tính.\nĐôi khi vì sĩ diện nên không nói ra những suy nghĩ tiếc rẻ trong lòng mình cho nên dẫn đến bản thân buồn bực không vui\nBệnh dạ dày"
+    },
+    {
+      "stt": 44,
+      "ma_gop": "NGŨ QUỶ + LỤC SÁT",
+      "tu_truong_1": "NGŨ QUỶ",
+      "tu_truong_2": "LỤC SÁT",
+      "diem": 8,
+      "mo_ta": "Ý nghĩ rất buồn bực suy nghĩ tiêu cực và suy nghĩ nhiều nhưng không có tác dụng dễ đồng tính luyến ái tâm tính không tốt ám tài ám Tình Đau Khổ tâm tình Xấu dễ Quyên sinh"
+    },
+    {
+      "stt": 45,
+      "ma_gop": "TUYỆT MỆNH + LỤC SÁT",
+      "tu_truong_1": "TUYỆT MỆNH",
+      "tu_truong_2": "LỤC SÁT",
+      "diem": 12,
+      "mo_ta": "Hay quyết định sai lầm rồi hối hận dễ xung đột vướng về tình cảm\nRất u buồn không có cảm hứng làm bất cứ việc gì thường hay tổn thương thu mình lại cô lập. Nghiêm trọng.\nLuôn vì quyết định của mình mà cảm thấy không vui phiền muộn\nĐầu tư thường thua thiệt mắc nợ phiền muộn\nHay xung đột với ngừoi khác sau đó rất hối hận......"
+    },
+    {
+      "stt": 46,
+      "ma_gop": "LỤC SÁT + 0",
+      "tu_truong_1": "LỤC SÁT",
+      "tu_truong_2": "0",
+      "diem": 9,
+      "mo_ta": "Khinh sinh u buồn tăng lên. dễ tiêu cực. U nhọt.\nDễ dàng gặp việc không vui có chứng u buồn trầm cảm có khuynh hướng tự sát\nCảm xúc tâm tình đè nén không muốn bên ngoài nhận biết ẩn tính nhìn không ra\n(6001;1006;7004;4007;3008;8003 đều giống như vậy)"
+    },
+    {
+      "stt": 47,
+      "ma_gop": "THIÊN Y + HỌA HẠI",
+      "tu_truong_1": "THIÊN Y",
+      "tu_truong_2": "HỌA HẠI",
+      "diem": 9,
+      "mo_ta": "thích tiêu tiền, vì miệng mà phá Tài. hay tiêu tiền vì sĩ diện, thích mua đồ ăn, thích đem tiền đó đi lấy lòng người khác\nTiêu số tiền cũng khá lớ, bạo tay\nĐem tiền đi dùng xa xỉ, hoặc phải dùng tiền đi xem bệnh, xem bói.."
+    },
+    {
+      "stt": 48,
+      "ma_gop": "SINH KHÍ + HỌA HẠI",
+      "tu_truong_1": "SINH KHÍ",
+      "tu_truong_2": "HỌA HẠI",
+      "diem": 10,
+      "mo_ta": "tự nhận là rất giỏi, dễ tự cao tự đại, tự khen bản thân, tự nhận là mình rất giỏi\ntranh chấp vì Thị Phi, hay mở miệng ra là dẫn đến tranh luận ầm ĩ"
+    },
+    {
+      "stt": 49,
+      "ma_gop": "DIÊN NIÊN + HỌA HẠI",
+      "tu_truong_1": "DIÊN NIÊN",
+      "tu_truong_2": "HỌA HẠI",
+      "diem": 10,
+      "mo_ta": "Ăn nói tốt, lời nói có trọng lượng, tuy nhiên cũng dễ phát ngôn bừa bãi bộp chộp\nnăng lực lãnh đạo bị cản trở, quyền lực bị uy hiếp, làm việc dễ hối hận\nDễ có người bàn tán thị phi sau lưng, hay phải phàn nàn về công việc, hay gặp tiểu nhân"
+    },
+    {
+      "stt": 50,
+      "ma_gop": "PHỤC VỊ + HỌA HẠI",
+      "tu_truong_1": "PHỤC VỊ",
+      "tu_truong_2": "HỌA HẠI",
+      "diem": 8,
+      "mo_ta": "mạnh miệng, tự cho là đúng, (tăng Từ Trường Họa Hại lên) Nói năng tốt, có tài ăn nói, miệng lưỡi sắc bén, tuy nhiên cũng dễ dẫn đến cãi nhau, lại sĩ diện hiếu thắng, đúng sai cũng không nhượng bộ\nnói bằng được, nói dài nói dai nói dại, nói hớ."
+    },
+    {
+      "stt": 51,
+      "ma_gop": "HỌA HẠI + HỌA HẠI",
+      "tu_truong_1": "HỌA HẠI",
+      "tu_truong_2": "HỌA HẠI",
+      "diem": 8,
+      "mo_ta": "dễ cãi vã, Tính khí nóng nảy, không kiên nhẫn\nNói thẳng, cứng rắn quá và rất mạng miệng, rất thích cãi lộn hoặc dẫn đến cãi lộn, không có kiên nhẫn, dẫn đến việc hụt hơi"
+    },
+    {
+      "stt": 52,
+      "ma_gop": "LỤC SÁT + HỌA HẠI",
+      "tu_truong_1": "LỤC SÁT",
+      "tu_truong_2": "HỌA HẠI",
+      "diem": 8,
+      "mo_ta": "dễ đắc tội với người khác, không có tâm tình nói chuyện. Ảnh hưởng xấu tới hôn nhân,tình cảm\nNói chuyện không có tâm hoặc không để tâm ,hay nói chuyện lơ đãng thường xuyên vạ miệng thường dễ dàng đắc tội với người khác\nTình duyên và hôn nhân không thuận"
+    },
+    {
+      "stt": 53,
+      "ma_gop": "NGŨ QUỶ + HỌA HẠI",
+      "tu_truong_1": "NGŨ QUỶ",
+      "tu_truong_2": "HỌA HẠI",
+      "diem": 8,
+      "mo_ta": "Suy nghĩ nhiều suy nghĩ rối ren dẫn đến gây ra cãi vã to khắc khẩu liên tục suy nghĩ khó hiện thực Hóa. Thích chi tiết\ncẩn thận bệnh tim"
+    },
+    {
+      "stt": 54,
+      "ma_gop": "TUYỆT MỆNH + HỌA HẠI",
+      "tu_truong_1": "TUYỆT MỆNH",
+      "tu_truong_2": "HỌA HẠI",
+      "diem": 12,
+      "mo_ta": "cách làm việc dễ gây ra cãi vã\nchiêu cảm tai nạn giao thông cẩn thận có tai nạn giao thông nghiêm trọng\nhay gây ra mâu thuẫn không hòa hợp hay gây tranh cãi do miệng"
+    },
+    {
+      "stt": 55,
+      "ma_gop": "HỌAHẠI + 0",
+      "tu_truong_1": "HỌAHẠI",
+      "tu_truong_2": "0",
+      "diem": 8,
+      "mo_ta": "không ngừng thị phi sức khỏe không tốt bệnh ẩn tàng ẩn nguy cơ tiền mắc kẹt hao mòn bị rút ruột. ẩn tiểu nhân...\nbệnh tật giấu đi nhìn không ra triệu chứng khi phát ra sẽ rất nghiêm trọng\nCãi vã thị phi ngoài ý muốn không nói ra thì thôi nhưng nói ra lại kinh người khi phát sinh việc ngoài ý muốn lại rất nghiêm trọng"
+    },
+    {
+      "stt": 56,
+      "ma_gop": "THIÊN Y + DIÊN NIÊN",
+      "tu_truong_1": "THIÊN Y",
+      "tu_truong_2": "DIÊN NIÊN",
+      "diem": 9,
+      "mo_ta": "cách cục làm chủ ,làm lãnh đạo, có làm thuê cũng ra làm chủ\nTự mình làm chủ, tự lập nghiệp, số tiền kiếm được cũng rất tốt\nKiếm tiền từ công việc tốt\nCó suy nghĩ làm chủ, có ý chí\nTự mình làm chủ, tự lập nghiệp, số tiền kiếm được cũng rất tốt và công việc tương đối vất vả\nkiếm tiền từ công việc tốt nhất, gặp nhiều may mắn và cơ hội tiền bạc trong công việc, công việc đem lại tiền bạc lâu bền và nhiều, kiếm tiền rất tốt."
+    },
+    {
+      "stt": 57,
+      "ma_gop": "SINH KHÍ + DIÊN NIÊN",
+      "tu_truong_1": "SINH KHÍ",
+      "tu_truong_2": "DIÊN NIÊN",
+      "diem": 10,
+      "mo_ta": "Thông qua quý nhân đem công việc tốt đến, cách cục này sẽ làm lãnh đạo hoặc thầy giáo, học hành tốt, thăng quan, cường thế, hợp với nam hơn, nếu là nữ sử dụng thì người nữ này cần làm lãnh đạo, hoặc nắm quyền trong nhà. nữ hợp với Cường thế\nđược quý nhân nâng đỡ, tương trợ trong sự nghiệp\nCó thể là chủ quản đơn vị, không nhất thiết là ông chủ.\nNăng lực cao, được quý nhân công nhận.thông qua quý nhân mang đến công việc tốt.\nlợi cho học hành. tấn cấp. [hợp với người đang thất nghiệp]"
+    },
+    {
+      "stt": 58,
+      "ma_gop": "DIÊN NIÊN + DIÊN NIÊN",
+      "tu_truong_1": "DIÊN NIÊN",
+      "tu_truong_2": "DIÊN NIÊN",
+      "diem": 11,
+      "mo_ta": "năng lực làm việc mạnh, có quyền lợi, có năng lực lãnh đạo, chịu áp lực rất tốt, thường hay nhận được quyền lợi địa vị, có năng lực dẫn dắt lãnh đạo. Vì cường thế cho nên nữ k nên dùng quá mạnh 1591,9199…> khắc phu, ly hôn]"
+    },
+    {
+      "stt": 59,
+      "ma_gop": "PHỤC VỊ + DIÊN NIÊN",
+      "tu_truong_1": "PHỤC VỊ",
+      "tu_truong_2": "DIÊN NIÊN",
+      "diem": 9,
+      "mo_ta": "tăng cường năng lượng diên niên ,năng lực càng lớn.cố gắng làm việc. quyền lợi trong công việc rất nhiều\nThường hay đùa nghịch kiểu rất thông minh"
+    },
+    {
+      "stt": 60,
+      "ma_gop": "LỤC SÁT + DIÊN NIÊN",
+      "tu_truong_1": "LỤC SÁT",
+      "tu_truong_2": "DIÊN NIÊN",
+      "diem": 9,
+      "mo_ta": "công tác hành chính hoặc phục vụ. xử lý tốt quan hệ với nữ nhân và quan hệ xã hội. xu hướng làm việc liên quan nữ nhân phái đẹp , spa thẩm mĩ or vận tải,dịch vụ..."
+    },
+    {
+      "stt": 61,
+      "ma_gop": "HỌA HẠI + DIÊN NIÊN",
+      "tu_truong_1": "HỌA HẠI",
+      "tu_truong_2": "DIÊN NIÊN",
+      "diem": 9,
+      "mo_ta": "có khẩu tài tốt lấy miệng làm nghiệp công việc liên quan ăn nói sale...năng lực và ăn nói đều tốt chủ yếu công việc chủ yếu liên quan đến ăn nói."
+    },
+    {
+      "stt": 62,
+      "ma_gop": "NGŨ QUỶ + DIÊN NIÊN",
+      "tu_truong_1": "NGŨ QUỶ",
+      "tu_truong_2": "DIÊN NIÊN",
+      "diem": 8,
+      "mo_ta": "công việc cần cường độ linh hoạt não có ý tưởng sáng tạo và thực hiện được. cường độ làm việc lớn,\ncông việc cần cường độ linh hoạt của não có lý tưởng và khát vọng rất giỏi phát hiện những điều người khác không thấy thường làmviệc rất vất vả thường xuyên phải cày đêm dựa vào năng lực bản thân để lên chức vị.\nCần chú ý thượng tôn pháp luật nếu không sẽ rất dễ thất bại và mất hết.\nCó thể là công việc làm việc với nước ngoài"
+    },
+    {
+      "stt": 63,
+      "ma_gop": "TUYỆT MỆNH + DIÊN NIÊN",
+      "tu_truong_1": "TUYỆT MỆNH",
+      "tu_truong_2": "DIÊN NIÊN",
+      "diem": 11,
+      "mo_ta": "Công việc cần lá gan lớn sự mạnh mẽ liều lĩnh liên quan đến phòng kinh doanh đầu tư quản lý tài sản. Nam giới làm bất động sản mua nhà đất.\nlà đại nam nhân hảo tử hán làm lãnh đạo và có quyền uy thường tự thân đi làm và nỗ lực công việc vất vả yêu cầu cao đối với người khác,\nthích được khẳng định bản thân và thích học tập.\nrất dễ được đề bạt và thăng tiến vì sự cố gắng nỗ lực là người rất trách nhiệm trong công việc\nnữ không nên dùng quá mạnh quá nhiều vì âm dương sai chỗ vừa khổ vừa mệt trả giá nhiều làm ân báo oán đa số ly hôn hôn nhân không hạnh phúc không được hưởng phước từ chồng về gìa thường không tiền và bệnh tật,"
+    },
+    {
+      "stt": 64,
+      "ma_gop": "DIÊN NIÊN + 0",
+      "tu_truong_1": "DIÊN NIÊN",
+      "tu_truong_2": "0",
+      "diem": 11,
+      "mo_ta": "không phát huy được khả năng sự nghiệp đình trệ hay gặp khó khăn không phát lên được.\nbị kèn cựa cản trở. nỗ lực không có kết quả năng lực ẩn giấu đi không phát huy ra được thực tế rất mạnh\nkhôn vặt nhìn vấn đề không hoàn thiện xử lý vấn đề có phần cực đoan"
+    },
+    {
+      "stt": 65,
+      "ma_gop": "LỤC SÁT + PHỤC VỊ",
+      "tu_truong_1": "LỤC SÁT",
+      "tu_truong_2": "PHỤC VỊ",
+      "diem": 8,
+      "mo_ta": "Lúc nào cũng nhìn thấy sự khó khăn, rào cản, suy nghĩ lúc nào cũng tiêu cực, sợ sệt rất nhiều, dù 1 việc dễ ẹc nhưng đối với người này vẫn cứ là khó khăn, lý do và rào cản,\nTính cách này khó có thể thành công, họ luôn luôn sợ hãi thu mình lại mà đánh mất rất nhiều cơ hội.\nRất hay lề mề.\nĐàn ông hay nghiện thuốc, nội tâm yếu ớt, trống rỗng, đa sầu đa cảm, rất dễ dàng bị khủng hoảng.\nKhông thuận lợi cho tình duyên, hôn nhân"
+    },
+    {
+      "stt": 66,
+      "ma_gop": "HỌA HẠI + PHỤC VỊ",
+      "tu_truong_1": "HỌA HẠI",
+      "tu_truong_2": "PHỤC VỊ",
+      "diem": 8,
+      "mo_ta": "mạnh miệng, tự cho là đúng, (tăng Từ Trường Họa Hại lên) Nói năng tốt, có tài ăn nói, miệng lưỡi sắc bén, tuy nhiên cũng dễ dẫn đến cãi nhau, lại sĩ diện hiếu thắng, đúng sai cũng không nhượng bộ\nnói bằng được, nói dài nói dai nói dại, nói hớ."
+    },
+    {
+      "stt": 67,
+      "ma_gop": "0 + THIÊN Y",
+      "tu_truong_1": "0",
+      "tu_truong_2": "THIÊN Y",
+      "diem": 9,
+      "mo_ta": "điều tốt đẹp của Thiên y không còn nữa mà bị ẩn tàng đi 1 lúc nào đó bị phản lại.\nDễ mắc kẹt tiền mua nhà mắc nợ cho mượn tiền không đòi dc\ntình cảm có vấn đề ngoại tình khó phát hiện bên ngoài khác xa thựctế vc ngoài tưởng Happy nhưng nhạt không tưởng tưởng là người có tiền nhàn nhã nhưng thực tế nợ nần tài sản hao mòn thất thoát kẹt tiền mắc nợ\nẨn giấu đi tiền tài.tiền tài tuy kiếm ra nhiều nhưng hay bị mắc kẹt\nMua nhà mắc nợ đôi khi bị giựt nợ bị lừa đảo mà mất tiền của\nTình cảm có nguy cơ tan vỡ rạn nứt có thể ẩn giấu người tình tay ba rất kín kẽ ngoại tình sớm muộn chia tay ẩn tàng ly hôn\nKhông nên đi đầu tư vì có thể không những không kiếm được tiền mà còn có thể bị lừa bị lỗ đầu tư thất bại,"
+    },
+    {
+      "stt": 68,
+      "ma_gop": "0 + NGŨ QUỶ",
+      "tu_truong_1": "0",
+      "tu_truong_2": "NGŨ QUỶ",
+      "diem": 9,
+      "mo_ta": "Hay do dự suy nghĩ viển vông không thực thi được hay thay đổi nghi ngờ không quyết đoán\nMắc nợ từng đống dễ ngoại tình thất thường\nHuyết áp khó ngủ tim phẫu thuật mổ xẻ dễ xuất gia tu hành\nBiểu thị ly hôn mà lại là người khác chủ động chứ mình bị động bị dồn vào thế bị ép."
+    },
+    {
+      "stt": 69,
+      "ma_gop": "0 + TUYỆT MỆNH",
+      "tu_truong_1": "0",
+      "tu_truong_2": "TUYỆT MỆNH",
+      "diem": 11,
+      "mo_ta": "mua nhà mắc nợ nợ ngập hoặc cho vaykhông đòi được dễ thất bại dễ ngoại tình đầu tư thất bại\nÂm thầm nhưng đến khi phát ra lại cực kì bạo phát không gì đỡ nổi ẩn tàng mối nguy hiểm rất lớn đã phát ra là lên đến đỉnh điểm.\nĐôi khi phá sản bất thình lình đầu tư bỗng nhiên thua lỗ mất sạch quyết định quá cảm tính dẫn đến hậu quả khôn lường.\nHôn nhân đang tốt đẹp bỗng nhiên sóng gió ly hôn bất ngờ dễ ly hôn\nTai nạn xe cộ chết ngoài ý muốn hoặc âm thầm phát ung thư\nMọi thứ hầu hết phải đánh đổi bằng sự lao lực của bản thân mà thành khổ cực khó nhọc rất ít quý nhân.\nNếu đã khó mang thai càng khó hơn con cái khó khăn hoặc nuôi con cái cực khổ nhất là những lúc thời vận đến đoạn từ trường xấu này thì thật xấu càng thêm xấu.\nĐầu tư thất bại to nhỏ tuỳ từ trường nhưng đầu tư sẽ lợi bất cập hại."
+    },
+    {
+      "stt": 70,
+      "ma_gop": "PHỤC VỊ + SINH KHÍ",
+      "tu_truong_1": "PHỤC VỊ",
+      "tu_truong_2": "SINH KHÍ",
+      "diem": 9,
+      "mo_ta": "Sinh khí tụ tập mạnh lên.quý nhân hiển lộ.Ngày càng trở lên vui vẻ, quý nhân rất nhiều"
+    },
+    {
+      "stt": 71,
+      "ma_gop": "DIÊN NIÊN + PHỤC VỊ",
+      "tu_truong_1": "DIÊN NIÊN",
+      "tu_truong_2": "PHỤC VỊ",
+      "diem": null,
+      "mo_ta": "tăng cường năng lượng diên niên ,năng lực càng lớn.cố gắng làm việc. quyền lợi trong công việc rất nhiều\nThường hay đùa nghịch kiểu rất thông minh"
+    },
+    {
+      "stt": 72,
+      "ma_gop": "THIÊN Y + PHỤC VỊ",
+      "tu_truong_1": "THIÊN Y",
+      "tu_truong_2": "PHỤC VỊ",
+      "diem": null,
+      "mo_ta": "thông qua kiên nhẫn kiên trì chờ đợi mà tạo ra tài phú lớn"
+    }
+  ]
+}

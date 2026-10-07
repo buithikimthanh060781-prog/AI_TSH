@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Thần Số Học Pythagoras — Khám Phá Bản Đồ Vận Mệnh 23 Chỉ Số</title>
-  <meta name="description" content="Tra cứu Thần Số Học Pythagoras chính xác: Bản đồ SVG 23 chỉ số, Đường đời, Sứ mệnh, Linh hồn, Nhân cách, 4 Đỉnh cao, 4 Thử thách và Nợ nghiệp.">
+  <title>Thần Số Học Pythagoras & Năng Lượng Con Số — Khám Phá Bản Đồ Vận Mệnh</title>
+  <meta name="description" content="Tra cứu Thần Số Học Pythagoras và Năng Lượng Con Số chính xác: Bản đồ SVG 23 chỉ số và bóc tách từ trường số điện thoại cát hung.">
   <link rel="stylesheet" href="css/style.css?v=5">
+  <link rel="stylesheet" href="css/phone-energy.css?v=1">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
 </head>
 <body>
@@ -18,13 +19,14 @@
     <div class="container header-inner">
       <a href="index.html" class="brand-logo">
         <span class="brand-icon">✨</span>
-        <span>Thần Số Học Pythagoras</span>
+        <span>Thần Số Học Pythagoras & Năng Lượng Con Số</span>
       </a>
 
       <nav class="nav-links">
         <a href="#lookup" class="nav-link active">Tra cứu</a>
         <a href="#map-section" class="nav-link">Bản đồ</a>
         <a href="#indicators" class="nav-link">23 Chỉ số</a>
+        <a href="#phone-results-wrapper" class="nav-link" onclick="goToPhoneSection(event)">Năng lượng SĐT</a>
         <a href="kien-thuc.html" class="nav-link">Kiến thức</a>
         <a href="lienhe.html" class="nav-link">Liên hệ</a>
       </nav>
@@ -43,9 +45,9 @@
       <div class="hero-badge">
         <span>🔮 Khám Phá Tiềm Năng & Định Hướng Cuộc Đời</span>
       </div>
-      <h1 class="hero-title">Bản Đồ Thần Số Học Pythagoras</h1>
+      <h1 class="hero-title">Thần Số Học Pythagoras & Năng Lượng Con Số</h1>
       <p class="hero-sub">
-        Giải mã trọn vẹn 23 chỉ số cốt lõi và các chu kỳ đỉnh cao cuộc đời từ họ tên và ngày sinh của bạn theo trường phái Pythagoras nguyên bản.
+        Giải mã trọn vẹn 23 chỉ số bản mệnh Pythagoras từ họ tên & ngày sinh, kết hợp bóc tách từ trường Năng lượng con số qua số điện thoại để kích hoạt vận khí cát tường.
       </p>
 
       <!-- Biểu mẫu Tra cứu -->
@@ -53,24 +55,38 @@
         <div id="lookup-error" class="lookup-error"></div>
         <form id="lookup-form" autocomplete="off">
           <div class="form-group">
-            <label for="input-fullname" class="form-label">Họ và tên khai sinh của bạn</label>
-            <input type="text" id="input-fullname" class="form-control" placeholder="Ví dụ: Hoàng Sơ Hiền" required>
+            <label for="input-fullname" class="form-label">
+              <span>Họ và tên khai sinh của bạn</span>
+              <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted); margin-left: 6px;">(Dành cho Thần số học)</span>
+            </label>
+            <input type="text" id="input-fullname" class="form-control" placeholder="Ví dụ: Hoàng Sơ Hiền">
             <div id="name-preview" class="name-preview"></div>
           </div>
 
           <div class="form-group">
-            <label class="form-label">Ngày / Tháng / Năm sinh (Dương lịch)</label>
+            <label class="form-label">
+              <span>Ngày / Tháng / Năm sinh (Dương lịch)</span>
+              <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted); margin-left: 6px;">(Dành cho Thần số học)</span>
+            </label>
             <div class="date-grid">
-              <select id="input-day" class="form-control" required>
+              <select id="input-day" class="form-control">
                 <option value="">Chọn ngày</option>
               </select>
-              <select id="input-month" class="form-control" required>
+              <select id="input-month" class="form-control">
                 <option value="">Chọn tháng</option>
               </select>
-              <select id="input-year" class="form-control" required>
+              <select id="input-year" class="form-control">
                 <option value="">Chọn năm</option>
               </select>
             </div>
+          </div>
+
+          <div class="form-group">
+            <label for="input-phone" class="form-label">
+              <span>Số điện thoại tra cứu</span>
+              <span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted); margin-left: 6px;">(Dành cho Năng lượng từ trường số)</span>
+            </label>
+            <input type="tel" id="input-phone" class="form-control" placeholder="Ví dụ: 0933968869 (để trống nếu chỉ xem Thần số học)">
           </div>
 
           <div style="margin: 10px 0 16px; display: flex; align-items: center; gap: 8px;">
@@ -119,115 +135,203 @@
         </div>
       </div>
 
-      <!-- 4 Chỉ số Cốt lõi Nổi bật -->
-      <div class="core-stats-grid">
-        <div class="core-stat-card">
-          <div class="core-stat-icon">🧭</div>
-          <div>
-            <div class="core-stat-name">Đường đời</div>
-            <div class="core-stat-val" id="summary-duongdoi-val2">22</div>
+      <!-- Vùng Kết Quả Thần Số Học Pythagoras -->
+      <div id="pythagoras-results-wrapper">
+        <!-- 4 Chỉ số Cốt lõi Nổi bật -->
+        <div class="core-stats-grid">
+          <div class="core-stat-card">
+            <div class="core-stat-icon">🧭</div>
+            <div>
+              <div class="core-stat-name">Đường đời</div>
+              <div class="core-stat-val" id="summary-duongdoi-val2">22</div>
+            </div>
+          </div>
+          <div class="core-stat-card">
+            <div class="core-stat-icon">🎯</div>
+            <div>
+              <div class="core-stat-name">Sứ mệnh</div>
+              <div class="core-stat-val" id="summary-sumenh-val">7</div>
+            </div>
+          </div>
+          <div class="core-stat-card">
+            <div class="core-stat-icon">💖</div>
+            <div>
+              <div class="core-stat-name">Linh hồn</div>
+              <div class="core-stat-val" id="summary-linhhon-val">9</div>
+            </div>
+          </div>
+          <div class="core-stat-card">
+            <div class="core-stat-icon">🎭</div>
+            <div>
+              <div class="core-stat-name">Nhân cách</div>
+              <div class="core-stat-val" id="summary-nhancach-val">7</div>
+            </div>
           </div>
         </div>
-        <div class="core-stat-card">
-          <div class="core-stat-icon">🎯</div>
-          <div>
-            <div class="core-stat-name">Sứ mệnh</div>
-            <div class="core-stat-val" id="summary-sumenh-val">7</div>
-          </div>
-        </div>
-        <div class="core-stat-card">
-          <div class="core-stat-icon">💖</div>
-          <div>
-            <div class="core-stat-name">Linh hồn</div>
-            <div class="core-stat-val" id="summary-linhhon-val">9</div>
-          </div>
-        </div>
-        <div class="core-stat-card">
-          <div class="core-stat-icon">🎭</div>
-          <div>
-            <div class="core-stat-name">Nhân cách</div>
-            <div class="core-stat-val" id="summary-nhancach-val">7</div>
-          </div>
-        </div>
-      </div>
 
-      <!-- Khối Bản Đồ SVG Trực Quan -->
-      <div class="map-view-grid" id="map-section">
-        <div class="map-card-wrapper">
-          <div class="section-heading-box">
+        <!-- Khối Bản Đồ SVG Trực Quan -->
+        <div class="map-view-grid" id="map-section">
+          <div class="map-card-wrapper">
+            <div class="section-heading-box">
+              <h2 class="section-title">
+                <span>🗺️</span>
+                <span>Bản Đồ Năng Lượng Thần Số Học</span>
+              </h2>
+              <p class="section-subtitle">
+                Sơ đồ hình học thiêng liêng thể hiện mối tương quan giữa các luồng năng lượng trong cuộc đời bạn.
+              </p>
+            </div>
+
+            <!-- Thanh Vận Trình Thời Gian & Chu Kỳ Vận Niên (Phương án A1) -->
+            <div class="transit-timeline-container" id="transit-timeline-container">
+              <!-- Injected dynamically via renderTransitBar() -->
+            </div>
+
+            <div class="svg-container" id="svg-map-container">
+              <!-- SVG Map injected here -->
+            </div>
+
+            <div class="map-tips">
+              <span class="map-tip-item">💡 Bấm 1 lần vào vòng tròn để đánh dấu đổi màu (xanh dương ⇄ xanh lá)</span>
+              <span class="map-tip-item">🔍 Bấm đúp (Double-click) để mở luận giải chi tiết chỉ số</span>
+              <span class="map-tip-item">🔒 Các chỉ số có icon khoá: Đăng ký để mở</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Danh sách 23 Thẻ Chỉ Số -->
+        <div class="indicator-section" id="indicators">
+          <div class="section-heading-box text-center">
             <h2 class="section-title">
-              <span>🗺️</span>
-              <span>Bản Đồ Năng Lượng Thần Số Học</span>
+              <span>📊</span>
+              <span>Chi Tiết Toàn Bộ 23 Chỉ Số</span>
             </h2>
             <p class="section-subtitle">
-              Sơ đồ hình học thiêng liêng thể hiện mối tương quan giữa các luồng năng lượng trong cuộc đời bạn.
+              Tra cứu đầy đủ các khía cạnh tính cách, năng lực tiềm ẩn, bài học đỉnh cao và nợ nghiệp cần hoá giải.
             </p>
           </div>
 
-          <!-- Thanh Vận Trình Thời Gian & Chu Kỳ Vận Niên (Phương án A1) -->
-          <div class="transit-timeline-container" id="transit-timeline-container">
-            <!-- Injected dynamically via renderTransitBar() -->
+          <!-- Thanh công cụ Lọc & Tìm kiếm -->
+          <div class="indicator-toolbar">
+            <div class="filter-tabs">
+              <button type="button" class="tab-filter-btn active" data-group="all">Tất cả (23)</button>
+              <button type="button" class="tab-filter-btn" data-group="cotLoi">Cốt lõi</button>
+              <button type="button" class="tab-filter-btn" data-group="boTro">Bổ trợ</button>
+              <button type="button" class="tab-filter-btn" data-group="dinhCao">4 Đỉnh cao</button>
+              <button type="button" class="tab-filter-btn" data-group="thuThach">4 Thử thách</button>
+              <button type="button" class="tab-filter-btn" data-group="dacBiet">Đặc biệt</button>
+            </div>
+
+            <div class="search-box">
+              <input type="text" id="indicator-search" class="form-control" placeholder="Tìm nhanh chỉ số...">
+            </div>
           </div>
 
-          <div class="svg-container" id="svg-map-container">
-            <!-- SVG Map injected here -->
-          </div>
-
-          <div class="map-tips">
-            <span class="map-tip-item">💡 Bấm 1 lần vào vòng tròn để đánh dấu đổi màu (xanh dương ⇄ xanh lá)</span>
-            <span class="map-tip-item">🔍 Bấm đúp (Double-click) để mở luận giải chi tiết chỉ số</span>
-            <span class="map-tip-item">🔒 Các chỉ số có icon khoá: Đăng ký để mở</span>
+          <!-- Lưới thẻ chỉ số -->
+          <div class="indicator-grid" id="indicator-cards-grid">
+            <!-- Cards injected here -->
           </div>
         </div>
       </div>
 
-      <!-- Sơ đồ Quy đổi Ký tự Pythagoras -->
-      <div class="breakdown-wrapper">
-        <div class="section-heading-box">
-          <h3 class="section-title">
-            <span>🔡</span>
-            <span>Sơ Đồ Phân Tích Ký Tự Họ Tên</span>
-          </h3>
-          <p class="section-subtitle">
-            Chi tiết từng chữ cái được quy đổi sang số theo Hệ Pythagoras, phân tách nguyên âm và phụ âm.
-          </p>
-        </div>
-        <div id="letter-breakdown-container">
-          <!-- Table injected here -->
-        </div>
-      </div>
-
-      <!-- Danh sách 23 Thẻ Chỉ Số -->
-      <div class="indicator-section" id="indicators">
+      <!-- Khối Báo Cáo Năng Lượng Từ Trường Số Điện Thoại -->
+      <div id="phone-results-wrapper" class="phone-results-wrapper" style="display: none;">
         <div class="section-heading-box text-center">
           <h2 class="section-title">
-            <span>📊</span>
-            <span>Chi Tiết Toàn Bộ 23 Chỉ Số</span>
+            <span>📱</span>
+            <span>Báo Cáo Năng Lượng Từ Trường Số Điện Thoại</span>
           </h2>
           <p class="section-subtitle">
-            Tra cứu đầy đủ các khía cạnh tính cách, năng lực tiềm ẩn, bài học đỉnh cao và nợ nghiệp cần hoá giải.
+            Phân tích Bát Cực Linh Số, bóc tách dòng chảy năng lượng và luận giải các tổ hợp cát hung.
           </p>
         </div>
 
-        <!-- Thanh công cụ Lọc & Tìm kiếm -->
-        <div class="indicator-toolbar">
-          <div class="filter-tabs">
-            <button type="button" class="tab-filter-btn active" data-group="all">Tất cả (23)</button>
-            <button type="button" class="tab-filter-btn" data-group="cotLoi">Cốt lõi</button>
-            <button type="button" class="tab-filter-btn" data-group="boTro">Bổ trợ</button>
-            <button type="button" class="tab-filter-btn" data-group="dinhCao">4 Đỉnh cao</button>
-            <button type="button" class="tab-filter-btn" data-group="thuThach">4 Thử thách</button>
-            <button type="button" class="tab-filter-btn" data-group="dacBiet">Đặc biệt</button>
+        <!-- Bảng Kết Quả Năng Lượng Từ Trường SĐT (Chuẩn Theo Mẫu Excel) -->
+        <div class="phone-excel-card" id="phone-excel-card">
+          <div class="phone-excel-header-row">
+            <div class="phone-excel-main-title">
+              <span class="phone-excel-title-label">Từ trường SĐT: </span>
+              <span class="phone-excel-title-number" id="phone-excel-num">--</span>
+            </div>
+            <div class="phone-excel-actions">
+              <button type="button" class="phone-excel-copy-btn" id="phone-excel-copy-btn" onclick="copyPhoneExcelResult()" title="Sao chép kết quả chuẩn định dạng">
+                <span class="copy-icon">📋</span>
+                <span id="phone-excel-copy-status">Sao chép kết quả</span>
+              </button>
+            </div>
           </div>
-
-          <div class="search-box">
-            <input type="text" id="indicator-search" class="form-control" placeholder="Tìm nhanh chỉ số...">
+          <div class="phone-excel-body">
+            <div class="phone-excel-row">
+              <div class="phone-excel-label">Cặp số</div>
+              <div class="phone-excel-value phone-excel-val-blue" id="phone-excel-pairs">--</div>
+            </div>
+            <div class="phone-excel-row">
+              <div class="phone-excel-label">Năng lượng</div>
+              <div class="phone-excel-value phone-excel-val-purple" id="phone-excel-energy">--</div>
+            </div>
           </div>
         </div>
 
-        <!-- Lưới thẻ chỉ số -->
-        <div class="indicator-grid" id="indicator-cards-grid">
-          <!-- Cards injected here -->
+        <!-- 1. Thẻ Tóm tắt Số & Chỉ số Cát/Hung -->
+        <div class="phone-summary-card">
+          <div class="phone-display-box">
+            <div class="phone-number-display" id="phone-display-num">--</div>
+            <div class="phone-rating-badge cat" id="phone-rating-badge">--</div>
+          </div>
+          <div class="phone-stats-grid">
+            <div class="phone-stat-item">
+              <span class="phone-stat-num" id="phone-total-pairs">--</span>
+              <span class="phone-stat-label">Cặp từ trường</span>
+            </div>
+            <div class="phone-stat-item cat-stat">
+              <span class="phone-stat-num" id="phone-cat-count">--</span>
+              <span class="phone-stat-label">Sao Cát (Tốt)</span>
+            </div>
+            <div class="phone-stat-item hung-stat">
+              <span class="phone-stat-num" id="phone-hung-count">--</span>
+              <span class="phone-stat-label">Sao Hung (Chú ý)</span>
+            </div>
+            <div class="phone-stat-item">
+              <span class="phone-stat-num" id="phone-avg-score">--</span>
+              <span class="phone-stat-label">Điểm trung bình</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Sơ đồ bóc tách cụm số -> từ trường (Visual Flow) -->
+        <div class="phone-flow-box">
+          <h3 class="phone-box-title">
+            <span>🔄</span> Sơ Đồ Bóc Tách Cụm Số & Dòng Chảy Từ Trường
+          </h3>
+          <p class="phone-box-desc">
+            Số điện thoại được tách thành các cụm số theo thuật toán cổ thư và chuyển đổi sang 8 nguồn năng lượng Bát Cực:
+          </p>
+          <div class="phone-flow-container" id="phone-flow-container">
+            <!-- Dynamic pills inserted here -->
+          </div>
+        </div>
+
+        <!-- 3. Danh sách Luận giải chi tiết từng cặp từ trường -->
+        <div class="phone-pairs-section">
+          <h3 class="phone-box-title">
+            <span>📖</span> Luận Giải Chi Tiết Các Cặp Từ Trường Liên Tiếp
+          </h3>
+          <div class="phone-pairs-list" id="phone-pairs-list">
+            <!-- Dynamic pair cards inserted here -->
+          </div>
+        </div>
+
+        <!-- 4. Khối hiệu ứng số 0 đặc biệt (nếu có) -->
+        <div class="phone-zero-section" id="phone-zero-section" style="display: none;">
+          <h3 class="phone-box-title">
+            <span>⚡</span> Luận Giải Năng Lượng Ẩn Tàng (Có Chứa Số 0)
+          </h3>
+          <p class="phone-box-desc">
+            Khi số điện thoại có chứa số 0, các năng lượng tốt đẹp có xu hướng bị ẩn tàng hoặc đảo chiều:
+          </p>
+          <div class="phone-pairs-list" id="phone-zero-list">
+            <!-- Dynamic zero cards inserted here -->
+          </div>
         </div>
       </div>
 

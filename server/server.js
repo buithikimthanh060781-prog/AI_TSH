@@ -47,6 +47,7 @@ app.use('/api/admin/posts', require('./routes/adminPosts'));
 app.use('/api/admin/upload', require('./routes/adminUploads'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/posts', require('./routes/posts'));
+app.use('/api/phone', require('./routes/phone'));
 
 // Static uploads with nosniff
 app.use('/uploads', express.static(path.join(__dirname, '..', 'data', 'uploads')));

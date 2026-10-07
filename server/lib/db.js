@@ -96,6 +96,30 @@ db.exec(`
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP
   );
+  CREATE TABLE IF NOT EXISTS nlso (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ma_so TEXT NOT NULL UNIQUE,
+    tu_truong TEXT NOT NULL,
+    cap_do INTEGER DEFAULT 1,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_nlso_ma_so ON nlso(ma_so);
+
+  CREATE TABLE IF NOT EXISTS ket_luan (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    tu_truong_1 TEXT NOT NULL,
+    tu_truong_2 TEXT NOT NULL,
+    ma_ket_luan TEXT NOT NULL UNIQUE,
+    diem INTEGER,
+    ket_luan TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_ket_luan_pair ON ket_luan(tu_truong_1, tu_truong_2);
+  CREATE INDEX IF NOT EXISTS idx_ket_luan_ma ON ket_luan(ma_ket_luan);
 `);
 
 // Migration: ensure phone and note columns exist in users table
@@ -114,5 +138,56 @@ try {
 try {
   db.exec('ALTER TABLE users ADD COLUMN terms_accepted_at TEXT;');
 } catch (e) {}
+
+// Auto-seed Năng Lượng Số (NLSO & KET LUAN) nếu bảng chưa có dữ liệu
+function autoSeedPhoneEnergy() {
+  try {
+    const countRow = db.prepare('SELECT COUNT(*) as count FROM ket_luan').get();
+    if (countRow && countRow.count > 0) {
+      return; // Đã có dữ liệu
+    }
+
+    const seedPath = path.join(dataDir, 'phone_energy_seed.json');
+    if (!fs.existsSync(seedPath)) {
+      return;
+    }
+
+    const seedData = JSON.parse(fs.readFileSync(seedPath, 'utf8'));
+
+    if (Array.isArray(seedData.nlso)) {
+      const insertNlso = db.prepare(`
+        INSERT OR IGNORE INTO nlso (ma_so, tu_truong, cap_do)
+        VALUES (?, ?, ?)
+      `);
+      db.exec('BEGIN TRANSACTION;');
+      for (const item of seedData.nlso) {
+        insertNlso.run(item.ma_so, item.tu_truong, item.cap_do || 1);
+      }
+      db.exec('COMMIT;');
+    }
+
+    if (Array.isArray(seedData.ket_luan)) {
+      const insertKetLuan = db.prepare(`
+        INSERT OR IGNORE INTO ket_luan (tu_truong_1, tu_truong_2, ma_ket_luan, diem, ket_luan)
+        VALUES (?, ?, ?, ?, ?)
+      `);
+      db.exec('BEGIN TRANSACTION;');
+      for (const item of seedData.ket_luan) {
+        insertKetLuan.run(
+          item.tu_truong_1,
+          item.tu_truong_2,
+          item.ma_gop,
+          item.diem !== undefined ? item.diem : null,
+          item.mo_ta || ''
+        );
+      }
+      db.exec('COMMIT;');
+    }
+    console.log('✅ Auto-seed Năng Lượng Số (NLSO & KET LUAN) hoàn tất.');
+  } catch (err) {
+    console.error('Auto-seed Năng Lượng Số thất bại:', err.message);
+  }
+}
+autoSeedPhoneEnergy();
 
 module.exports = db;

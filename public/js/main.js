@@ -394,19 +394,32 @@ function renderSvgMap(data) {
 
     // Label positioning
     const isTruongThanh = key === 'truongThanh';
+    const isLkDuongDoi = key === 'lkDuongDoiSuMenh';
+    const isLkNhanCach = key === 'lkNhanCachLinhHon';
+
+    let labelFontSize = 12;
+    if (isTruongThanh) labelFontSize = 9.5;
+    else if (isLkDuongDoi) labelFontSize = 8.5;
+    else if (isLkNhanCach) labelFontSize = 9.5;
+
     let labelY = isTruongThanh ? (y + r + 13) : (y + r + 16);
+    if (isLkDuongDoi) {
+      labelY = y + r + 10;
+    } else if (isLkNhanCach) {
+      labelY = y + r + 14;
+    }
     if (labelPos === 'top') {
       labelY = y - r - 8;
     }
 
     const fillLabel = labelColor === 'red' ? '#dc2626' : '#000000';
-    const labelFontSize = isTruongThanh ? 9.5 : 12;
+    const lineSpacing = isLkDuongDoi ? 11 : ((isLkNhanCach || isTruongThanh) ? 12 : 14);
     let labelSvg = '';
     if (label.includes('\n')) {
       const parts = label.split('\n');
       labelSvg = `
         <text x="${x}" y="${labelY}" text-anchor="middle" font-size="${labelFontSize}" font-weight="bold" fill="${fillLabel}">${parts[0]}</text>
-        <text x="${x}" y="${labelY + 14}" text-anchor="middle" font-size="${labelFontSize}" font-weight="bold" fill="${fillLabel}">${parts[1]}</text>
+        <text x="${x}" y="${labelY + lineSpacing}" text-anchor="middle" font-size="${labelFontSize}" font-weight="bold" fill="${fillLabel}">${parts[1]}</text>
       `;
     } else {
       labelSvg = `<text x="${x}" y="${labelY}" text-anchor="middle" font-size="${labelFontSize}" font-weight="bold" fill="${fillLabel}">${label}</text>`;
@@ -527,12 +540,18 @@ function renderSvgMap(data) {
       </text>
       <text x="455" y="155" font-size="12" font-weight="bold" fill="#000000" text-anchor="middle">Thái độ</text>
 
-      <!-- CB & TDLT (phía trên đỉnh cung cong) -->
-      <text x="260" y="112" font-size="12" font-weight="bold" fill="#000000" text-anchor="middle">CB</text>
-      <text x="260" y="130" font-size="15" font-weight="bold" fill="#000000" text-anchor="middle">${isUnlocked ? data.canBang : '🔒'}</text>
+      <!-- Cân bằng & Tư duy lý trí: hiển thị dọc thanh thoát, không đóng khung, khoảng cách an toàn tuyệt đối với đường biên -->
+      <g class="map-indicator-box" data-key="canBang" onclick="handleNodeClick(this, 'canBang', false)" ondblclick="handleNodeDblClick('canBang', '${data.canBang}', false)" style="cursor: pointer;">
+        <text x="262" y="112" font-size="10.5" font-weight="bold" fill="#000000" text-anchor="middle">Cân</text>
+        <text x="262" y="125" font-size="10.5" font-weight="bold" fill="#000000" text-anchor="middle">bằng</text>
+        <text x="262" y="142" font-size="15" font-weight="bold" fill="#000000" text-anchor="middle">${isUnlocked ? data.canBang : '🔒'}</text>
+      </g>
 
-      <text x="340" y="112" font-size="12" font-weight="bold" fill="#000000" text-anchor="middle">TDLT</text>
-      <text x="340" y="130" font-size="15" font-weight="bold" fill="#000000" text-anchor="middle">${isUnlocked ? data.tuDuyLyTri : '🔒'}</text>
+      <g class="map-indicator-box" data-key="tuDuyLyTri" onclick="handleNodeClick(this, 'tuDuyLyTri', false)" ondblclick="handleNodeDblClick('tuDuyLyTri', '${data.tuDuyLyTri}', false)" style="cursor: pointer;">
+        <text x="338" y="112" font-size="9.5" font-weight="bold" fill="#000000" text-anchor="middle">Tư duy</text>
+        <text x="338" y="125" font-size="9.5" font-weight="bold" fill="#000000" text-anchor="middle">lý trí</text>
+        <text x="338" y="142" font-size="15" font-weight="bold" fill="#000000" text-anchor="middle">${isUnlocked ? data.tuDuyLyTri : '🔒'}</text>
+      </g>
 
       <!-- 3. KHU VỰC TRUNG TÂM: 4 Ô CHẶNG (C) & 4 Ô THỬ THÁCH (TT) CÓ CLICK ĐỔI MÀU -->
       <g>
@@ -605,7 +624,7 @@ function renderSvgMap(data) {
       <g>
         <ellipse cx="195" cy="485" rx="24" ry="16" fill="#4a90e2" class="toggle-shape-btn" onclick="handleShapeClick(this, '#4a90e2', '#2e7d32')" />
         <text x="195" y="490" font-size="12" font-weight="bold" fill="#ffffff" text-anchor="middle" pointer-events="none">${passionStr}</text>
-        <text x="195" y="517" font-size="12" font-weight="bold" fill="#dc2626" text-anchor="middle">Đ.Mê</text>
+        <text x="195" y="517" font-size="11.5" font-weight="bold" fill="#dc2626" text-anchor="middle">Đam mê</text>
       </g>
 
       <!-- 5. KHU VỰC CHU KỲ CÁ NHÂN (NẰM GỌN GÀNG TRONG VÙNG TỨ GIÁC: LINH HỒN, SỨ MỆNH, NHÂN CÁCH, LK) -->
@@ -638,7 +657,7 @@ function renderSvgMap(data) {
       ${nodeCircle(485, 235, 25, data.suMenh, data.truocSuMenh, 'Sứ mệnh', 'suMenh', true, true, 'top', 'red')}
 
       <!-- Vòng tròn LK trên cung cong (hào quang vàng, uốn cong chạm đúng tâm nút, nhãn đỏ phía DƯỚI) -->
-      ${nodeCircle(300, 155, 21, data.lkDuongDoiSuMenh, '', 'LK', 'lkDuongDoiSuMenh', false, true, 'bottom', 'red')}
+      ${nodeCircle(300, 155, 21, data.lkDuongDoiSuMenh, '', 'Liên kết\nđường đời - sứ mệnh', 'lkDuongDoiSuMenh', false, true, 'bottom', 'red')}
 
       <!-- Vòng tròn Linh hồn (hào quang vàng, nhãn đỏ phía TRÊN) -->
       ${nodeCircle(300, 440, 25, data.linhHon, data.truocLinhHon, 'Linh hồn', 'linhHon', false, true, 'top', 'red')}
@@ -649,8 +668,8 @@ function renderSvgMap(data) {
       <!-- Vòng tròn Nhân cách (tọa độ x=485 THẲNG ĐỨNG với Sứ mệnh, nhãn đen 2 dòng) -->
       ${nodeCircle(485, 440, 25, data.nhanCach, data.truocNhanCach, 'Nhân\ncách', 'nhanCach', false, false, 'bottom', 'black')}
 
-      <!-- Vòng tròn LK NC-LH (nhãn đỏ LK LH- phía DƯỚI) -->
-      ${nodeCircle(390, 470, 20, data.lkNhanCachLinhHon, '', 'LK LH-', 'lkNhanCachLinhHon', false, false, 'bottom', 'red')}
+      <!-- Vòng tròn LK NC-LH (nhãn đỏ phía DƯỚI) -->
+      ${nodeCircle(390, 470, 20, data.lkNhanCachLinhHon, '', 'Liên kết\nLinh hồn - Nhân cách', 'lkNhanCachLinhHon', false, false, 'bottom', 'red')}
 
       <!-- Vòng tròn Sức mạnh tiềm thức (không hào quang, nhãn đen 2 dòng phía DƯỚI) -->
       ${nodeCircle(300, 550, 23, data.sucManhTiemThuc, '', 'Sức mạnh\ntiềm thức', 'sucManhTiemThuc', false, false, 'bottom', 'black')}
@@ -1347,6 +1366,17 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
 }
 
 // Xử lý Form Tra cứu
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+// Xử lý Form Tra cứu
 async function handleLookupSubmit(e) {
   if (e) e.preventDefault();
 
@@ -1354,6 +1384,7 @@ async function handleLookupSubmit(e) {
   const dayInput = document.getElementById('input-day');
   const monthInput = document.getElementById('input-month');
   const yearInput = document.getElementById('input-year');
+  const phoneInput = document.getElementById('input-phone');
   const errorBox = document.getElementById('lookup-error');
 
   if (errorBox) errorBox.style.display = 'none';
@@ -1362,32 +1393,45 @@ async function handleLookupSubmit(e) {
   const day = parseInt(dayInput?.value, 10);
   const month = parseInt(monthInput?.value, 10);
   const year = parseInt(yearInput?.value, 10);
+  const rawPhone = phoneInput ? phoneInput.value.trim() : '';
+  const cleanedPhone = rawPhone ? rawPhone.replace(/\D/g, '') : '';
 
-  // Validation
-  if (!fullName || fullName.length < 2) {
-    showLookupError('Họ và tên phải có tối thiểu 2 chữ cái.');
+  const hasPythagoras = Boolean(fullName && fullName.length >= 2 && day && month && year);
+  const hasPhone = Boolean(cleanedPhone && cleanedPhone.length >= 4);
+
+  // Validation kịch bản tra cứu
+  if (!hasPythagoras && !hasPhone) {
+    if (fullName && (!day || !month || !year)) {
+      showLookupError('Vui lòng chọn đầy đủ ngày, tháng, năm sinh để tra cứu Thần số học.');
+      return;
+    }
+    if ((day || month || year) && (!fullName || fullName.length < 2)) {
+      showLookupError('Vui lòng nhập họ và tên khai sinh (tối thiểu 2 ký tự) để tra cứu Thần số học.');
+      return;
+    }
+    if (rawPhone && !hasPhone) {
+      showLookupError('Số điện thoại không hợp lệ (tối thiểu 4 chữ số).');
+      return;
+    }
+    showLookupError('Vui lòng nhập Họ tên + Ngày sinh (để tra cứu Thần số học) hoặc Số điện thoại (để tra cứu Năng lượng số).');
     return;
   }
-  if (!day || !month || !year) {
-    showLookupError('Vui lòng chọn đầy đủ ngày, tháng, năm sinh.');
+
+  if (rawPhone && !hasPhone) {
+    showLookupError('Số điện thoại không hợp lệ (tối thiểu 4 chữ số).');
     return;
   }
 
-  // Validate real date
-  const birthDateObj = new Date(year, month - 1, day);
-  if (
-    birthDateObj.getFullYear() !== year ||
-    birthDateObj.getMonth() !== month - 1 ||
-    birthDateObj.getDate() !== day
-  ) {
-    showLookupError('Ngày tháng năm sinh không có thật trong lịch.');
-    return;
-  }
-
-  const now = new Date();
-  if (birthDateObj > now) {
-    showLookupError('Ngày sinh không thể ở thời điểm tương lai.');
-    return;
+  // Nếu người dùng có nhập họ tên hoặc ngày sinh nhưng chưa đủ thông tin
+  if (!hasPythagoras && (fullName || day || month || year)) {
+    if (!fullName || fullName.length < 2) {
+      showLookupError('Vui lòng nhập đầy đủ họ và tên khai sinh (tối thiểu 2 chữ cái).');
+      return;
+    }
+    if (!day || !month || !year) {
+      showLookupError('Vui lòng chọn đầy đủ ngày, tháng, năm sinh.');
+      return;
+    }
   }
 
   // Kiểm tra tài khoản chưa được kích hoạt
@@ -1396,57 +1440,114 @@ async function handleLookupSubmit(e) {
     return;
   }
 
-  // Check private lookup mode
-  const isIncognito = !!document.getElementById('lookup-incognito')?.checked;
-  const birthDateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-
-  // Send to server to record lookup & check unverified quota
-  try {
-    const res = await fetch('/api/lookups', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fullName, birthDate: birthDateStr, noHistory: isIncognito })
-    });
-    const resData = await res.json();
-    if (!res.ok) {
-      if (resData.error === 'REQUIRE_VERIFY') {
-        showLookupError(resData.message);
-        return;
-      }
+  // 1. Xử lý Thần số học Pythagoras (nếu có thông tin)
+  const pythWrapper = document.getElementById('pythagoras-results-wrapper');
+  if (hasPythagoras) {
+    // Validate real date
+    const birthDateObj = new Date(year, month - 1, day);
+    if (
+      birthDateObj.getFullYear() !== year ||
+      birthDateObj.getMonth() !== month - 1 ||
+      birthDateObj.getDate() !== day
+    ) {
+      showLookupError('Ngày tháng năm sinh không có thật trong lịch.');
+      return;
     }
-  } catch (err) {
-    console.warn('Could not record lookup on server:', err);
-  }
 
-  // Calculate results
-  const result = tinhThanSoHoc(fullName, day, month, year);
-  currentResult = result;
+    const now = new Date();
+    if (birthDateObj > now) {
+      showLookupError('Ngày sinh không thể ở thời điểm tương lai.');
+      return;
+    }
 
-  // Save to localStorage only if not incognito (bảo mật riêng tư)
-  if (!isIncognito) {
+    const isIncognito = !!document.getElementById('lookup-incognito')?.checked;
+    const birthDateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+
+    // Gửi lên server để ghi nhận lịch sử tra cứu
     try {
-      localStorage.setItem('tsh_last_lookup', JSON.stringify({ fullName, day, month, year }));
-      const historyList = JSON.parse(localStorage.getItem('tsh_lookup_history') || '[]');
-      historyList.unshift({
-        full_name: fullName,
-        birth_date: birthDateStr,
-        created_at: new Date().toISOString()
+      const res = await fetch('/api/lookups', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fullName, birthDate: birthDateStr, noHistory: isIncognito })
       });
-      localStorage.setItem('tsh_lookup_history', JSON.stringify(historyList.slice(0, 30)));
-    } catch (e) {}
+      const resData = await res.json();
+      if (!res.ok) {
+        if (resData.error === 'REQUIRE_VERIFY') {
+          showLookupError(resData.message);
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn('Could not record lookup on server:', err);
+    }
+
+    // Tính toán kết quả Thần số học (giữ nguyên vẹn 100% công thức)
+    const result = tinhThanSoHoc(fullName, day, month, year);
+    currentResult = result;
+
+    if (!isIncognito) {
+      try {
+        localStorage.setItem('tsh_last_lookup', JSON.stringify({ fullName, day, month, year }));
+        const historyList = JSON.parse(localStorage.getItem('tsh_lookup_history') || '[]');
+        historyList.unshift({
+          full_name: fullName,
+          birth_date: birthDateStr,
+          created_at: new Date().toISOString()
+        });
+        localStorage.setItem('tsh_lookup_history', JSON.stringify(historyList.slice(0, 30)));
+      } catch (e) {}
+    }
+
+    currentSelectedTransitYear = new Date().getFullYear();
+    renderResultView(result);
+
+    if (pythWrapper) pythWrapper.style.display = 'block';
+  } else {
+    // Ẩn vùng Pythagoras nếu chỉ tra cứu số điện thoại
+    if (pythWrapper) pythWrapper.style.display = 'none';
+
+    // Cập nhật header tóm tắt thông tin SĐT
+    const sumName = document.getElementById('summary-fullname');
+    const sumBirth = document.getElementById('summary-birthdate');
+    const sumDuongdoi = document.getElementById('summary-duongdoi-val');
+    if (sumName) sumName.textContent = 'Tra Cứu Năng Lượng Số Điện Thoại';
+    if (sumBirth) sumBirth.textContent = 'Số điện thoại: ' + (rawPhone.startsWith('0') ? rawPhone : '0' + rawPhone);
+    if (sumDuongdoi) sumDuongdoi.textContent = '📱';
   }
 
-  // Reset transit selected year to current actual year on new lookup
-  currentSelectedTransitYear = new Date().getFullYear();
+  // 2. Xử lý Năng Lượng Từ Trường Số Điện Thoại (nếu có thông tin)
+  const phoneWrapper = document.getElementById('phone-results-wrapper');
+  if (hasPhone) {
+    try {
+      const pRes = await fetch('/api/phone/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: rawPhone })
+      });
+      const pData = await pRes.json();
+      if (pData.success) {
+        renderPhoneResultView(pData.data, pData.isUnlocked);
+        if (phoneWrapper) phoneWrapper.style.display = 'block';
+      } else {
+        showLookupError(pData.message || 'Lỗi khi phân tích số điện thoại.');
+      }
+    } catch (err) {
+      console.warn('Lỗi kết nối phân tích SĐT:', err);
+    }
+  } else {
+    // Ẩn khối số điện thoại nếu không nhập SĐT
+    if (phoneWrapper) phoneWrapper.style.display = 'none';
+  }
 
-  // Render UI
-  renderResultView(result);
-
-  // Smooth scroll to results
+  // Hiển thị phần kết quả chung & cuộn trang
   const resultSection = document.getElementById('results-section');
   if (resultSection) {
     resultSection.style.display = 'block';
-    resultSection.scrollIntoView({ behavior: 'smooth' });
+    if (!hasPythagoras && hasPhone && phoneWrapper) {
+      phoneWrapper.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      resultSection.scrollIntoView({ behavior: 'smooth' });
+    }
   }
 }
 
@@ -1457,6 +1558,145 @@ function showLookupError(msg) {
     errorBox.style.display = 'block';
   } else {
     alert(msg);
+  }
+}
+
+// Hiển thị kết quả Năng lượng từ trường số điện thoại
+function renderPhoneResultView(data, isUnlocked) {
+  if (!data) return;
+
+  // 0. Bảng Kết quả chuẩn theo mẫu Excel (Từ trường SĐT / Cặp số / Năng lượng)
+  const excelNumEl = document.getElementById('phone-excel-num');
+  if (excelNumEl) excelNumEl.textContent = data.input.displayFormat;
+
+  const excelPairsEl = document.getElementById('phone-excel-pairs');
+  const capSoVal = data.capSoText || (data.groups ? data.groups.map(g => g.group).join('/') : '--');
+  if (excelPairsEl) excelPairsEl.textContent = capSoVal;
+
+  const excelEnergyEl = document.getElementById('phone-excel-energy');
+  let energyVal = data.nangLuongText;
+  if (!energyVal && data.groups) {
+    energyVal = data.groups
+      .filter(g => g.tuTruong)
+      .map(g => `${g.tuTruongTitle || g.tuTruong}${g.capDo || ''}${g.transformText ? ' ' + g.transformText : ''}`)
+      .join(' / ');
+  }
+  if (excelEnergyEl) excelEnergyEl.textContent = energyVal || '--';
+
+  // Lưu chuỗi kết quả chuẩn định dạng để sao chép
+  window._currentPhoneExcelText = [
+    `Từ trường SĐT: ${data.input.displayFormat}`,
+    `Cặp số          ${capSoVal}`,
+    `Năng lượng     ${energyVal || ''}`
+  ].join('\n');
+
+  // 1. Thẻ Tóm tắt
+  const numEl = document.getElementById('phone-display-num');
+  if (numEl) numEl.textContent = data.input.displayFormat;
+
+  const badgeEl = document.getElementById('phone-rating-badge');
+  if (badgeEl) {
+    badgeEl.textContent = data.summary.rating;
+    badgeEl.className = 'phone-rating-badge ' + (data.summary.catPercent >= 60 ? 'cat' : (data.summary.hungPercent >= 60 ? 'hung' : 'trung_tinh'));
+  }
+
+  const pairsCountEl = document.getElementById('phone-total-pairs');
+  if (pairsCountEl) pairsCountEl.textContent = data.summary.totalPairs;
+
+  const catEl = document.getElementById('phone-cat-count');
+  if (catEl) catEl.textContent = `${data.summary.catCount} (${data.summary.catPercent}%)`;
+
+  const hungEl = document.getElementById('phone-hung-count');
+  if (hungEl) hungEl.textContent = `${data.summary.hungCount} (${data.summary.hungPercent}%)`;
+
+  const avgEl = document.getElementById('phone-avg-score');
+  if (avgEl) avgEl.textContent = data.summary.avgScore ? `${data.summary.avgScore} / 12` : '--';
+
+  // 2. Sơ đồ bóc tách dòng chảy năng lượng (Flow)
+  const flowContainer = document.getElementById('phone-flow-container');
+  if (flowContainer) {
+    flowContainer.innerHTML = '';
+    data.groups.forEach((g, idx) => {
+      const pill = document.createElement('div');
+      pill.className = `phone-group-pill ${g.type || 'trung_tinh'}`;
+      const starLabel = (g.tuTruongTitle || g.tuTruong || 'Chưa định') + (g.capDo ? g.capDo : '');
+      pill.innerHTML = `
+        <span class="phone-pill-digits">${escapeHtml(g.group)}</span>
+        <span class="phone-pill-energy">${escapeHtml(starLabel)}</span>
+        ${g.transformText ? `<span class="phone-pill-transform">${escapeHtml(g.transformText)}</span>` : ''}
+      `;
+      flowContainer.appendChild(pill);
+
+      if (idx < data.groups.length - 1) {
+        const arrow = document.createElement('span');
+        arrow.className = 'phone-flow-arrow';
+        arrow.textContent = '➔';
+        flowContainer.appendChild(arrow);
+      }
+    });
+  }
+
+  // 3. Danh sách các cặp luận giải
+  const pairsList = document.getElementById('phone-pairs-list');
+  if (pairsList) {
+    pairsList.innerHTML = '';
+    data.pairs.forEach((p, idx) => {
+      const isLockedPair = !isUnlocked && idx >= 2;
+      const card = document.createElement('div');
+      let pairType = 'mixed-pair';
+      if (p.type1 === 'cat' && p.type2 === 'cat') pairType = 'cat-pair';
+      else if (p.type1 === 'hung' && p.type2 === 'hung') pairType = 'hung-pair';
+
+      card.className = `phone-pair-card ${pairType} ${isLockedPair ? 'phone-pair-locked' : ''}`;
+      card.innerHTML = `
+        <div class="phone-pair-header">
+          <div class="phone-pair-title">
+            <span style="color: #64748b; font-size: 0.9rem; margin-right: 6px;">#${p.index}</span>
+            <span>${escapeHtml(p.field1)}</span>
+            <span style="color: #94a3b8; margin: 0 4px;">+</span>
+            <span>${escapeHtml(p.field2)}</span>
+            <span style="font-size: 0.8rem; font-weight: normal; color: #64748b; margin-left: 8px;">(Cụm: ${escapeHtml(p.fromGroup)} &amp; ${escapeHtml(p.toGroup)})</span>
+          </div>
+          ${p.diem !== null ? `<span class="phone-pair-score">⭐ ${p.diem} điểm</span>` : ''}
+        </div>
+        <div class="phone-pair-desc">${escapeHtml(p.moTa || 'Chưa có luận giải cho tổ hợp này.')}</div>
+        ${isLockedPair ? `
+          <div class="phone-locked-overlay">
+            <button type="button" class="phone-locked-btn" onclick="openAuthModal('register')">
+              🔒 Đăng ký để mở khóa luận giải
+            </button>
+          </div>
+        ` : ''}
+      `;
+      pairsList.appendChild(card);
+    });
+  }
+
+  // 4. Luận giải hiệu ứng ẩn tàng số 0
+  const zeroSection = document.getElementById('phone-zero-section');
+  const zeroList = document.getElementById('phone-zero-list');
+  if (zeroSection && zeroList) {
+    if (data.specialZeroEffects && data.specialZeroEffects.length > 0) {
+      zeroSection.style.display = 'block';
+      zeroList.innerHTML = '';
+      data.specialZeroEffects.forEach(z => {
+        const card = document.createElement('div');
+        card.className = 'phone-pair-card hung-pair';
+        card.innerHTML = `
+          <div class="phone-pair-header">
+            <div class="phone-pair-title">
+              <span>⚡ Hiệu ứng: ${escapeHtml(z.pairKey)}</span>
+              <span style="font-size: 0.8rem; font-weight: normal; color: #64748b; margin-left: 8px;">(Xuất hiện tại cụm: ${escapeHtml(z.group)})</span>
+            </div>
+            ${z.diem !== null ? `<span class="phone-pair-score">⭐ ${z.diem} điểm</span>` : ''}
+          </div>
+          <div class="phone-pair-desc">${escapeHtml(z.moTa)}</div>
+        `;
+        zeroList.appendChild(card);
+      });
+    } else {
+      zeroSection.style.display = 'none';
+    }
   }
 }
 
@@ -1985,6 +2225,77 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+function goToPhoneSection(e) {
+  if (e) e.preventDefault();
+  const phoneWrapper = document.getElementById('phone-results-wrapper');
+  const phoneInput = document.getElementById('input-phone');
+
+  // Nếu đã tra cứu và khối kết quả SĐT đang hiển thị
+  if (phoneWrapper && phoneWrapper.style.display !== 'none') {
+    phoneWrapper.scrollIntoView({ behavior: 'smooth' });
+  } else {
+    // Nếu chưa tra cứu, cuộn lên ô nhập số điện thoại và focus vào ô đó
+    if (phoneInput) {
+      phoneInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      phoneInput.focus();
+      phoneInput.style.transition = 'box-shadow 0.3s';
+      phoneInput.style.boxShadow = '0 0 0 4px rgba(2, 132, 199, 0.4)';
+      setTimeout(() => {
+        phoneInput.style.boxShadow = '';
+      }, 1500);
+    }
+  }
+}
+
+function copyPhoneExcelResult() {
+  const text = window._currentPhoneExcelText;
+  if (!text) return;
+
+  const copyStatusEl = document.getElementById('phone-excel-copy-status');
+  const copyBtn = document.getElementById('phone-excel-copy-btn');
+
+  const onCopied = () => {
+    if (copyStatusEl) copyStatusEl.textContent = '✓ Đã sao chép!';
+    if (copyBtn) {
+      copyBtn.style.background = '#ecfdf5';
+      copyBtn.style.color = '#059669';
+      copyBtn.style.borderColor = '#10b981';
+    }
+    setTimeout(() => {
+      if (copyStatusEl) copyStatusEl.textContent = 'Sao chép kết quả';
+      if (copyBtn) {
+        copyBtn.style.background = '';
+        copyBtn.style.color = '';
+        copyBtn.style.borderColor = '';
+      }
+    }, 2000);
+  };
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(onCopied).catch(() => {
+      fallbackCopy(text, onCopied);
+    });
+  } else {
+    fallbackCopy(text, onCopied);
+  }
+}
+
+function fallbackCopy(text, cb) {
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    if (cb) cb();
+  } catch (e) {
+    alert('Không thể tự động sao chép. Bạn có thể chọn và chép trực tiếp nội dung.');
+  }
+}
+
 // Explicit window bindings for modal & privacy controls
 window.openHistoryModal = openHistoryModal;
 window.closeHistoryModal = closeHistoryModal;
@@ -1995,4 +2306,7 @@ window.clearAllLookupHistory = clearAllLookupHistory;
 window.openPrivacyPolicyModal = openPrivacyPolicyModal;
 window.closePrivacyPolicyModal = closePrivacyPolicyModal;
 window.acceptPrivacyAndClose = acceptPrivacyAndClose;
+window.goToPhoneSection = goToPhoneSection;
+window.copyPhoneExcelResult = copyPhoneExcelResult;
+
 

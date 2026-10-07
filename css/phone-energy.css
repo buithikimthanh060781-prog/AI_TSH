@@ -1,0 +1,444 @@
+/* ==========================================================================
+   Phone Number Energy Analysis (Năng Lượng Số)
+   File CSS riêng biệt quản lý giao diện phân tích năng lượng từ trường số điện thoại
+   ========================================================================== */
+
+.phone-results-wrapper {
+  margin-top: 40px;
+}
+
+/* ==========================================================================
+   Bảng Hiển Thị Kết Quả Chuẩn Theo Mẫu Excel (Từ trường SĐT / Cặp số / Năng lượng)
+   ========================================================================== */
+.phone-excel-card {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-left: 5px solid #217346; /* Điểm nhấn xanh lá đặc trưng của Excel */
+  border-radius: 8px;
+  padding: 18px 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  font-family: Calibri, 'Segoe UI', Arial, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.phone-excel-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed #e2e8f0;
+}
+
+.phone-excel-main-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #000000;
+  line-height: 1.4;
+  letter-spacing: -0.2px;
+}
+
+.phone-excel-title-label {
+  color: #000000;
+  font-weight: 700;
+}
+
+.phone-excel-title-number {
+  color: #000000;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.phone-excel-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.phone-excel-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8fafc;
+  color: #1e293b;
+  border: 1px solid #cbd5e1;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.phone-excel-copy-btn:hover {
+  background: #0284c7;
+  color: #ffffff;
+  border-color: #0284c7;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+}
+
+.phone-excel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.phone-excel-row {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+
+.phone-excel-label {
+  width: 110px;
+  min-width: 110px;
+  font-weight: 700;
+  color: #000000;
+  user-select: none;
+}
+
+.phone-excel-value {
+  flex: 1;
+  font-weight: 700;
+  word-break: break-word;
+  letter-spacing: 0.3px;
+}
+
+.phone-excel-val-blue {
+  color: #0070c0; /* Xanh Microsoft Office chuẩn */
+}
+
+.phone-excel-val-purple {
+  color: #7030a0; /* Tím Microsoft Office chuẩn */
+}
+
+@media (max-width: 640px) {
+  .phone-excel-card {
+    padding: 15px;
+  }
+  .phone-excel-main-title {
+    font-size: 1.1rem;
+  }
+  .phone-excel-row {
+    flex-direction: column;
+    gap: 3px;
+    margin-bottom: 6px;
+  }
+  .phone-excel-label {
+    width: auto;
+    min-width: auto;
+    font-size: 0.95rem;
+  }
+  .phone-excel-value {
+    font-size: 1rem;
+  }
+}
+
+@media print {
+  .phone-excel-card {
+    border: 1px solid #000000 !important;
+    border-left: 5px solid #217346 !important;
+    page-break-inside: avoid;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .phone-excel-copy-btn {
+    display: none !important;
+  }
+  .phone-excel-val-blue {
+    color: #0070c0 !important;
+  }
+  .phone-excel-val-purple {
+    color: #7030a0 !important;
+  }
+}
+
+.phone-summary-card {
+  background: #ffffff;
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: var(--radius-lg, 12px);
+  padding: 24px 30px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.phone-display-box {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.phone-number-display {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--primary-color, #0284c7);
+  letter-spacing: 1.5px;
+  font-family: monospace, monospace;
+}
+
+.phone-rating-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.phone-rating-badge.cat {
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+}
+
+.phone-rating-badge.hung {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.phone-rating-badge.trung_tinh {
+  background: #f8fafc;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.phone-stats-grid {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.phone-stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 90px;
+}
+
+.phone-stat-num {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.phone-stat-item.cat-stat .phone-stat-num {
+  color: #10b981;
+}
+
+.phone-stat-item.hung-stat .phone-stat-num {
+  color: #ef4444;
+}
+
+.phone-stat-label {
+  font-size: 0.78rem;
+  color: var(--text-muted, #64748b);
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.phone-flow-box,
+.phone-pairs-section,
+.phone-zero-section {
+  background: #ffffff;
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: var(--radius-lg, 12px);
+  padding: 24px 30px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+.phone-box-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.phone-box-desc {
+  font-size: 0.9rem;
+  color: var(--text-muted, #64748b);
+  margin-bottom: 16px;
+}
+
+.phone-flow-container {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 10px 0;
+}
+
+.phone-group-pill {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: var(--radius-md, 8px);
+  background: #f8fafc;
+  border: 1px solid var(--border-color, #e2e8f0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+  min-width: 80px;
+}
+
+.phone-group-pill.cat {
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+.phone-group-pill.hung {
+  border-color: #fca5a5;
+  background: #fef2f2;
+}
+
+.phone-pill-digits {
+  font-family: monospace, monospace;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.phone-pill-energy {
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.phone-group-pill.cat .phone-pill-energy {
+  color: #15803d;
+}
+
+.phone-group-pill.hung .phone-pill-energy {
+  color: #b91c1c;
+}
+
+.phone-pill-transform {
+  font-size: 0.7rem;
+  background: rgba(0, 0, 0, 0.06);
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-top: 3px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.phone-flow-arrow {
+  font-size: 1.2rem;
+  color: #94a3b8;
+}
+
+.phone-pairs-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.phone-pair-card {
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: var(--radius-md, 8px);
+  padding: 16px 20px;
+  background: #fcfcfd;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+
+.phone-pair-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+}
+
+.phone-pair-card.cat-pair {
+  border-left: 5px solid #10b981;
+}
+
+.phone-pair-card.hung-pair {
+  border-left: 5px solid #ef4444;
+}
+
+.phone-pair-card.mixed-pair {
+  border-left: 5px solid #f59e0b;
+}
+
+.phone-pair-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.phone-pair-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.phone-pair-score {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.phone-pair-desc {
+  font-size: 0.95rem;
+  color: #334155;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+.phone-pair-locked {
+  overflow: hidden;
+  user-select: none;
+}
+
+.phone-pair-locked .phone-pair-desc {
+  filter: blur(4px);
+  opacity: 0.5;
+}
+
+.phone-locked-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.75);
+  border-radius: var(--radius-md, 8px);
+}
+
+.phone-locked-btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  background: #0284c7;
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}

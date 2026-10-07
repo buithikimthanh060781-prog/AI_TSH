@@ -91,14 +91,14 @@ const TSH_DATA = {
     },
     lkDuongDoiSuMenh: {
       key: 'lkDuongDoiSuMenh',
-      name: 'Liên kết Đường đời - Sứ mệnh',
+      name: 'Liên kết đường đời - sứ mệnh',
       group: 'boTro',
       shortDesc: 'Cây cầu nối giúp bạn dung hoà giữa con người hiện tại và lý tưởng cao đẹp cần đạt đến.',
       isFree: false
     },
     lkNhanCachLinhHon: {
       key: 'lkNhanCachLinhHon',
-      name: 'Liên kết Nhân cách - Linh hồn',
+      name: 'Liên kết Linh hồn - Nhân cách',
       group: 'boTro',
       shortDesc: 'Chìa khoá thống nhất giữa nội tâm sâu kín và diện mạo thể hiện ra bên ngoài.',
       isFree: false

@@ -1,0 +1,441 @@
+Public ketquatachso As String
+
+Function ProcessPhoneNumber(phone As String) As String
+    Dim result As String, temp As String
+    Dim i As Integer, j As Integer, pair As String, nextPair As String
+    
+    ' B? s? 0 d?u tiên n?u có
+    If Left(phone, 1) = "0" Then
+        phone = Mid(phone, 2)
+    End If
+    
+    ' Duy?t qua các c?p s? li?n k?
+    For i = 1 To Len(phone) - 1
+        pair = Mid(phone, i, 2)
+        
+        ' X? lý c?p li?n k? ti?p theo
+        If i + 1 <= Len(phone) Then
+            nextPair = Mid(phone, i + 1, 2)
+        Else
+            nextPair = ""
+        End If
+        
+        ' Ki?m tra các di?u ki?n
+        If pair <> temp Then
+            If InStr(pair, "0") = 0 And InStr(pair, "5") = 0 Then
+                ' C?p không ch?a 0 ho?c 5 và c?p li?n sau không ch?a 0
+                If InStr(nextPair, "0") = 0 Then
+                    result = result & pair & " "
+                    temp = ""
+                ' C?p không ch?a 0 ho?c 5 và c?p li?n sau ch?a 0
+                Else
+                    result = result & pair & "0 "
+                    temp = ""
+                End If
+            ElseIf InStr(pair, "0") > 0 Then
+                ' C?p ch?a 0
+                If InStr(nextPair, "0") > 0 Then
+                    ' C?p li?n sau cung ch?a 0
+                    Dim newPair As String
+                    newPair = pair & nextPair
+                    
+                    ' B? hai s? 0 n?u có hai s? 0
+                    newPair = Replace(newPair, "00", "")
+                    
+                    ' Ki?m tra n?u còn hai ký t? gi?ng nhau thì b? hai ký t?
+                    For j = 1 To Len(newPair) - 1
+                        If Mid(newPair, j, 1) = Mid(newPair, j + 1, 1) Then
+                            newPair = Replace(newPair, Mid(newPair, j, 2), "")
+                            Exit For
+                        End If
+                    Next j
+                    
+                    temp = ""
+                Else
+                    ' C?p ch?a 0 và c?p li?n sau không ch?a 0
+                    result = result & pair & nextPair & " "
+                    temp = nextPair
+                End If
+            ElseIf InStr(pair, "5") > 0 Then
+                ' C?p ch?a 5
+                If InStr(nextPair, "5") > 0 Then
+                    ' C?p li?n sau ch?a 5, ghép 5 l?i
+                    Dim newPair5 As String
+                    newPair5 = Left(pair, 1) & "5" & Right(nextPair, 1)
+                    result = result & newPair5 & " "
+                    temp = ""
+                Else
+                    result = result & pair & " "
+                    temp = ""
+                End If
+            End If
+        End If
+    Next i
+    
+    ProcessPhoneNumber = Trim(result)
+End Function
+
+
+
+Function TachSoDienThoai1(sdt As String) As String
+    Dim i As Integer
+    Dim result As String
+    Dim temp As String
+    Dim pairs As Collection
+    Set pairs = New Collection
+    
+    If Left(sdt, 1) = "0" Then
+        sdt = Mid(sdt, 2)
+    End If
+    
+    ' T?o các c?p s?
+    For i = 1 To Len(sdt) - 1
+        pairs.Add Mid(sdt, i, 2)
+    Next i
+    
+    ' Khai báo bi?n temp và gán giá tr? r?ng
+    temp = ""
+    
+    ' Duy?t qua các c?p s? và áp d?ng quy t?c
+    i = 1
+    Do While i <= pairs.count
+        Dim currentPair As String
+        Dim nextPair As String
+        currentPair = pairs(i)
+        
+        If i < pairs.count Then
+            nextPair = pairs(i + 1)
+        Else
+            nextPair = ""
+        End If
+        
+        If currentPair <> temp Then
+            If InStr(currentPair, "0") = 0 And InStr(currentPair, "5") = 0 Then
+                If InStr(nextPair, "0") = 0 Then
+                    result = result & currentPair & "/"
+                    temp = ""
+                Else
+                    result = result & currentPair & "0/"
+                    temp = ""
+                End If
+            ElseIf InStr(currentPair, "0") > 0 Then
+                If InStr(nextPair, "0") > 0 Then
+                    Dim newPair As String
+                    newPair = Left(currentPair, 1) & "0" & Right(nextPair, 1)
+                    If Left(currentPair, 1) & Right(nextPair, 1) = "00" Then
+                        newPair = Left(currentPair, 1) & nextPair
+                    End If
+                    If (InStr(newPair, "00") = 0 And Left(newPair, 1) <> Right(newPair, 1)) Or (Left(newPair, 1) = Right(newPair, 1)) Then
+                        result = result & newPair & "/"
+                    End If
+                    
+                    temp = ""
+                    
+                Else
+                    Dim combinedPair As String
+                    If Left(nextPair, 1) = Right(nextPair, 1) Then
+                        combinedPair = currentPair & Left(nextPair, 1)
+                    Else
+                        combinedPair = RemoveOneDuplicateChar(currentPair & nextPair)
+                    End If
+                    
+                    result = result & combinedPair & "/"
+                    temp = nextPair
+                End If
+            ElseIf InStr(currentPair, "5") > 0 Then
+                If InStr(nextPair, "5") > 0 Then
+                    result = result & Left(currentPair, 1) & "5" & Right(nextPair, 1) & "/"
+                    temp = ""
+                    i = i + 1
+                Else
+                    result = result & currentPair & "/"
+                    temp = ""
+                End If
+            End If
+        End If
+        
+        i = i + 1
+    Loop
+    
+    ' Lo?i b? d?u g?ch chéo cu?i cùng n?u có
+    If Right(result, 1) = "/" Then
+        result = Left(result, Len(result) - 1)
+    End If
+    
+    TachSoDienThoai1 = result
+End Function
+
+Function RemoveDuplicateNumbers(inputStr As String) As String
+    Dim result As String
+    Dim i As Integer
+    
+    ' S?A CHO MAC: Thay Scripting.Dictionary b?ng VBA.Collection d? không b? crash ?ng d?ng
+    Dim dict As Collection
+    Set dict = New Collection
+    result = ""
+    Dim temp As String
+    temp = ""
+    
+    For i = 1 To Len(inputStr)
+        Dim num As String
+        num = Mid(inputStr, i, 1)
+        If temp <> num Then
+            ' Ki?m tra ph?n t? t?n t?i trong Collection
+            Dim hasKey As Boolean: hasKey = False
+            On Error Resume Next
+            Dim dummy As String
+            dummy = dict(num)
+            If Err.number = 0 Then hasKey = True
+            On Error GoTo 0
+            
+            If Not hasKey Then
+                dict.Add num, num
+                result = result & num
+            Else
+                temp = num
+            End If
+        End If
+    Next i
+    
+    RemoveDuplicateNumbers = result
+End Function
+
+Function RemoveOneDuplicateChar(s As String) As String
+    Dim i As Integer
+    
+    ' S?A CHO MAC: Thay Scripting.Dictionary b?ng Collection tra c?u Key d?ng chu?i
+    Dim charCount As Collection
+    Set charCount = New Collection
+    
+    ' Iterate through each character in the string
+    For i = 1 To Len(s)
+        Dim char As String
+        char = Mid(s, i, 1)
+        
+        Dim exists As Boolean: exists = False
+        On Error Resume Next
+        Dim curCount As Integer
+        curCount = charCount(char)
+        If Err.number = 0 Then exists = True
+        On Error GoTo 0
+        
+        ' Count occurrences of each character
+        If exists Then
+            charCount.Remove char
+            charCount.Add curCount + 1, char
+        Else
+            charCount.Add 1, char
+        End If
+    Next i
+    
+    ' Build the result string
+    Dim result As String
+    result = ""
+    
+    For i = 1 To Len(s)
+        char = Mid(s, i, 1)
+        
+        Dim cnt As Integer
+        cnt = charCount(char)
+        
+        ' If the character appears more than once, remove one occurrence
+        If cnt > 1 Then
+            charCount.Remove char
+            charCount.Add cnt - 1, char
+        Else
+            result = result & char
+        End If
+    Next i
+    
+ RemoveOneDuplicateChar = result
+End Function
+
+Function ReSetBanDo()
+    ActiveSheet.Shapes("Oval 6").TextFrame.Characters.text = ""
+    ActiveSheet.Shapes("Oval 8").TextFrame.Characters.text = ""
+    ActiveSheet.Shapes("Oval 10").TextFrame.Characters.text = ""
+    ActiveSheet.Shapes("Oval 11").TextFrame.Characters.text = ""
+    ActiveSheet.Shapes("Oval 17").TextFrame.Characters.text = ""
+    
+    ' tinh chi so lien ket LH-NC
+    ActiveSheet.Shapes("Oval 9").TextFrame.Characters.text = ""
+    ActiveSheet.Shapes("Oval 12").TextFrame.Characters.text = ""
+    ActiveSheet.Shapes("Oval 13").TextFrame.Characters.text = ""
+    ActiveSheet.Shapes("Rectangle 7").TextFrame.Characters.text = ""
+    ActiveSheet.Shapes("Oval 14").TextFrame.Characters.text = ""
+    ActiveSheet.Shapes("Oval 23").TextFrame.Characters.text = ""
+    ActiveSheet.Shapes("Rectangle 20").TextFrame.Characters.text = ""
+    ActiveSheet.Shapes("Rectangle 21").TextFrame.Characters.text = ""
+    ActiveSheet.Shapes("Rectangle 117").TextFrame.Characters.text = ""
+    ActiveSheet.Shapes("Rectangle 58").TextFrame.Characters.text = ""
+    ActiveSheet.Shapes("Rectangle 59").TextFrame.Characters.text = ""
+    ActiveSheet.Shapes("Rectangle 61").TextFrame.Characters.text = ""
+    ActiveSheet.Shapes("Rectangle 60").TextFrame.Characters.text = ""
+    ActiveSheet.Shapes("Rectangle 67").TextFrame.Characters.text = ""
+    ActiveSheet.Shapes("Rectangle 66").TextFrame.Characters.text = ""
+    ActiveSheet.Shapes("Rectangle 65").TextFrame.Characters.text = ""
+    ActiveSheet.Shapes("Rectangle 63").TextFrame.Characters.text = ""
+    ActiveSheet.Shapes("Rectangle 69").TextFrame.Characters.text = ""
+    ActiveSheet.Shapes("Rectangle 71").TextFrame.Characters.text = ""
+    ActiveSheet.Shapes("Rectangle 73").TextFrame.Characters.text = ""
+    ActiveSheet.Shapes("Rectangle 74").TextFrame.Characters.text = ""
+    ActiveSheet.Shapes("Rectangle 81").TextFrame.Characters.text = ""
+    ActiveSheet.Shapes("Rectangle 82").TextFrame.Characters.text = ""
+    ActiveSheet.Shapes("Rectangle 83").TextFrame.Characters.text = ""
+    
+    Dim ws As Worksheet
+    Set ws = ThisWorkbook.Sheets("Sheet1")
+    ws.Range("E40").value = ""
+End Function
+
+
+
+
+
+Function LayNangLuongSo(so As String) As String
+    Dim wsNLS As Worksheet
+    Dim ws As Worksheet
+    Dim searchRange As Range
+    Dim foundCell As Range
+    
+    If Len(so) = 1 Then
+        LayNangLuongSo = ""
+        Exit Function
+    End If
+    If Len(so) = 2 And (Left(so, 1) = 0 Or Right(so, 1) = 0) Then
+        LayNangLuongSo = ""
+        Exit Function
+    End If
+    
+    ' Thiet lap worksheet va vung tim kiem
+    Set ws = ThisWorkbook.Sheets("Sheet1")
+    Set wsNLS = ThisWorkbook.Sheets("NLSO")
+    
+    Dim cell As Range
+    For Each cell In wsNLS.UsedRange
+        If cell.value = so Then
+            LayNangLuongSo = wsNLS.Range(Left(cell.Address, 2) & "$1").value & wsNLS.Range("$A" & Right(cell.Address, 2)).value
+            ketquatachso = ketquatachso & wsNLS.Range(Left(cell.Address, 2) & "$1").value & "/"
+            Exit Function
+        End If
+    Next cell
+    LayNangLuongSo = ""
+End Function
+
+Function TachNangLuongSo(chuoiso As String) As String
+    Dim ws As Worksheet
+    Set ws = ThisWorkbook.Sheets("Sheet1")
+    Dim mang As Variant
+    Dim so As String
+    Dim result As String
+    Dim thaythe As String
+    Dim temp As String
+    Dim i As Integer
+    
+    ketquatachso = ""
+    mang = Split(chuoiso, "/")
+    
+    For i = LBound(mang) To UBound(mang)
+        thaythe = ""
+        so = mang(i)
+        If Len(so) = 1 Or (Len(so) = 2 And (Left(so, 1) = 0 Or Right(so, 1) = 0)) Then
+            result = result & ""
+        Else
+            If InStr(so, "5") > 0 Then
+                so = Replace(so, "5", "")
+                thaythe = " x 5"
+            End If
+            If InStr(so, "0") > 0 Then
+                so = Replace(so, "0", "")
+                thaythe = " + 0"
+            End If
+            temp = LayNangLuongSo(so)
+            If temp <> "" Then
+                result = result & temp & thaythe & " / "
+            End If
+        End If
+    Next i
+    
+    If Right(result, 2) = "/ " Then
+        result = Left(result, Len(result) - 2)
+        ketquatachso = Left(ketquatachso, Len(ketquatachso) - 1)
+    End If
+    
+    TachNangLuongSo = result
+End Function
+
+Function ProcessSequence(inputString As String) As String
+    ' SUA CHO MAC: Thay Scripting.Dictionary bang Collection dem phan tu trung lap
+    Dim elementCount As Collection
+    Set elementCount = New Collection
+    Dim result As String
+    Dim i As Long
+    Dim element As String
+    Dim count As Long
+    
+    result = ""
+    
+    ' Dem so lan xuat hien cua moi phan tu
+    For i = 1 To Len(inputString)
+        element = Mid(inputString, i, 1)
+        
+        Dim isExist As Boolean: isExist = False
+        On Error Resume Next
+        Dim curCount As Long
+        curCount = elementCount(element)
+        If Err.number = 0 Then isExist = True
+        On Error GoTo 0
+        
+        If isExist Then
+            elementCount.Remove element
+            elementCount.Add curCount + 1, element
+        Else
+            elementCount.Add 1, element
+        End If
+    Next i
+    
+    ' Xo ly chuoi theo yeu cau
+    For i = 1 To Len(inputString)
+        element = Mid(inputString, i, 1)
+        count = elementCount(element)
+        
+        If count > 1 Then
+            If Len(result) - Len(Replace(result, element, "")) < (count - 1) Then
+                result = result & element
+            End If
+        Else
+            result = result & element
+        End If
+    Next i
+    
+    ProcessSequence = result
+End Function
+Function KetLuanTuTruong(inputString As String) As String
+    Dim ws As Worksheet
+    Set ws = ThisWorkbook.Sheets("Sheet1")
+    Dim mang As Variant
+    Dim so As String
+    Dim result As String
+    Dim i As Integer
+    Dim wsNLS As Worksheet
+    Dim searchRange As Range
+    Dim foundCell As Range
+    
+    Set wsNLS = ThisWorkbook.Sheets("KETLUAN")
+    Set searchRange = wsNLS.Range("A1:E100")
+    mang = Split(inputString, "/")
+    
+    For i = LBound(mang) To UBound(mang) - 1
+        so = UCase(mang(i)) & " + " & UCase(mang(i + 1))
+        Set foundCell = searchRange.Find(What:=so, LookIn:=xlValues, LookAt:=xlWhole)
+        
+        ' SUA CHO MAC: Chuyen dau cong chuoi toan hoc '+' sang '&' de triet tieu loi ep kieu
+        If Not foundCell Is Nothing Then
+            result = result & so & ": " & vbCrLf & "==> " & foundCell.Offset(0, 1).value & vbCrLf & vbCrLf
+        Else
+            result = result & so & ": " & vbCrLf & "==> " & vbCrLf
+        End If
+    Next i
+    
+    ActiveSheet.Shapes("Rectangle 85").TextFrame.Characters.text = result
+End Function
