@@ -109,6 +109,12 @@
   <section class="results-section" id="results-section">
     <div class="container">
 
+      <!-- Tiêu đề Báo Cáo In / Lưu PDF (Chỉ hiển thị khi in) -->
+      <div class="print-only-header">
+        <div class="print-logo-title">HỒ SƠ BÁO CÁO NĂNG LƯỢNG & LUẬN GIẢI THẦN SỐ HỌC PYTHAGORAS</div>
+        <div class="print-subtitle">Hệ Thống Phân Tích Bản Đồ Đa Chiều Chuẩn Pythagoras & Sacred Geometry</div>
+      </div>
+
       <!-- Header Tóm tắt Kết quả & Thanh tác vụ -->
       <div class="result-header-bar">
         <div class="result-profile">
@@ -123,13 +129,16 @@
         </div>
 
         <div class="result-actions">
+          <button type="button" class="btn btn-primary btn-sm btn-coaching-glow" onclick="openCoachingReport()">
+            <span>✨ Luận giải chuyên sâu</span>
+          </button>
           <button type="button" class="btn btn-outline btn-sm" onclick="exportResultImage()">
             <span>📸 Lưu ảnh kết quả (PNG)</span>
           </button>
-          <button type="button" class="btn btn-outline btn-sm" onclick="window.print()">
+          <button type="button" class="btn btn-outline btn-sm" onclick="printNumerologyReport()" title="Xuất Bản đồ năng lượng & Luận giải chuyên sâu ra PDF">
             <span>🖨️ In / Lưu PDF</span>
           </button>
-          <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('lookup').scrollIntoView({behavior:'smooth'})">
+          <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('lookup').scrollIntoView({behavior:'smooth'})">
             <span>🔍 Tra cứu người khác</span>
           </button>
         </div>
@@ -197,6 +206,15 @@
               <span class="map-tip-item">🔒 Các chỉ số có icon khoá: Đăng ký để mở</span>
             </div>
           </div>
+        </div>
+
+        <!-- Khối Luận Giải Chuyên Sâu Dành Riêng Cho Xuất Báo Cáo / In PDF -->
+        <div id="coaching-print-section" class="coaching-print-section">
+          <!-- Tự động kết xuất nội dung Luận giải khi bấm In / Lưu PDF -->
+        </div>
+
+        <div class="print-only-footer">
+          Bản quyền phân tích © Thần Số Học Pythagoras. Tài liệu được xuất tự động từ hệ thống.
         </div>
 
         <!-- Danh sách 23 Thẻ Chỉ Số -->
@@ -499,6 +517,21 @@
     </div>
   </div>
 
+  <!-- MODAL: Luận giải chuyên sâu theo hướng Coaching -->
+  <div class="modal-backdrop" id="coaching-modal" onclick="if(event.target === this) closeCoachingModal()">
+    <div class="modal-card coaching-modal-card">
+      <div class="coaching-modal-actions">
+        <button type="button" class="btn btn-outline btn-sm print-modal-btn" onclick="printNumerologyReport()" title="Xuất Bản đồ & Luận giải ra PDF">
+          <span>🖨️ In / Lưu PDF</span>
+        </button>
+        <button type="button" class="modal-close" onclick="closeCoachingModal()">&times;</button>
+      </div>
+      <div id="coaching-content">
+        <!-- Content injected dynamically from NumerologyCoaching -->
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL: Đăng ký / Đăng nhập -->
   <div class="modal-backdrop" id="auth-modal">
     <div class="modal-card" style="max-width: 480px;">
@@ -701,6 +734,7 @@
 
   <!-- Scripts -->
   <script src="js/data.js?v=2"></script>
-  <script src="js/main.js?v=7"></script>
+  <script src="js/coaching-engine.js?v=1"></script>
+  <script src="js/main.js?v=8"></script>
 </body>
 </html>

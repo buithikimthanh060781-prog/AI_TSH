@@ -176,8 +176,11 @@ function tinhThanSoHoc(hoTen, ngay, thang, nam) {
   const tN = RN(thang);
   const nN = RN(tongNam);
 
-  const chang1 = RM(dN + tN);
-  const chang2 = RM(dN + nN);
+  // 15-18. Bốn Chặng (Đỉnh cao Kim tự tháp chuẩn Pythagoras)
+  // - Đỉnh 1 & Đỉnh 2: Nếu là master thì quy đổi thành số < 10 (rút gọn triệt để về 1 - 9)
+  // - Đỉnh 3 & Đỉnh 4: Master giữ nguyên (11, 22, 33...) (Đỉnh 4 giữ thêm cả 10)
+  const chang1 = RN(dN + tN);
+  const chang2 = RN(dN + nN);
   const chang3 = RM(chang1 + chang2);
   const chang4 = RM10(tN + nN);
 
@@ -1701,7 +1704,7 @@ function renderPhoneResultView(data, isUnlocked) {
 }
 
 function renderResultView(data) {
-  const isUnlocked = !!(currentUser && currentUser.is_verified);
+  const isUnlocked = !!(currentUser && (currentUser.is_verified || currentUser.is_admin));
 
   // Update header summary
   const summaryName = document.getElementById('summary-fullname');
@@ -1725,6 +1728,15 @@ function renderResultView(data) {
   renderSvgMap(data);
   renderLetterBreakdown(data);
   renderCards(data);
+
+  // Tự động kết xuất trước nội dung Luận giải chuyên sâu để sẵn sàng in / xuất PDF
+  if (typeof prepareCoachingReportForPrint === 'function') {
+    try {
+      prepareCoachingReportForPrint();
+    } catch (e) {
+      console.warn('Lỗi kết xuất trước Luận giải:', e);
+    }
+  }
 }
 
 // ============================================================================
@@ -2308,5 +2320,106 @@ window.closePrivacyPolicyModal = closePrivacyPolicyModal;
 window.acceptPrivacyAndClose = acceptPrivacyAndClose;
 window.goToPhoneSection = goToPhoneSection;
 window.copyPhoneExcelResult = copyPhoneExcelResult;
+
+// ============================================================================
+// Module Luận Giải Chuyên Sâu Theo Hướng Coaching & Xuất Báo Cáo In / Lưu PDF
+// ============================================================================
+function prepareCoachingReportForPrint() {
+  if (!currentResult) {
+    return false;
+  }
+
+  if (typeof NumerologyCoaching === 'undefined' || typeof NumerologyCoaching.generate !== 'function') {
+    return false;
+  }
+
+  const isUnlocked = !!(currentUser && (currentUser.is_verified || currentUser.is_admin));
+  const coaching = NumerologyCoaching.generate(currentResult, { isUnlocked });
+  const html = NumerologyCoaching.renderHTML(coaching);
+
+  // 1. Cập nhật vào vùng in chuyên biệt cho PDF
+  let printContainer = document.getElementById('coaching-print-section');
+  if (!printContainer) {
+    printContainer = document.createElement('div');
+    printContainer.id = 'coaching-print-section';
+    printContainer.className = 'coaching-print-section';
+    const mapSection = document.getElementById('map-section');
+    if (mapSection && mapSection.parentNode) {
+      mapSection.parentNode.insertBefore(printContainer, mapSection.nextSibling);
+    }
+  }
+  if (printContainer) {
+    printContainer.innerHTML = html;
+  }
+
+  // 2. Đồng thời cập nhật vào Modal Coaching nếu modal có mặt
+  const modalContainer = document.getElementById('coaching-content');
+  if (modalContainer) {
+    modalContainer.innerHTML = html;
+  }
+
+  return true;
+}
+
+function openCoachingReport() {
+  if (!currentResult) {
+    alert('Vui lòng tra cứu thông tin họ tên và ngày sinh trước khi mở Luận giải chuyên sâu.');
+    return;
+  }
+
+  if (typeof NumerologyCoaching === 'undefined' || typeof NumerologyCoaching.generate !== 'function') {
+    alert('Hệ thống đang tải module Luận giải Coaching, vui lòng thử lại sau giây lát.');
+    return;
+  }
+
+  prepareCoachingReportForPrint();
+
+  const modal = document.getElementById('coaching-modal');
+  if (modal) {
+    modal.classList.add('active');
+  }
+}
+
+function closeCoachingModal() {
+  const modal = document.getElementById('coaching-modal');
+  if (modal) {
+    modal.classList.remove('active');
+  }
+}
+
+function printNumerologyReport() {
+  if (!currentResult) {
+    alert('Vui lòng tra cứu thông tin họ tên và ngày sinh trước khi in / lưu PDF.');
+    return;
+  }
+
+  if (typeof NumerologyCoaching === 'undefined' || typeof NumerologyCoaching.generate !== 'function') {
+    alert('Hệ thống đang tải module Luận giải Coaching, vui lòng thử lại sau giây lát.');
+    return;
+  }
+
+  // Chuẩn bị nội dung Luận giải chuyên sâu vào DOM in
+  prepareCoachingReportForPrint();
+
+  // Đóng modal coaching nếu đang mở để tránh xung đột overlay màn hình khi in
+  closeCoachingModal();
+
+  // Đợi DOM cập nhật ổn định rồi kích hoạt hộp thoại in
+  setTimeout(() => {
+    window.print();
+  }, 150);
+}
+
+// Bắt sự kiện beforeprint (khi người dùng dùng phím tắt Ctrl+P trên trình duyệt)
+window.addEventListener('beforeprint', () => {
+  if (currentResult && typeof NumerologyCoaching !== 'undefined') {
+    prepareCoachingReportForPrint();
+  }
+});
+
+window.prepareCoachingReportForPrint = prepareCoachingReportForPrint;
+window.openCoachingReport = openCoachingReport;
+window.closeCoachingModal = closeCoachingModal;
+window.printNumerologyReport = printNumerologyReport;
 
 
