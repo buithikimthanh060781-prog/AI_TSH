@@ -1016,6 +1016,13 @@
         challenge: 'Sự chia ly, mất mát những điều không còn phù hợp và nỗi buồn tiếc nuối quá khứ.',
         action: 'Học cách buông xả với lòng biết ơn; mở rộng trái tim phụng sự mà không mong cầu đền đáp.'
       },
+      10: {
+        theme: 'Giai đoạn tự chủ toàn diện - Thích nghi linh hoạt - Tiềm năng vô hạn',
+        guidance: 'Con số 10 mang năng lượng tổng hòa của số 1 (tiên phong, độc lập) và số 0 (tiềm năng vô hạn). Giai đoạn này mở ra cơ hội vàng để bạn làm chủ hoàn toàn cuộc đời, nâng cấp tầm nhìn và thích ứng nhạy bén trước mọi biến chuyển của thời đại.',
+        opportunity: 'Đột phá sự nghiệp, danh tiếng vang dội, khả năng xoay chuyển tình thế ngoạn mục và dẫn dắt các xu hướng mới.',
+        challenge: 'Sự tự tin thái quá dẫn đến chủ quan, dễ cả thèm chóng chán hoặc phân tán trước quá nhiều cơ hội rộng mở.',
+        action: 'Tập trung vào mục tiêu then chốt, phát huy năng lực linh hoạt thích ứng và luôn giữ tâm thế khiêm nhường học hỏi.'
+      },
       11: {
         theme: 'Giai đoạn ngọn hải đăng - Khai sáng trực giác',
         guidance: 'Thời kỳ kích hoạt năng lượng tâm linh và trực giác cao độ. Bạn được đặt vào vị trí người truyền cảm hứng, kết nối tâm thức và soi đường cho người khác bằng sự thấu hiểu sâu sắc.',
@@ -1029,6 +1036,13 @@
         opportunity: 'Để lại di sản trường tồn, tạo bước ngoặt phát triển mang tầm lịch sử cho cộng đồng/ngành nghề.',
         challenge: 'Khối lượng công việc khổng lồ, đòi hỏi sự phối hợp của cả trực giác lớn và kỷ luật thép.',
         action: 'Kiên định với đại nghiệp nhưng biết ủy quyền và xây dựng bộ máy cộng sự đáng tin cậy.'
+      },
+      33: {
+        theme: 'Giai đoạn chữa lành vũ trụ - Tình thương vô điều kiện - Phụng sự cao cả',
+        guidance: 'Con số Bậc thầy 33/6 là biểu tượng của tình yêu thương bao la và năng lượng trị liệu tâm hồn ở tầng bậc cao nhất. Bạn được vũ trụ trao sứ mệnh nâng đỡ, xoa dịu nỗi đau và truyền nguồn cảm hứng an lành cho cộng đồng.',
+        opportunity: 'Trở thành ngọn hải đăng tâm hồn, người thầy truyền cảm hứng vĩ đại và tạo lập những giá trị nhân văn lưu truyền hậu thế.',
+        challenge: 'Gánh nặng tâm lý khi ôm đồm nỗi đau của người khác, dễ kiệt sức nếu không biết bảo vệ năng lượng bản thân.',
+        action: 'Nuôi dưỡng tình thương đi đôi với trí tuệ; bảo vệ sức khỏe và tâm an để ngọn đèn phụng sự luôn rực sáng bền bỉ.'
       }
     },
 

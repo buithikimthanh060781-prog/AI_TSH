@@ -178,10 +178,10 @@ function tinhThanSoHoc(hoTen, ngay, thang, nam) {
 
   // 15-18. Bốn Chặng (Đỉnh cao Kim tự tháp chuẩn Pythagoras)
   // - Đỉnh 1 & Đỉnh 2: Nếu là master thì quy đổi thành số < 10 (rút gọn triệt để về 1 - 9)
-  // - Đỉnh 3 & Đỉnh 4: Master giữ nguyên (11, 22, 33...) (Đỉnh 4 giữ thêm cả 10)
+  // - Đỉnh 3 & Đỉnh 4: Nếu tính ra 10, 11, 22, 33 thì giữ nguyên, còn lại rút gọn về 1 - 9
   const chang1 = RN(dN + tN);
   const chang2 = RN(dN + nN);
-  const chang3 = RM(chang1 + chang2);
+  const chang3 = RM10(chang1 + chang2);
   const chang4 = RM10(tN + nN);
 
   const tuoi1 = 36 - RN(duongDoi);

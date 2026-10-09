@@ -270,6 +270,14 @@ const TSH_DATA = {
       challenges: 'Đôi khi quá lý tưởng hoá thực tế, khó tha thứ cho bản thân khi mắc lỗi, hay tiếc nuối quá khứ và khó buông bỏ.',
       advice: 'Hãy học cách buông bỏ những điều đã qua, chấp nhận sự không hoàn hảo của thế giới và kiên định với lý tưởng nhân văn của mình.'
     },
+    10: {
+      title: 'Số 10: Năng Lực Thích Nghi Toàn Diện & Tiềm Năng Vô Hạn',
+      keywords: 'Linh hoạt, Tiên phong, Độc lập, Đổi mới, Tự tin, Tỏa sáng',
+      summary: 'Số 10 kết hợp sức mạnh khởi đầu của số 1 với tiềm năng vô hạn của số 0. Bạn sở hữu khả năng thích nghi tuyệt vời trong mọi hoàn cảnh, phong thái tự tin và luôn sẵn sàng dẫn đầu mọi xu hướng.',
+      strengths: 'Ứng biến mau lẹ, tư duy đột phá, năng lượng lạc quan tích cực, thu hút cơ hội mới và khả năng xoay chuyển tình thế xuất sắc.',
+      challenges: 'Dễ mất tập trung vì có quá nhiều lựa chọn, đôi khi tự tin thái quá hoặc thiếu kiên nhẫn với những kế hoạch dài hạn.',
+      advice: 'Hãy chọn lọc trọng tâm để dồn toàn lực, kết hợp sự linh hoạt với tính kiên định để hiện thực hóa trọn vẹn tiềm năng to lớn của bạn.'
+    },
     11: {
       title: 'Số Bậc Thầy 11/2: Ngọn Hải Đăng Trực Giác & Soi Đường',
       keywords: 'Bậc thầy tâm linh, Trực giác tối cao, Nhạy cảm, Truyền cảm hứng, Sứ mệnh',
