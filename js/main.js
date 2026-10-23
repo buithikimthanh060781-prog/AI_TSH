@@ -228,9 +228,11 @@ function tinhThanSoHoc(hoTen, ngay, thang, nam) {
   const namCaNhan = RN(RN(ngay) + RN(thang) + RN(curYear));
   const thangCaNhan = RN(namCaNhan + curMonth);
   const ngayCaNhan = RN(thangCaNhan + curDay);
+  const tuoi = curYear - nam;
 
   return {
     hoTen, tenChuan, ngay, thang, nam, wordStats,
+    tuoi,
     duongDoi, truocDuongDoi,
     suMenh, truocSuMenh,
     linhHon, truocLinhHon,
@@ -468,6 +470,12 @@ function renderSvgMap(data) {
   // Debt numbers string (nợ nghiệp không có thì để trống)
   const debtStr = data.noNghiep.length ? data.noNghiep.join(', ') : '';
 
+  // Chuỗi ngày sinh kèm số tuổi (VD: 30/10/1983 (43 tuổi))
+  const currentAge = (data.tuoi !== undefined && data.tuoi !== null) 
+    ? data.tuoi 
+    : (new Date().getFullYear() - data.nam);
+  const birthDateStr = `${data.ngay}/${data.thang}/${data.nam}${currentAge > 0 ? ` (${currentAge} tuổi)` : ''}`;
+
   const svgHtml = `
     <svg viewBox="0 0 600 640" class="tsh-svg" id="tsh-interactive-svg" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -610,7 +618,7 @@ function renderSvgMap(data) {
 
       <!-- HỌ TÊN VÀ NGÀY SINH TRUNG TÂM -->
       <text x="300" y="342" font-size="${data.tenChuan.length > 22 ? 12 : (data.tenChuan.length > 16 ? 13.5 : 15)}" font-weight="800" fill="#1a4480" text-anchor="middle">${data.tenChuan}</text>
-      <text x="300" y="360" font-size="13" font-weight="700" fill="#1a4480" text-anchor="middle">${data.ngay}/${data.thang}/${data.nam}</text>
+      <text x="300" y="360" font-size="${birthDateStr.length > 20 ? 12 : 13}" font-weight="700" fill="#1a4480" text-anchor="middle">${birthDateStr}</text>
 
       <!-- 4. KHU VỰC THIẾU & ĐAM MÊ (CLICK ĐỔI MÀU) -->
       <!-- Vòng cung Chỉ số thiếu: Chữ Thiếu đưa vào bên trong vành vòng cung -->
@@ -1271,7 +1279,8 @@ function exportResultImage() {
   // Date of birth
   ctx.fillStyle = '#f59e0b';
   ctx.font = 'bold 20px system-ui, sans-serif';
-  ctx.fillText(`Ngày sinh: ${currentResult.ngay}/${currentResult.thang}/${currentResult.nam}`, 400, 250);
+  const ageVal = currentResult.tuoi || (new Date().getFullYear() - currentResult.nam);
+  ctx.fillText(`Ngày sinh: ${currentResult.ngay}/${currentResult.thang}/${currentResult.nam}${ageVal > 0 ? ` (${ageVal} tuổi)` : ''}`, 400, 250);
 
   // Main Badge: Đường Đời
   ctx.beginPath();
@@ -1715,8 +1724,9 @@ function renderResultView(data) {
   const summaryLinhHon = document.getElementById('summary-linhhon-val');
   const summaryNhanCach = document.getElementById('summary-nhancach-val');
 
+  const ageVal = data.tuoi || (new Date().getFullYear() - data.nam);
   if (summaryName) summaryName.textContent = data.tenChuan;
-  if (summaryDate) summaryDate.textContent = `${data.ngay}/${data.thang}/${data.nam}`;
+  if (summaryDate) summaryDate.textContent = `${data.ngay}/${data.thang}/${data.nam}${ageVal > 0 ? ` (${ageVal} tuổi)` : ''}`;
   if (summaryDuongDoi) summaryDuongDoi.textContent = data.duongDoi;
   if (summaryDuongDoi2) summaryDuongDoi2.textContent = data.duongDoi;
   if (summarySuMenh) summarySuMenh.textContent = data.suMenh;
