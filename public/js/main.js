@@ -150,10 +150,10 @@ function tinhThanSoHoc(hoTen, ngay, thang, nam) {
     }
   }
 
-  // Đam mê: xuất hiện lớn hơn 2 lần (tần suất > 2)
+  // Đam mê: xuất hiện lớn hơn 1 lần (tần suất > 1)
   const damMe = Object.keys(freq)
     .map(Number)
-    .filter(num => freq[num] > 2)
+    .filter(num => freq[num] > 1)
     .sort((a, b) => {
       if (freq[b] !== freq[a]) return freq[b] - freq[a];
       return a - b;
@@ -460,7 +460,7 @@ function renderSvgMap(data) {
     ? (data.chiSoThieu.length ? data.chiSoThieu.join(', ') : '0') 
     : '🔒';
 
-  // Passion numbers string (chỉ lấy các số xuất hiện > 2 lần)
+  // Passion numbers string (chỉ lấy các số xuất hiện > 1 lần)
   const passionStr = isUnlocked 
     ? (data.damMe.length ? data.damMe.slice(0, 4).join(', ') : '0') 
     : '🔒';
