@@ -564,10 +564,10 @@ function renderSvgMap(data) {
         <text x="338" y="142" font-size="15" font-weight="bold" fill="#000000" text-anchor="middle">${isUnlocked ? data.tuDuyLyTri : '🔒'}</text>
       </g>
 
-      <!-- 3. KHU VỰC TRUNG TÂM: 4 Ô CHẶNG (C) & 4 Ô THỬ THÁCH (TT) CÓ CLICK ĐỔI MÀU -->
+      <!-- 3. KHU VỰC TRUNG TÂM: 4 Ô CHẶNG & 4 Ô THÁCH THỨC CÓ CLICK ĐỔI MÀU -->
       <g>
-        <!-- Nhãn C: màu đỏ -->
-        <text x="195" y="225" font-size="14" font-weight="bold" fill="#dc2626">C:</text>
+        <!-- Nhãn Chặng: màu đỏ -->
+        <text x="207" y="225" font-size="11.5" font-weight="bold" fill="#dc2626" text-anchor="end">Chặng:</text>
         <!-- 4 Ô Chặng: Click đổi màu xanh lá ⇄ vàng cam -->
         <rect x="215" y="206" width="38" height="28" fill="#2e7d32" rx="2" class="rect-toggle-btn" onclick="handleRectClick(this, '#2e7d32', '#f59e0b')" />
         <text x="234" y="225" font-size="15" font-weight="bold" fill="#000000" text-anchor="middle" pointer-events="none">${isUnlocked ? data.chang[0].val : '🔒'}</text>
@@ -581,8 +581,8 @@ function renderSvgMap(data) {
         <rect x="359" y="206" width="38" height="28" fill="#2e7d32" rx="2" class="rect-toggle-btn" onclick="handleRectClick(this, '#2e7d32', '#f59e0b')" />
         <text x="378" y="225" font-size="15" font-weight="bold" fill="#000000" text-anchor="middle" pointer-events="none">${isUnlocked ? data.chang[3].val : '🔒'}</text>
 
-        <!-- Nhãn TT: màu đỏ -->
-        <text x="190" y="259" font-size="14" font-weight="bold" fill="#dc2626">TT:</text>
+        <!-- Nhãn Thách thức: màu đỏ -->
+        <text x="207" y="259" font-size="11.5" font-weight="bold" fill="#dc2626" text-anchor="end">Thách thức:</text>
         <!-- 4 Ô Thử thách: Click đổi màu xanh lá ⇄ đỏ/cam -->
         <rect x="215" y="240" width="38" height="28" fill="#2e7d32" rx="2" class="rect-toggle-btn" onclick="handleRectClick(this, '#2e7d32', '#dc2626')" />
         <text x="234" y="259" font-size="15" font-weight="bold" fill="#000000" text-anchor="middle" pointer-events="none">${isUnlocked ? data.thuThach[0].val : '🔒'}</text>
