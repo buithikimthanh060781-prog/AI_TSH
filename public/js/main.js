@@ -1049,13 +1049,14 @@ function get3PersonalDays(ngay, thang, activeYear) {
     .join(',');
 }
 
-// Render Bảng Tổng Hợp Chỉ Số 2 Trang (Chuẩn Mẫu Báo Cáo - Khớp 100% Ảnh Mẫu)
-function renderSummaryBoard(data, container, isUnlocked, query, filter) {
+// Sinh mã HTML Bảng Tổng Hợp 23 Chỉ Số Chuẩn Mẫu (2 Trang - Khớp 100% Ảnh Mẫu)
+function generateSummaryBoardHTML(data, isUnlocked, isForPrint = false, query = '', filter = 'all') {
   const fullName = (data.hoTen || '').trim().toUpperCase();
   const birthDateStr = `${String(data.ngay).padStart(2, '0')}/${String(data.thang).padStart(2, '0')}/${data.nam}`;
   const activeYear = currentSelectedTransitYear || new Date().getFullYear();
 
   function checkCardMatch(card) {
+    if (isForPrint) return true;
     if (filter !== 'all') {
       if (filter === 'cotLoi' && card.group !== 'cotLoi') return false;
       if (filter === 'boTro' && card.group !== 'boTro') return false;
@@ -1072,7 +1073,7 @@ function renderSummaryBoard(data, container, isUnlocked, query, filter) {
     return true;
   }
 
-  const isFiltering = !!(query || filter !== 'all');
+  const isFiltering = !isForPrint && !!(query || filter !== 'all');
 
   // Trang 1: 12 Chỉ số viền vàng nền trắng (3 cột x 4 hàng)
   const page1Cards = [
@@ -1264,7 +1265,7 @@ function renderSummaryBoard(data, container, isUnlocked, query, filter) {
   ];
 
   function renderPage1Card(c) {
-    const isLocked = !isUnlocked && !c.isFree;
+    const isLocked = !isForPrint && !isUnlocked && !c.isFree;
     const isMatch = checkCardMatch(c);
     let stateClasses = '';
     if (isLocked) stateClasses += ' tsh-card-locked';
@@ -1275,18 +1276,21 @@ function renderSummaryBoard(data, container, isUnlocked, query, filter) {
     const isMulti = String(c.val).length > 4;
     const displayVal = isLocked ? '🔒' : c.val;
     const numClass = isMulti ? 'tsh-card-number multi-num' : 'tsh-card-number';
-    const clickAction = isLocked
-      ? (currentUser
-          ? `alert('Tài khoản của bạn đang chờ Quản trị viên (Admin) xác thực/kích hoạt. Vui lòng liên hệ Admin qua Zalo/SĐT 0762294134 để được kích hoạt trước khi mở khoá 23 chỉ số.')`
-          : `openAuthModal('register')`)
-      : `openMeaningModal('${c.modalKey || c.key}', '${c.modalVal || c.val}')`;
+    const clickAction = isForPrint
+      ? ''
+      : (isLocked
+          ? (currentUser
+              ? `alert('Tài khoản của bạn đang chờ Quản trị viên (Admin) xác thực/kích hoạt. Vui lòng liên hệ Admin qua Zalo/SĐT 0762294134 để được kích hoạt trước khi mở khoá 23 chỉ số.')`
+              : `openAuthModal('register')`)
+          : `openMeaningModal('${c.modalKey || c.key}', '${c.modalVal || c.val}')`);
 
+    const onclickAttr = isForPrint ? '' : ` onclick="${clickAction}" title="${c.name}: Bấm để xem luận giải chi tiết"`;
     const lockTag = isLocked
       ? `<span class="tsh-badge-lock">${currentUser ? 'Chờ duyệt' : 'Đăng ký'}</span>`
       : '';
 
     return `
-      <div class="tsh-card-white${stateClasses}" onclick="${clickAction}" title="${c.name}: Bấm để xem luận giải chi tiết">
+      <div class="tsh-card-white${stateClasses}"${onclickAttr}>
         ${lockTag}
         <div class="${numClass}">${displayVal}</div>
         <div class="tsh-card-title">${c.name}</div>
@@ -1296,7 +1300,7 @@ function renderSummaryBoard(data, container, isUnlocked, query, filter) {
   }
 
   function renderPage2Card(c) {
-    const isLocked = !isUnlocked && !c.isFree;
+    const isLocked = !isForPrint && !isUnlocked && !c.isFree;
     const isMatch = checkCardMatch(c);
     let stateClasses = '';
     if (isLocked) stateClasses += ' tsh-card-locked';
@@ -1307,18 +1311,21 @@ function renderSummaryBoard(data, container, isUnlocked, query, filter) {
     const isMulti = String(c.val).length > 4;
     const displayVal = isLocked ? '🔒' : c.val;
     const numClass = isMulti ? 'tsh-card-number multi-num' : 'tsh-card-number';
-    const clickAction = isLocked
-      ? (currentUser
-          ? `alert('Tài khoản của bạn đang chờ Quản trị viên (Admin) xác thực/kích hoạt. Vui lòng liên hệ Admin qua Zalo/SĐT 0762294134 để được kích hoạt trước khi mở khoá 23 chỉ số.')`
-          : `openAuthModal('register')`)
-      : `openMeaningModal('${c.modalKey || c.key}', '${c.modalVal || c.val}')`;
+    const clickAction = isForPrint
+      ? ''
+      : (isLocked
+          ? (currentUser
+              ? `alert('Tài khoản của bạn đang chờ Quản trị viên (Admin) xác thực/kích hoạt. Vui lòng liên hệ Admin qua Zalo/SĐT 0762294134 để được kích hoạt trước khi mở khoá 23 chỉ số.')`
+              : `openAuthModal('register')`)
+          : `openMeaningModal('${c.modalKey || c.key}', '${c.modalVal || c.val}')`);
 
+    const onclickAttr = isForPrint ? '' : ` onclick="${clickAction}" title="${c.name}: Bấm để xem luận giải chi tiết"`;
     const lockTag = isLocked
       ? `<span class="tsh-badge-lock">${currentUser ? 'Chờ duyệt' : 'Đăng ký'}</span>`
       : '';
 
     return `
-      <div class="tsh-card-blue${stateClasses}" onclick="${clickAction}" title="${c.name}: Bấm để xem luận giải chi tiết">
+      <div class="tsh-card-blue${stateClasses}"${onclickAttr}>
         ${lockTag}
         <div class="${numClass}">${displayVal}</div>
         <div class="tsh-card-title">${c.name}</div>
@@ -1367,12 +1374,19 @@ function renderSummaryBoard(data, container, isUnlocked, query, filter) {
     </div>
   `;
 
-  container.innerHTML = `
-    <div class="tsh-summary-board-container">
+  const containerClass = isForPrint ? 'tsh-summary-board-container tsh-print-board' : 'tsh-summary-board-container';
+  return `
+    <div class="${containerClass}">
       ${page1Html}
       ${page2Html}
     </div>
   `;
+}
+
+// Kết xuất Bảng Tổng Hợp 23 Chỉ Số vào vùng giao diện màn hình
+function renderSummaryBoard(data, container, isUnlocked, query = '', filter = 'all') {
+  if (!container) return;
+  container.innerHTML = generateSummaryBoardHTML(data, isUnlocked, false, query, filter);
 }
 
 // Render 23 Thẻ Chỉ Số
@@ -2739,6 +2753,21 @@ function prepareCoachingReportForPrint() {
     return false;
   }
 
+  // 1. Cập nhật Bảng Tổng Hợp 23 Chỉ Số Chuẩn Mẫu (2 Trang) vào vùng in chuyên biệt
+  let summaryPrintContainer = document.getElementById('summary-board-print-section');
+  if (!summaryPrintContainer) {
+    summaryPrintContainer = document.createElement('div');
+    summaryPrintContainer.id = 'summary-board-print-section';
+    summaryPrintContainer.className = 'summary-board-print-section';
+    const coachingPrint = document.getElementById('coaching-print-section');
+    if (coachingPrint && coachingPrint.parentNode) {
+      coachingPrint.parentNode.insertBefore(summaryPrintContainer, coachingPrint);
+    }
+  }
+  if (summaryPrintContainer && typeof generateSummaryBoardHTML === 'function') {
+    summaryPrintContainer.innerHTML = generateSummaryBoardHTML(currentResult, true, true);
+  }
+
   if (typeof NumerologyCoaching === 'undefined' || typeof NumerologyCoaching.generate !== 'function') {
     return false;
   }
@@ -2747,7 +2776,7 @@ function prepareCoachingReportForPrint() {
   const coaching = NumerologyCoaching.generate(currentResult, { isUnlocked });
   const html = NumerologyCoaching.renderHTML(coaching);
 
-  // 1. Cập nhật vào vùng in chuyên biệt cho PDF
+  // 2. Cập nhật vào vùng in chuyên biệt cho PDF
   let printContainer = document.getElementById('coaching-print-section');
   if (!printContainer) {
     printContainer = document.createElement('div');
@@ -2762,7 +2791,7 @@ function prepareCoachingReportForPrint() {
     printContainer.innerHTML = html;
   }
 
-  // 2. Đồng thời cập nhật vào Modal Coaching nếu modal có mặt
+  // 3. Đồng thời cập nhật vào Modal Coaching nếu modal có mặt
   const modalContainer = document.getElementById('coaching-content');
   if (modalContainer) {
     modalContainer.innerHTML = html;
@@ -2831,5 +2860,7 @@ window.prepareCoachingReportForPrint = prepareCoachingReportForPrint;
 window.openCoachingReport = openCoachingReport;
 window.closeCoachingModal = closeCoachingModal;
 window.printNumerologyReport = printNumerologyReport;
+window.generateSummaryBoardHTML = generateSummaryBoardHTML;
+window.renderSummaryBoard = renderSummaryBoard;
 
 
