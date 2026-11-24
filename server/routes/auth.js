@@ -5,6 +5,7 @@ const crypto = require('crypto');
 const db = require('../lib/db');
 const { 
   SESSION_COOKIE_NAME, 
+  DEVICE_COOKIE_NAME,
   SESSION_DURATION_DAYS, 
   getClientIp, 
   createSession, 
@@ -169,6 +170,15 @@ router.post('/register', async (req, res) => {
       secure: process.env.NODE_ENV === 'production'
     });
 
+    if (sessionRes.deviceId) {
+      res.cookie(DEVICE_COOKIE_NAME, sessionRes.deviceId, {
+        maxAge: 400 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production'
+      });
+    }
+
     console.log('\n=========================================');
     console.log(`👤 [USER REGISTER] Tài khoản mới: ${userFullName ? `[${userFullName}] ` : ''}SĐT ${cleanPhone} (ID: ${userId})`);
     if (userNote) console.log(`📝 [GHI CHÚ]: ${userNote}`);
@@ -291,6 +301,15 @@ router.post('/login', async (req, res) => {
       sameSite: 'lax',
       secure: process.env.NODE_ENV === 'production'
     });
+
+    if (sessionRes.deviceId) {
+      res.cookie(DEVICE_COOKIE_NAME, sessionRes.deviceId, {
+        maxAge: 400 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production'
+      });
+    }
 
     return res.json({
       success: true,

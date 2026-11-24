@@ -81,7 +81,7 @@ router.get('/users', requireAdmin, (req, res) => {
       SELECT 
         u.id, u.email, u.phone, u.full_name, u.note, u.is_verified, u.plan_expires, u.created_at,
         MAX(s.created_at) as last_login,
-        COUNT(DISTINCT s.device_id) as active_devices
+        COUNT(DISTINCT COALESCE(NULLIF(s.ip, ''), s.device_id)) as active_devices
       FROM users u
       LEFT JOIN sessions s ON u.id = s.user_id AND s.expires_at > datetime('now')
     `;
@@ -328,13 +328,21 @@ router.delete('/users/:id', requireAdmin, (req, res) => {
 // GET /api/admin/users/:id/devices - Xem thiết bị & cảnh báo bất thường
 router.get('/users/:id/devices', requireAdmin, (req, res) => {
   const userId = parseInt(req.params.id, 10);
+  // Cùng IP không lưu trữ nhiều thiết bị: nhóm theo IP (hoặc device_id nếu không có IP)
   const stmt = db.prepare(`
-    SELECT s.id as session_id, s.device_id, s.ip, s.user_agent, s.created_at, s.expires_at,
-           dl.label
+    SELECT 
+      MIN(s.id) as session_id,
+      s.device_id,
+      s.ip,
+      s.user_agent,
+      MAX(s.created_at) as created_at,
+      MAX(s.expires_at) as expires_at,
+      dl.label
     FROM sessions s
     LEFT JOIN device_labels dl ON dl.user_id = s.user_id AND dl.device_id = s.device_id
     WHERE s.user_id = ? AND s.expires_at > datetime('now')
-    ORDER BY s.created_at DESC
+    GROUP BY COALESCE(NULLIF(s.ip, ''), s.device_id)
+    ORDER BY created_at DESC
   `);
   const devices = stmt.all(userId);
 
@@ -368,7 +376,13 @@ router.delete('/users/:id/devices/:deviceId', requireAdmin, (req, res) => {
   const userId = parseInt(req.params.id, 10);
   const deviceId = req.params.deviceId;
 
-  removeDeviceSessions(userId, deviceId);
+  // Xoá tất cả sessions có cùng deviceId hoặc có cùng IP với deviceId đó để giải phóng hoàn toàn
+  const targetSession = db.prepare('SELECT ip FROM sessions WHERE user_id = ? AND device_id = ? LIMIT 1').get(userId, deviceId);
+  if (targetSession && targetSession.ip) {
+    db.prepare('DELETE FROM sessions WHERE user_id = ? AND (device_id = ? OR ip = ?)').run(userId, deviceId, targetSession.ip);
+  } else {
+    removeDeviceSessions(userId, deviceId);
+  }
   res.json({ success: true, message: 'Đã gỡ thiết bị khỏi tài khoản.' });
 });
 

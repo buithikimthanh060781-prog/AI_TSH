@@ -34,8 +34,9 @@ function ensureDeviceId(req, res) {
 
 function countActiveDevices(userId) {
   const now = new Date().toISOString();
+  // Cùng IP không tính thêm thiết bị mới: đếm số lượng thiết bị duy nhất theo IP (hoặc device_id nếu không có IP)
   const stmt = db.prepare(`
-    SELECT COUNT(DISTINCT device_id) as count 
+    SELECT COUNT(DISTINCT COALESCE(NULLIF(ip, ''), device_id)) as count 
     FROM sessions 
     WHERE user_id = ? AND expires_at > ?
   `);
@@ -43,20 +44,48 @@ function countActiveDevices(userId) {
   return row ? row.count : 0;
 }
 
-function hasActiveDevice(userId, deviceId) {
+function hasActiveDevice(userId, deviceId, ip) {
   const now = new Date().toISOString();
-  const stmt = db.prepare(`
-    SELECT 1 FROM sessions 
-    WHERE user_id = ? AND device_id = ? AND expires_at > ? 
-    LIMIT 1
-  `);
-  return !!stmt.get(userId, deviceId, now);
+  // Nếu cùng IP đã có phiên hoạt động (không quan tâm giờ đăng nhập), coi như đã là thiết bị hợp lệ
+  if (ip) {
+    const stmtIp = db.prepare(`
+      SELECT 1 FROM sessions 
+      WHERE user_id = ? AND ip = ? AND expires_at > ? 
+      LIMIT 1
+    `);
+    if (stmtIp.get(userId, ip, now)) return true;
+  }
+  if (deviceId) {
+    const stmtDev = db.prepare(`
+      SELECT 1 FROM sessions 
+      WHERE user_id = ? AND device_id = ? AND expires_at > ? 
+      LIMIT 1
+    `);
+    if (stmtDev.get(userId, deviceId, now)) return true;
+  }
+  return false;
 }
 
 function createSession(userId, deviceId, ip, userAgent, bypassDeviceLimit = false) {
+  const now = new Date().toISOString();
+
+  // NGUYÊN TẮC: Nếu cùng IP (không quan tâm giờ đăng nhập), KHÔNG lưu trữ thiết bị mới
+  // Tái sử dụng lại device_id đã có của IP đó
+  if (ip) {
+    const existingForIp = db.prepare(`
+      SELECT device_id FROM sessions 
+      WHERE user_id = ? AND ip = ? AND expires_at > ?
+      ORDER BY created_at DESC LIMIT 1
+    `).get(userId, ip, now);
+
+    if (existingForIp && existingForIp.device_id) {
+      deviceId = existingForIp.device_id;
+    }
+  }
+
   // Check 2 devices limit
   if (!bypassDeviceLimit) {
-    const isExistingDevice = hasActiveDevice(userId, deviceId);
+    const isExistingDevice = hasActiveDevice(userId, deviceId, ip);
     if (!isExistingDevice) {
       const activeDeviceCount = countActiveDevices(userId);
       if (activeDeviceCount >= 2) {
@@ -77,7 +106,7 @@ function createSession(userId, deviceId, ip, userAgent, bypassDeviceLimit = fals
   `);
   stmt.run(sessionId, userId, deviceId, ip, userAgent || '', expiresAt);
 
-  return { sessionId, expiresAt };
+  return { sessionId, deviceId, expiresAt };
 }
 
 function getSession(sessionId) {

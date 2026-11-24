@@ -157,6 +157,25 @@ try {
   db.exec('ALTER TABLE users ADD COLUMN terms_accepted_at TEXT;');
 } catch (e) {}
 
+// Migration: Cùng IP không lưu trữ nhiều thiết bị - hợp nhất các phiên cùng IP về 1 device_id duy nhất
+try {
+  const duplicateIps = db.prepare(`
+    SELECT user_id, ip, MIN(device_id) as primary_device_id
+    FROM sessions
+    WHERE ip IS NOT NULL AND ip != '' AND expires_at > datetime('now')
+    GROUP BY user_id, ip
+    HAVING COUNT(DISTINCT device_id) > 1
+  `).all();
+
+  for (const row of duplicateIps) {
+    db.prepare(`
+      UPDATE sessions 
+      SET device_id = ? 
+      WHERE user_id = ? AND ip = ?
+    `).run(row.primary_device_id, row.user_id, row.ip);
+  }
+} catch (e) {}
+
 // Auto-seed Năng Lượng Số (NLSO & KET LUAN) nếu bảng chưa có dữ liệu
 function autoSeedPhoneEnergy() {
   try {
