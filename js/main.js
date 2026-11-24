@@ -1016,39 +1016,36 @@ function formatKarmicDebtText(noNghiepArr) {
   return noNghiepArr.map(n => map[n] || n).join(',');
 }
 
-// Helper tính chuỗi 5 năm cá nhân
+// Helper tính chuỗi 5 năm cá nhân liên tiếp
 function get5PersonalYears(ngay, thang, activeYear) {
   const y = activeYear || new Date().getFullYear();
-  return [y - 2, y - 1, y, y + 1, y + 2]
-    .map(yr => RN(RN(ngay) + RN(thang) + RN(yr)))
+  const py = RN(RN(ngay) + RN(thang) + RN(y));
+  return [-2, -1, 0, 1, 2]
+    .map(offset => ((py + offset - 1) % 9 + 9) % 9 + 1)
     .join(',');
 }
 
-// Helper tính chuỗi 5 tháng cá nhân
+// Helper tính chuỗi 5 tháng cá nhân liên tiếp
 function get5PersonalMonths(ngay, thang, activeYear) {
   const y = activeYear || new Date().getFullYear();
   const py = RN(RN(ngay) + RN(thang) + RN(y));
   const curM = new Date().getMonth() + 1;
+  const pm = RN(py + curM);
   return [-2, -1, 0, 1, 2]
-    .map(offset => {
-      const m = ((curM + offset - 1) % 12 + 12) % 12 + 1;
-      return RN(py + m);
-    })
+    .map(offset => ((pm + offset - 1) % 9 + 9) % 9 + 1)
     .join(',');
 }
 
-// Helper tính chuỗi 3 ngày cá nhân
+// Helper tính chuỗi 3 ngày cá nhân liên tiếp
 function get3PersonalDays(ngay, thang, activeYear) {
   const y = activeYear || new Date().getFullYear();
   const py = RN(RN(ngay) + RN(thang) + RN(y));
   const curM = new Date().getMonth() + 1;
   const pm = RN(py + curM);
   const curD = new Date().getDate();
+  const pd = RN(pm + curD);
   return [-1, 0, 1]
-    .map(offset => {
-      const d = Math.max(1, Math.min(31, curD + offset));
-      return RN(pm + RN(d));
-    })
+    .map(offset => ((pd + offset - 1) % 9 + 9) % 9 + 1)
     .join(',');
 }
 
