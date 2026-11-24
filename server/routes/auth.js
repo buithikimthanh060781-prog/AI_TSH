@@ -428,6 +428,90 @@ router.post('/resend-verification', (req, res) => {
   });
 });
 
+// POST /api/auth/request-password-reset - Thành viên gửi yêu cầu đặt lại mật khẩu mới cho Admin duyệt
+router.post('/request-password-reset', async (req, res) => {
+  try {
+    const { account, phone, email, newPassword, confirmPassword, note } = req.body;
+    const inputAccount = (account || phone || email || '').trim();
+
+    if (!inputAccount) {
+      return res.status(400).json({ error: 'MISSING_ACCOUNT', message: 'Vui lòng nhập số điện thoại hoặc email đã đăng ký.' });
+    }
+
+    if (!newPassword || newPassword.length < 6) {
+      return res.status(400).json({ error: 'INVALID_PASSWORD', message: 'Mật khẩu mới phải có tối thiểu 6 ký tự.' });
+    }
+
+    if (confirmPassword && newPassword !== confirmPassword) {
+      return res.status(400).json({ error: 'PASSWORD_MISMATCH', message: 'Mật khẩu mới và xác nhận mật khẩu không khớp nhau.' });
+    }
+
+    const cleanInput = inputAccount.replace(/[\s.-]/g, '');
+    const cleanPhone = cleanPhoneNumber(inputAccount);
+    const withoutPlus = cleanPhone.replace(/^\+/, '');
+    const withPlus = cleanPhone.startsWith('+') ? cleanPhone : `+${cleanPhone}`;
+
+    // Tìm kiếm người dùng trong hệ thống
+    const user = db.prepare(`
+      SELECT * FROM users 
+      WHERE phone = ? OR email = ? OR phone = ? OR phone = ? OR phone = ? OR email = ? OR email = ?
+    `).get(cleanInput, cleanInput, cleanPhone, withoutPlus, withPlus, cleanPhone, inputAccount.toLowerCase());
+
+    if (!user) {
+      return res.status(404).json({
+        error: 'USER_NOT_FOUND',
+        message: 'Không tìm thấy tài khoản tương ứng với số điện thoại/email này. Vui lòng kiểm tra lại.'
+      });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const newHash = await bcrypt.hash(newPassword, salt);
+    const userNote = (typeof note === 'string' ? note.trim().slice(0, 500) : null) || null;
+
+    // Kiểm tra xem đã có yêu cầu nào đang chờ duyệt hay chưa
+    const existingPending = db.prepare(`
+      SELECT id FROM password_reset_requests 
+      WHERE user_id = ? AND status = 'pending'
+    `).get(user.id);
+
+    if (existingPending) {
+      db.prepare(`
+        UPDATE password_reset_requests 
+        SET new_password_hash = ?, 
+            new_password_plain = ?, 
+            note = ?, 
+            updated_at = CURRENT_TIMESTAMP 
+        WHERE id = ?
+      `).run(newHash, newPassword, userNote, existingPending.id);
+    } else {
+      db.prepare(`
+        INSERT INTO password_reset_requests (user_id, account, full_name, new_password_hash, new_password_plain, note, status)
+        VALUES (?, ?, ?, ?, ?, ?, 'pending')
+      `).run(user.id, user.phone || user.email, user.full_name || null, newHash, newPassword, userNote);
+    }
+
+    try {
+      const { scheduleCloudBackup } = require('../lib/dbSync');
+      scheduleCloudBackup();
+    } catch (e) {}
+
+    console.log('\n=========================================');
+    console.log(`🔑 [YÊU CẦU ĐẶT LẠI MẬT KHẨU MỚI]`);
+    console.log(`👤 Tài khoản: ${user.phone || user.email} (ID: ${user.id}, Họ tên: ${user.full_name || 'N/A'})`);
+    if (userNote) console.log(`📝 Ghi chú: ${userNote}`);
+    console.log(`⏳ Trạng thái: Chờ Quản trị viên (Admin) phê duyệt.`);
+    console.log('=========================================\n');
+
+    return res.json({
+      success: true,
+      message: 'Yêu cầu đặt lại mật khẩu đã được gửi tới Quản trị viên (Admin) thành công! Mật khẩu mới sẽ có hiệu lực ngay sau khi Admin phê duyệt.'
+    });
+  } catch (err) {
+    console.error('Request password reset error:', err);
+    res.status(500).json({ error: 'SERVER_ERROR', message: 'Lỗi máy chủ khi gửi yêu cầu đặt lại mật khẩu.' });
+  }
+});
+
 // POST /api/auth/forgot-password
 router.post('/forgot-password', (req, res) => {
   const { email } = req.body;

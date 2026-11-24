@@ -7,7 +7,7 @@ const {
   deleteAdminSession, 
   requireAdmin 
 } = require('../lib/adminSession');
-const { removeDeviceSessions } = require('../lib/session');
+const { removeDeviceSessions, deleteAllUserSessions } = require('../lib/session');
 
 // POST /api/admin/login
 router.post('/login', (req, res) => {
@@ -135,13 +135,20 @@ router.get('/users', requireAdmin, (req, res) => {
       is_suspicious: suspiciousUserIds.has(u.id)
     }));
 
+    let passReqPendingCount = 0;
+    try {
+      const pRow = db.prepare("SELECT COUNT(*) as count FROM password_reset_requests WHERE status = 'pending'").get();
+      if (pRow) passReqPendingCount = pRow.count;
+    } catch (e) {}
+
     res.json({ 
       success: true, 
       users: enrichedUsers,
       stats: {
         total: statsRow ? statsRow.total : 0,
         verified: statsRow ? statsRow.verified : 0,
-        pending: statsRow ? statsRow.pending : 0
+        pending: statsRow ? statsRow.pending : 0,
+        pending_pass_requests: passReqPendingCount
       }
     });
   } catch (err) {
@@ -390,6 +397,195 @@ router.get('/backup-db', requireAdmin, (req, res) => {
     res.download(dbFile, filename);
   } else {
     res.status(404).json({ error: 'DATABASE_NOT_FOUND', message: 'Không tìm thấy file database.' });
+  }
+});
+
+// GET /api/admin/password-requests - Danh sách yêu cầu đặt lại mật khẩu từ thành viên
+router.get('/password-requests', requireAdmin, (req, res) => {
+  try {
+    const { status } = req.query;
+    let sql = `
+      SELECT 
+        pr.id, pr.user_id, pr.account, pr.full_name, pr.new_password_plain, pr.note, pr.status, pr.admin_note, pr.created_at, pr.updated_at,
+        u.phone as user_phone, u.email as user_email, u.is_verified, u.plan_expires
+      FROM password_reset_requests pr
+      LEFT JOIN users u ON pr.user_id = u.id
+    `;
+    const params = [];
+    if (status && status !== 'all') {
+      sql += ` WHERE pr.status = ?`;
+      params.push(status);
+    }
+    sql += ` ORDER BY CASE WHEN pr.status = 'pending' THEN 0 ELSE 1 END, pr.id DESC`;
+
+    const requests = db.prepare(sql).all(...params);
+
+    const statsRow = db.prepare(`
+      SELECT 
+        COUNT(*) as total,
+        COALESCE(SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END), 0) as pending,
+        COALESCE(SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END), 0) as approved,
+        COALESCE(SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END), 0) as rejected
+      FROM password_reset_requests
+    `).get();
+
+    res.json({
+      success: true,
+      requests,
+      stats: {
+        total: statsRow ? statsRow.total : 0,
+        pending: statsRow ? statsRow.pending : 0,
+        approved: statsRow ? statsRow.approved : 0,
+        rejected: statsRow ? statsRow.rejected : 0
+      }
+    });
+  } catch (err) {
+    console.error('Lỗi khi tải danh sách yêu cầu đặt lại mật khẩu:', err);
+    res.status(500).json({ success: false, error: 'SERVER_ERROR', message: err.message, requests: [] });
+  }
+});
+
+// POST /api/admin/password-requests/:id/approve - Admin duyệt yêu cầu đặt lại mật khẩu của thành viên
+router.post('/password-requests/:id/approve', requireAdmin, (req, res) => {
+  try {
+    const requestId = parseInt(req.params.id, 10);
+    const reqRow = db.prepare('SELECT * FROM password_reset_requests WHERE id = ?').get(requestId);
+    if (!reqRow) {
+      return res.status(404).json({ error: 'NOT_FOUND', message: 'Không tìm thấy yêu cầu đặt lại mật khẩu.' });
+    }
+
+    // 1. Cập nhật mật khẩu mới cho tài khoản người dùng trong bảng users
+    db.prepare(`
+      UPDATE users 
+      SET password_hash = ?, updated_at = CURRENT_TIMESTAMP 
+      WHERE id = ?
+    `).run(reqRow.new_password_hash, reqRow.user_id);
+
+    // 2. Cập nhật trạng thái yêu cầu sang 'approved'
+    db.prepare(`
+      UPDATE password_reset_requests 
+      SET status = 'approved', admin_note = 'Đã duyệt bởi Admin', updated_at = CURRENT_TIMESTAMP 
+      WHERE id = ?
+    `).run(requestId);
+
+    // 3. Đăng xuất tất cả thiết bị cũ của user này để bảo mật
+    deleteAllUserSessions(reqRow.user_id);
+
+    try {
+      const { scheduleCloudBackup } = require('../lib/dbSync');
+      scheduleCloudBackup();
+    } catch (e) {}
+
+    console.log(`\n=========================================`);
+    console.log(`✅ [ADMIN DUYỆT ĐỔI MẬT KHẨU] Tài khoản: ${reqRow.account} (User ID: ${reqRow.user_id})`);
+    console.log(`🔑 Mật khẩu mới đã được kích hoạt thành công!`);
+    console.log(`=========================================\n`);
+
+    res.json({
+      success: true,
+      message: `Đã duyệt và kích hoạt mật khẩu mới cho tài khoản ${reqRow.account} thành công!`
+    });
+  } catch (err) {
+    console.error('Lỗi khi duyệt mật khẩu:', err);
+    res.status(500).json({ error: 'SERVER_ERROR', message: err.message });
+  }
+});
+
+// POST /api/admin/password-requests/:id/reject - Admin từ chối yêu cầu đặt lại mật khẩu
+router.post('/password-requests/:id/reject', requireAdmin, (req, res) => {
+  try {
+    const requestId = parseInt(req.params.id, 10);
+    const { reason } = req.body;
+    const reqRow = db.prepare('SELECT * FROM password_reset_requests WHERE id = ?').get(requestId);
+    if (!reqRow) {
+      return res.status(404).json({ error: 'NOT_FOUND', message: 'Không tìm thấy yêu cầu đặt lại mật khẩu.' });
+    }
+
+    db.prepare(`
+      UPDATE password_reset_requests 
+      SET status = 'rejected', admin_note = ?, updated_at = CURRENT_TIMESTAMP 
+      WHERE id = ?
+    `).run(reason || 'Quản trị viên từ chối', requestId);
+
+    try {
+      const { scheduleCloudBackup } = require('../lib/dbSync');
+      scheduleCloudBackup();
+    } catch (e) {}
+
+    console.log(`❌ [ADMIN TỪ CHỐI ĐỔI MẬT KHẨU] Tài khoản: ${reqRow.account}. Lý do: ${reason || 'Quản trị viên từ chối'}`);
+
+    res.json({
+      success: true,
+      message: `Đã từ chối yêu cầu đặt lại mật khẩu của tài khoản ${reqRow.account}.`
+    });
+  } catch (err) {
+    console.error('Lỗi khi từ chối yêu cầu đặt lại mật khẩu:', err);
+    res.status(500).json({ error: 'SERVER_ERROR', message: err.message });
+  }
+});
+
+// POST /api/admin/users/:id/reset-password - Admin trực tiếp cấp lại mật khẩu mới cho thành viên
+router.post('/users/:id/reset-password', requireAdmin, async (req, res) => {
+  try {
+    const userId = parseInt(req.params.id, 10);
+    const { newPassword } = req.body;
+
+    if (!newPassword || String(newPassword).trim().length < 6) {
+      return res.status(400).json({ error: 'INVALID_PASSWORD', message: 'Mật khẩu mới phải từ 6 ký tự trở lên.' });
+    }
+
+    const user = db.prepare('SELECT id, email, phone, full_name FROM users WHERE id = ?').get(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'USER_NOT_FOUND', message: 'Không tìm thấy người dùng.' });
+    }
+
+    const bcrypt = require('bcryptjs');
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(String(newPassword).trim(), salt);
+
+    // 1. Cập nhật mật khẩu trong users
+    db.prepare(`
+      UPDATE users 
+      SET password_hash = ?, updated_at = CURRENT_TIMESTAMP 
+      WHERE id = ?
+    `).run(hash, userId);
+
+    // 2. Huỷ mọi session cũ để yêu cầu đăng nhập lại bằng mật khẩu mới
+    deleteAllUserSessions(userId);
+
+    // 3. Nếu có yêu cầu pending nào của user này thì đánh dấu approved luôn
+    try {
+      db.prepare(`
+        UPDATE password_reset_requests 
+        SET status = 'approved', 
+            new_password_plain = ?,
+            admin_note = 'Admin trực tiếp cấp mật khẩu mới', 
+            updated_at = CURRENT_TIMESTAMP 
+        WHERE user_id = ? AND status = 'pending'
+      `).run(String(newPassword).trim(), userId);
+    } catch (e) {}
+
+    try {
+      const { scheduleCloudBackup } = require('../lib/dbSync');
+      scheduleCloudBackup();
+    } catch (e) {}
+
+    const accountLabel = user.phone || user.email;
+    console.log(`\n=========================================`);
+    console.log(`🔑 [ADMIN TRỰC TIẾP CẤP MẬT KHẨU MỚI]`);
+    console.log(`👤 Tài khoản: ${accountLabel} (ID: ${userId})`);
+    console.log(`🔐 Mật khẩu mới được cấp: ${String(newPassword).trim()}`);
+    console.log(`=========================================\n`);
+
+    res.json({
+      success: true,
+      message: `Đã cấp lại mật khẩu mới thành công cho tài khoản ${accountLabel}!`,
+      account: accountLabel,
+      newPassword: String(newPassword).trim()
+    });
+  } catch (err) {
+    console.error('Lỗi khi Admin cấp mật khẩu mới:', err);
+    res.status(500).json({ error: 'SERVER_ERROR', message: 'Lỗi máy chủ khi cấp mật khẩu mới: ' + err.message });
   }
 });
 

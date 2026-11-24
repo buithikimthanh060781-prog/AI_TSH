@@ -22,14 +22,19 @@ async function checkAdmin() {
 
 function setFilter(filter) {
   currentFilter = filter;
-  ['all', 'pending', 'verified'].forEach(f => {
+  ['all', 'pending', 'verified', 'pass_requests'].forEach(f => {
     const el = document.getElementById(`tab-filter-${f}`);
     if (el) {
       if (f === filter) el.classList.add('active');
       else el.classList.remove('active');
     }
   });
-  loadUsers();
+
+  if (filter === 'pass_requests') {
+    loadPasswordRequests();
+  } else {
+    loadUsers();
+  }
 }
 
 async function loadUsers() {
@@ -40,7 +45,7 @@ async function loadUsers() {
   try {
     const params = new URLSearchParams();
     if (q) params.set('q', q);
-    if (currentFilter !== 'all') params.set('status', currentFilter);
+    if (currentFilter !== 'all' && currentFilter !== 'pass_requests') params.set('status', currentFilter);
 
     const url = `/api/admin/users?${params.toString()}`;
     const res = await fetch(url);
@@ -52,21 +57,23 @@ async function loadUsers() {
       const countAll = document.getElementById('count-all');
       const countPending = document.getElementById('count-pending');
       const countVerified = document.getElementById('count-verified');
+      const countPassReq = document.getElementById('count-pass-requests');
       const btnVerifyAll = document.getElementById('btn-verify-all');
 
       if (countAll) countAll.textContent = data.stats.total;
       if (countPending) {
         countPending.textContent = data.stats.pending;
-        if (data.stats.pending > 0) {
-          countPending.style.display = 'inline-block';
-        } else {
-          countPending.style.display = 'inline-block';
-        }
       }
       if (countVerified) countVerified.textContent = data.stats.verified;
 
+      if (countPassReq) {
+        const cnt = data.stats.pending_pass_requests || 0;
+        countPassReq.textContent = cnt;
+        countPassReq.style.display = cnt > 0 ? 'inline-block' : 'none';
+      }
+
       if (btnVerifyAll) {
-        if (data.stats.pending > 0) {
+        if (data.stats.pending > 0 && currentFilter !== 'pass_requests') {
           btnVerifyAll.style.display = 'inline-flex';
           btnVerifyAll.textContent = `✓ Kích hoạt tất cả (${data.stats.pending})`;
         } else {
@@ -75,10 +82,14 @@ async function loadUsers() {
       }
     }
 
-    renderUsersTable(allUsers);
+    if (currentFilter === 'pass_requests') {
+      loadPasswordRequests();
+    } else {
+      renderUsersTable(allUsers);
+    }
   } catch (err) {
     if (tbody) {
-      tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #f87171; padding: 40px;">Lỗi tải danh sách người dùng.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #f87171; padding: 40px;">Lỗi tải danh sách người dùng.</td></tr>';
     }
   }
 }
@@ -94,6 +105,22 @@ function escapeHtml(str) {
 }
 
 function renderUsersTable(users) {
+  const thead = document.getElementById('admin-table-head');
+  if (thead) {
+    thead.innerHTML = `
+      <tr>
+        <th>ID</th>
+        <th>SĐT / Email</th>
+        <th>Họ tên</th>
+        <th>Xác thực</th>
+        <th>Thiết bị</th>
+        <th>Lần login cuối</th>
+        <th>Hạn dùng</th>
+        <th>Thao tác</th>
+      </tr>
+    `;
+  }
+
   const tbody = document.getElementById('users-table-body');
   if (!tbody) return;
 
@@ -164,6 +191,7 @@ function renderUsersTable(users) {
           <div style="display: flex; gap: 6px; flex-wrap: wrap;">
             ${!u.is_verified ? `<button type="button" class="btn btn-verify-sm" onclick="openVerifyModal(${u.id}, '${accountDisplay}')">✓ Kích hoạt</button>` : ''}
             <button type="button" class="btn btn-outline btn-action-sm" onclick="openExtendModal(${u.id}, '${accountDisplay}')">Gia hạn</button>
+            <button type="button" class="btn btn-outline btn-action-sm" style="color:#0284c7; border-color: rgba(2,132,199,0.4);" onclick="openResetPasswordModal(${u.id}, '${escapeHtml(accountDisplay)}', '${escapeHtml(u.full_name || '')}')" title="Cấp lại mật khẩu mới cho thành viên">🔑 Cấp MK</button>
             <button type="button" class="btn btn-outline btn-action-sm" onclick="openDeviceModal(${u.id}, '${accountDisplay}')">Thiết bị (${u.active_devices || 0})</button>
             <button type="button" class="btn btn-outline btn-action-sm" style="color:#ef4444; border-color: rgba(239,68,68,0.4);" onclick="openDeleteModal(${u.id}, '${accountDisplay}')">Xoá</button>
           </div>
@@ -552,7 +580,264 @@ async function adminLogout() {
 const searchInput = document.getElementById('admin-search-user');
 if (searchInput) {
   searchInput.addEventListener('input', () => {
-    loadUsers();
+    if (currentFilter === 'pass_requests') {
+      loadPasswordRequests();
+    } else {
+      loadUsers();
+    }
+  });
+}
+
+// =========================================================================
+// QUẢN LÝ YÊU CẦU ĐẶT LẠI MẬT KHẨU TỪ THÀNH VIÊN
+// =========================================================================
+
+async function loadPasswordRequests() {
+  const thead = document.getElementById('admin-table-head');
+  if (thead) {
+    thead.innerHTML = `
+      <tr>
+        <th style="width: 50px;">ID</th>
+        <th>Tài khoản</th>
+        <th>Họ tên</th>
+        <th>Mật khẩu mới yêu cầu</th>
+        <th>Ghi chú thành viên</th>
+        <th>Thời gian gửi</th>
+        <th>Trạng thái</th>
+        <th style="width: 170px;">Thao tác</th>
+      </tr>
+    `;
+  }
+
+  const tbody = document.getElementById('users-table-body');
+  if (tbody) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 40px;">Đang tải danh sách yêu cầu đổi mật khẩu...</td></tr>';
+  }
+
+  try {
+    const res = await fetch('/api/admin/password-requests?status=all');
+    const data = await res.json();
+    const requests = data.requests || [];
+
+    const countPassReq = document.getElementById('count-pass-requests');
+    if (countPassReq && data.stats) {
+      countPassReq.textContent = data.stats.pending || 0;
+      countPassReq.style.display = data.stats.pending > 0 ? 'inline-block' : 'none';
+    }
+
+    renderPasswordRequestsTable(requests);
+  } catch (err) {
+    if (tbody) {
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #f87171; padding: 40px;">Lỗi khi tải danh sách yêu cầu đặt lại mật khẩu.</td></tr>';
+    }
+  }
+}
+
+function renderPasswordRequestsTable(requests) {
+  const tbody = document.getElementById('users-table-body');
+  if (!tbody) return;
+
+  if (!requests.length) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 40px;">Chưa có yêu cầu đặt lại mật khẩu nào.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = requests.map(r => {
+    const timeStr = r.created_at ? new Date(r.created_at).toLocaleDateString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' }) : '—';
+    const isPending = r.status === 'pending';
+    const isApproved = r.status === 'approved';
+    const isRejected = r.status === 'rejected';
+
+    let statusHtml = '<span class="badge-pending">⏳ Chờ duyệt</span>';
+    if (isApproved) statusHtml = '<span class="badge-verified">✓ Đã duyệt</span>';
+    if (isRejected) statusHtml = '<span style="color:#ef4444; font-weight:600; font-size:0.8rem;">✕ Đã từ chối</span>';
+
+    const plainPass = r.new_password_plain || '******';
+    const passDisplay = `
+      <div style="display: inline-flex; align-items: center; gap: 6px;">
+        <code style="background: #f1f5f9; padding: 3px 8px; border-radius: 4px; font-weight: 700; color: #0284c7; font-size: 0.95rem; letter-spacing: 0.5px;">${escapeHtml(plainPass)}</code>
+        <button type="button" class="btn btn-outline btn-action-sm" style="padding: 2px 6px; font-size: 0.75rem;" onclick="navigator.clipboard.writeText('${escapeHtml(plainPass)}'); alert('Đã chép mật khẩu: ${escapeHtml(plainPass)}');" title="Sao chép mật khẩu">📋</button>
+      </div>
+    `;
+
+    const noteDisplay = r.note ? `<span style="font-size: 0.84rem; color: #475569;">${escapeHtml(r.note)}</span>` : '<span style="color: var(--text-dim); font-size: 0.8rem;">—</span>';
+    const nameDisplay = r.full_name || r.user_full_name ? `<strong style="color: #0f172a;">${escapeHtml(r.full_name || r.user_full_name)}</strong>` : '<span style="color: var(--text-dim); font-size: 0.82rem;">—</span>';
+
+    let actionHtml = '';
+    if (isPending) {
+      actionHtml = `
+        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+          <button type="button" class="btn btn-verify-sm" onclick="approvePassRequest(${r.id}, '${escapeHtml(r.account)}')">✓ Duyệt & Đổi</button>
+          <button type="button" class="btn btn-outline btn-action-sm" style="color: #ef4444; border-color: rgba(239,68,68,0.4);" onclick="rejectPassRequest(${r.id}, '${escapeHtml(r.account)}')">✕ Từ chối</button>
+        </div>
+      `;
+    } else if (isApproved) {
+      actionHtml = '<span style="color: #10b981; font-size: 0.82rem; font-weight: 600;">✓ Đã kích hoạt</span>';
+    } else {
+      actionHtml = `<span style="color: var(--text-dim); font-size: 0.82rem;">${escapeHtml(r.admin_note || 'Bị từ chối')}</span>`;
+    }
+
+    return `
+      <tr class="${isPending ? 'row-pending' : ''}">
+        <td>#${r.id}</td>
+        <td>
+          <strong style="color: #0f172a;">${escapeHtml(r.account)}</strong>
+          <div style="font-size: 0.76rem; color: var(--text-muted);">User ID #${r.user_id}</div>
+        </td>
+        <td>${nameDisplay}</td>
+        <td>${passDisplay}</td>
+        <td>${noteDisplay}</td>
+        <td style="font-size: 0.82rem; color: var(--text-muted);">${timeStr}</td>
+        <td>${statusHtml}</td>
+        <td>${actionHtml}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+async function approvePassRequest(requestId, account) {
+  if (!confirm(`Bạn có chắc chắn muốn duyệt và kích hoạt mật khẩu mới cho tài khoản ${account}?`)) return;
+
+  try {
+    const res = await fetch(`/api/admin/password-requests/${requestId}/approve`, {
+      method: 'POST'
+    });
+    const data = await res.json();
+    if (res.ok) {
+      alert(data.message || 'Đã duyệt mật khẩu mới thành công!');
+      loadPasswordRequests();
+    } else {
+      alert(data.message || 'Không thể duyệt yêu cầu.');
+    }
+  } catch (err) {
+    alert('Lỗi kết nối khi duyệt mật khẩu.');
+  }
+}
+
+async function rejectPassRequest(requestId, account) {
+  const reason = prompt(`Nhập lý do từ chối yêu cầu đổi mật khẩu của tài khoản ${account}:`, 'Không khớp thông tin xác thực');
+  if (reason === null) return;
+
+  try {
+    const res = await fetch(`/api/admin/password-requests/${requestId}/reject`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reason })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      alert(data.message || 'Đã từ chối yêu cầu.');
+      loadPasswordRequests();
+    } else {
+      alert(data.message || 'Không thể từ chối yêu cầu.');
+    }
+  } catch (err) {
+    alert('Lỗi kết nối máy chủ.');
+  }
+}
+
+// =========================================================================
+// ADMIN TRỰC TIẾP CẤP LẠI MẬT KHẨU MỚI CHO THÀNH VIÊN
+// =========================================================================
+
+let adminResetUserId = null;
+let adminResetUserAccount = null;
+
+function openResetPasswordModal(userId, account, fullName) {
+  adminResetUserId = userId;
+  adminResetUserAccount = account;
+
+  const infoEl = document.getElementById('admin-reset-user-info');
+  if (infoEl) {
+    infoEl.innerHTML = `Đang cấp mật khẩu mới cho: <strong style="color: #0f172a;">${account}</strong> ${fullName ? `(${fullName})` : ''}`;
+  }
+
+  const errBox = document.getElementById('admin-reset-error');
+  if (errBox) {
+    errBox.style.display = 'none';
+    errBox.textContent = '';
+  }
+
+  generateRandomPass();
+  document.getElementById('admin-reset-password-modal').classList.add('active');
+}
+
+function closeAdminResetPasswordModal() {
+  document.getElementById('admin-reset-password-modal').classList.remove('active');
+}
+
+function generateRandomPass() {
+  const randomNum = Math.floor(100000 + Math.random() * 900000);
+  const input = document.getElementById('admin-input-new-pass');
+  if (input) input.value = String(randomNum);
+}
+
+function copyAdminNewPass() {
+  const input = document.getElementById('admin-input-new-pass');
+  if (!input || !input.value) return;
+  navigator.clipboard.writeText(input.value);
+  alert(`Đã sao chép mật khẩu: ${input.value}`);
+}
+
+const adminResetForm = document.getElementById('admin-reset-password-form');
+if (adminResetForm) {
+  adminResetForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!adminResetUserId) return;
+
+    const input = document.getElementById('admin-input-new-pass');
+    const errBox = document.getElementById('admin-reset-error');
+    const btnSubmit = document.getElementById('btn-submit-admin-reset');
+    const newPass = input ? input.value.trim() : '';
+
+    if (errBox) errBox.style.display = 'none';
+
+    if (!newPass || newPass.length < 6) {
+      if (errBox) {
+        errBox.style.display = 'block';
+        errBox.textContent = 'Mật khẩu phải từ 6 ký tự trở lên.';
+      }
+      return;
+    }
+
+    if (btnSubmit) {
+      btnSubmit.disabled = true;
+      btnSubmit.textContent = 'Đang cập nhật...';
+    }
+
+    try {
+      const res = await fetch(`/api/admin/users/${adminResetUserId}/reset-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newPassword: newPass })
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        alert(`✅ Cấp mật khẩu mới thành công!\n\nTài khoản: ${data.account}\nMật khẩu mới: ${data.newPassword}\n\nHãy gửi thông tin này cho thành viên qua Zalo.`);
+        closeAdminResetPasswordModal();
+        if (currentFilter === 'pass_requests') {
+          loadPasswordRequests();
+        } else {
+          loadUsers();
+        }
+      } else {
+        if (errBox) {
+          errBox.style.display = 'block';
+          errBox.textContent = data.message || 'Không thể cấp mật khẩu mới.';
+        }
+      }
+    } catch (err) {
+      if (errBox) {
+        errBox.style.display = 'block';
+        errBox.textContent = 'Lỗi kết nối máy chủ.';
+      }
+    } finally {
+      if (btnSubmit) {
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = '✓ Xác Nhận Cấp Mật Khẩu';
+      }
+    }
   });
 }
 

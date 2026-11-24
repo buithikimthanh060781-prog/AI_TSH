@@ -274,6 +274,9 @@
             <button type="button" class="filter-tab" id="tab-filter-verified" onclick="setFilter('verified')">
               ✓ Đã xác thực <span class="filter-badge" id="count-verified">0</span>
             </button>
+            <button type="button" class="filter-tab" id="tab-filter-pass-requests" onclick="setFilter('pass_requests')">
+              🔑 Yêu cầu đổi MK <span class="filter-badge pending-count" id="count-pass-requests" style="display: none;">0</span>
+            </button>
             <button type="button" class="btn btn-outline btn-sm" id="btn-verify-all" style="display: none; border-color: #10b981; color: #10b981;" onclick="verifyAllPending()">
               ✓ Kích hoạt tất cả chờ duyệt
             </button>
@@ -289,7 +292,7 @@
 
       <div class="table-responsive">
         <table class="admin-table">
-          <thead>
+          <thead id="admin-table-head">
             <tr>
               <th>ID</th>
               <th>SĐT / Email</th>
@@ -421,6 +424,39 @@
         <button type="button" class="btn btn-outline btn-sm" onclick="closeVerifyModal()">Huỷ</button>
         <button type="button" class="btn btn-primary btn-sm" style="background: #10b981; border-color: #10b981;" onclick="submitVerify(0)">Xác thực (Mặc định)</button>
       </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Admin Cấp Mật Khẩu Mới Cho Thành Viên -->
+  <div class="modal-backdrop" id="admin-reset-password-modal">
+    <div class="modal-card" style="max-width: 480px;">
+      <button type="button" class="modal-close" onclick="closeAdminResetPasswordModal()">&times;</button>
+      <h3 style="margin-bottom: 8px; font-size: 1.3rem; color: #0284c7;">🔑 Cấp Mật Khẩu Mới Cho Thành Viên</h3>
+      <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 16px;" id="admin-reset-user-info"></p>
+
+      <div id="admin-reset-error" style="display: none; padding: 10px 14px; border-radius: 6px; margin-bottom: 14px; font-size: 0.88rem; background: #fee2e2; border: 1px solid #fecaca; color: #b91c1c;"></div>
+
+      <form id="admin-reset-password-form">
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label style="font-weight: 600; font-size: 0.88rem; display: block; margin-bottom: 6px;">Mật khẩu mới (tối thiểu 6 ký tự):</label>
+          <div style="display: flex; gap: 8px;">
+            <input type="text" id="admin-input-new-pass" class="form-control" placeholder="••••••••" minlength="6" required style="flex: 1; font-family: monospace; font-size: 1rem; font-weight: 700; letter-spacing: 0.5px;">
+            <button type="button" class="btn btn-outline btn-sm" onclick="generateRandomPass()" title="Sinh mật khẩu ngẫu nhiên dễ nhớ">🎲 Ngẫu nhiên</button>
+            <button type="button" class="btn btn-outline btn-sm" onclick="copyAdminNewPass()" title="Sao chép mật khẩu">📋 Chép</button>
+          </div>
+        </div>
+
+        <div style="background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 18px; font-size: 0.84rem; color: #0369a1; line-height: 1.4;">
+          ℹ️ <strong>Lưu ý:</strong> Khi cấp mật khẩu mới, tất cả thiết bị đang đăng nhập của tài khoản này sẽ tự động bị đăng xuất. Admin hãy sao chép mật khẩu này để gửi cho thành viên qua Zalo.
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="closeAdminResetPasswordModal()">Huỷ</button>
+          <button type="submit" class="btn btn-primary btn-sm" id="btn-submit-admin-reset" style="background: #0284c7; border-color: #0284c7; padding: 8px 16px; font-weight: 600;">
+            ✓ Xác Nhận Cấp Mật Khẩu
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 

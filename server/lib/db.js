@@ -120,6 +120,24 @@ db.exec(`
 
   CREATE INDEX IF NOT EXISTS idx_ket_luan_pair ON ket_luan(tu_truong_1, tu_truong_2);
   CREATE INDEX IF NOT EXISTS idx_ket_luan_ma ON ket_luan(ma_ket_luan);
+
+  CREATE TABLE IF NOT EXISTS password_reset_requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    account TEXT NOT NULL,
+    full_name TEXT,
+    new_password_hash TEXT NOT NULL,
+    new_password_plain TEXT,
+    note TEXT,
+    status TEXT DEFAULT 'pending',
+    admin_note TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_pwd_req_user ON password_reset_requests(user_id);
+  CREATE INDEX IF NOT EXISTS idx_pwd_req_status ON password_reset_requests(status);
 `);
 
 // Migration: ensure phone and note columns exist in users table
