@@ -229,9 +229,18 @@
             </p>
           </div>
 
-          <!-- Thanh công cụ Lọc & Tìm kiếm -->
+          <!-- Thanh công cụ Lọc, Tìm kiếm & Chuyển chế độ xem -->
           <div class="indicator-toolbar">
-            <div class="filter-tabs">
+            <div class="view-mode-tabs" id="view-mode-tabs">
+              <button type="button" class="view-mode-btn active" id="btn-view-summary" onclick="switchIndicatorView('summary')">
+                📖 Bảng Tổng Hợp (Chuẩn Mẫu)
+              </button>
+              <button type="button" class="view-mode-btn" id="btn-view-cards" onclick="switchIndicatorView('cards')">
+                🗂️ Danh Sách Thẻ Chi Tiết
+              </button>
+            </div>
+
+            <div class="filter-tabs" id="indicator-filter-tabs">
               <button type="button" class="tab-filter-btn active" data-group="all">Tất cả (23)</button>
               <button type="button" class="tab-filter-btn" data-group="cotLoi">Cốt lõi</button>
               <button type="button" class="tab-filter-btn" data-group="boTro">Bổ trợ</button>
@@ -245,9 +254,9 @@
             </div>
           </div>
 
-          <!-- Lưới thẻ chỉ số -->
-          <div class="indicator-grid" id="indicator-cards-grid">
-            <!-- Cards injected here -->
+          <!-- Lưới thẻ chỉ số / Bảng Tổng hợp -->
+          <div id="indicator-cards-grid">
+            <!-- Cards or Summary Board injected here -->
           </div>
         </div>
       </div>

@@ -984,10 +984,340 @@ a:hover {
   gap: 16px;
   margin-bottom: 30px;
 }
+.view-mode-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.view-mode-btn {
+  background: #ffffff;
+  border: 1.5px solid var(--border-color);
+  color: var(--text-muted);
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.88rem;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.view-mode-btn:hover {
+  border-color: #1a2b6d;
+  color: #1a2b6d;
+  background: #f8fafc;
+}
+.view-mode-btn.active {
+  background: #1a2b6d;
+  color: #ffffff;
+  border-color: #1a2b6d;
+  box-shadow: 0 4px 12px rgba(26, 43, 109, 0.2);
+}
 .filter-tabs {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
+}
+
+/* ==========================================================================
+   Bảng Tổng Hợp 23 Chỉ Số Chuẩn Mẫu Báo Cáo (2 Trang - Trắng & Xanh)
+   ========================================================================== */
+.tsh-summary-board-container {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px;
+  max-width: 1320px;
+  margin: 0 auto;
+  width: 100%;
+}
+@media (max-width: 1080px) {
+  .tsh-summary-board-container {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
+.tsh-summary-page {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  padding: 32px 28px 48px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 820px;
+}
+
+.tsh-summary-page-header {
+  margin-bottom: 24px;
+}
+.tsh-summary-user-box {
+  text-align: right;
+  margin-bottom: 6px;
+}
+.tsh-summary-fullname {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #1a2b6d;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.tsh-summary-birthdate {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-top: 2px;
+}
+.tsh-summary-header-line {
+  height: 1.5px;
+  background: #cbd5e1;
+  width: 100%;
+  margin: 6px 0 18px;
+}
+.tsh-summary-title {
+  text-align: center;
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #1a2b6d;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin: 0 0 20px;
+}
+
+.tsh-grid-page1 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  flex: 1;
+}
+
+.tsh-grid-page2 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px 16px;
+  flex: 1;
+}
+
+@media (max-width: 680px) {
+  .tsh-grid-page1,
+  .tsh-grid-page2 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .tsh-summary-page {
+    padding: 24px 16px 42px;
+  }
+}
+@media (max-width: 440px) {
+  .tsh-grid-page1,
+  .tsh-grid-page2 {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+/* Thẻ Trang 1 (Trắng viền vàng) */
+.tsh-card-white {
+  background: #ffffff;
+  border: 1.5px solid #c5a059;
+  border-radius: 4px;
+  box-shadow: 4px 4px 0px 0px #c5a059;
+  padding: 16px 10px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.25s ease;
+  position: relative;
+  min-height: 175px;
+}
+.tsh-card-white:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px 0px #b08d46;
+}
+.tsh-card-white .tsh-card-number {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #1a2b6d;
+  line-height: 1.1;
+  margin-bottom: 4px;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tsh-card-white .tsh-card-number.multi-num {
+  font-size: 1.25rem;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+.tsh-card-white .tsh-card-title {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #1a2b6d;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin: 4px 0 6px 0;
+  line-height: 1.25;
+}
+.tsh-card-white .tsh-card-desc {
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: #374151;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Thẻ Trang 2 (Xanh hoàng gia viền trắng) */
+.tsh-card-blue {
+  background: #20317e;
+  border: 1.5px solid #ffffff;
+  border-radius: 4px;
+  box-shadow: 4px 4px 0px 0px #0e163b;
+  padding: 18px 10px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.25s ease;
+  position: relative;
+  min-height: 195px;
+}
+.tsh-card-blue:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px 0px #060a1a;
+}
+.tsh-card-blue .tsh-card-number {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.1;
+  margin-bottom: 4px;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tsh-card-blue .tsh-card-number.multi-num {
+  font-size: 1.25rem;
+  letter-spacing: 0.8px;
+  white-space: nowrap;
+}
+.tsh-card-blue .tsh-card-title {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin: 4px 0 6px 0;
+  line-height: 1.25;
+}
+.tsh-card-blue .tsh-card-desc {
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: #e2e8f0;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Dải băng trang trí chân trang */
+.tsh-page-bottom-ribbon {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 22px;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+}
+.tsh-ribbon-gold {
+  flex: 1;
+  background: linear-gradient(90deg, #c5a059 0%, #e6cd90 60%, #c5a059 100%);
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 100%, 0 100%);
+}
+.tsh-ribbon-page-num {
+  width: 48px;
+  background: #1a2b6d;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Trạng thái khoá & lọc */
+.tsh-card-dimmed {
+  opacity: 0.22 !important;
+  filter: grayscale(0.85);
+  transform: scale(0.97);
+}
+.tsh-card-highlighted {
+  box-shadow: 0 0 0 3px #38bdf8, 6px 6px 0px 0px #0284c7 !important;
+  transform: scale(1.02);
+}
+.tsh-badge-lock {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(245, 158, 11, 0.15);
+  color: #d97706;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+.tsh-card-blue .tsh-badge-lock {
+  background: rgba(254, 240, 138, 0.2);
+  color: #fef08a;
+  border-color: rgba(254, 240, 138, 0.5);
+}
+
+@media print {
+  .view-mode-tabs,
+  .indicator-toolbar {
+    display: none !important;
+  }
+  .tsh-summary-board-container {
+    display: block !important;
+  }
+  .tsh-summary-page {
+    page-break-inside: avoid;
+    margin-bottom: 25mm;
+    box-shadow: none !important;
+    border: 1px solid #cbd5e1 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .tsh-summary-page:first-child {
+    page-break-after: always;
+  }
+  .tsh-card-white {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    box-shadow: 2px 2px 0px 0px #c5a059 !important;
+  }
+  .tsh-card-blue {
+    background: #20317e !important;
+    color: #ffffff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    box-shadow: 2px 2px 0px 0px #0e163b !important;
+  }
+  .tsh-card-blue .tsh-card-number,
+  .tsh-card-blue .tsh-card-title {
+    color: #ffffff !important;
+  }
+  .tsh-card-blue .tsh-card-desc {
+    color: #e2e8f0 !important;
+  }
 }
 .tab-filter-btn {
   background: #ffffff;

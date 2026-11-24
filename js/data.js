@@ -161,9 +161,37 @@ const TSH_DATA = {
     },
     noNghiep: {
       key: 'noNghiep',
-      name: 'Nợ nghiệp (Karmic Debt)',
+      name: 'Bài học (Nợ nghiệp)',
       group: 'dacBiet',
-      shortDesc: 'Các bài học nghiệp quả từ quá khứ (13, 14, 16, 19) cần thức tỉnh và hoá giải.',
+      shortDesc: 'Những bài học bạn cần chinh phục để hoàn thiện bản thân.',
+      isFree: false
+    },
+    baiHoc: {
+      key: 'baiHoc',
+      name: 'Bài học',
+      group: 'dacBiet',
+      shortDesc: 'Những bài học bạn cần chinh phục để hoàn thiện bản thân.',
+      isFree: false
+    },
+    theHe: {
+      key: 'theHe',
+      name: 'Thế hệ',
+      group: 'boTro',
+      shortDesc: 'Giúp bạn nhận biết những yêu cầu và kỳ vọng bạn cần làm để phù hợp với thời đại của mình.',
+      isFree: false
+    },
+    chang: {
+      key: 'chang',
+      name: 'Chặng',
+      group: 'dinhCao',
+      shortDesc: 'Mức độ trưởng thành, trách nhiệm, khả năng lĩnh hội, các sự kiện quan trọng trong mỗi giai đoạn cuộc đời.',
+      isFree: false
+    },
+    thachThuc: {
+      key: 'thachThuc',
+      name: 'Thách thức',
+      group: 'thuThach',
+      shortDesc: 'Vấn đề lớn bạn sẽ đối mặt trong các giai đoạn và cách bạn nên làm để vượt qua.',
       isFree: false
     },
     namTheGioi: {

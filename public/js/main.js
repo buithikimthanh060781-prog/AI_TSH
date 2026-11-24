@@ -229,10 +229,12 @@ function tinhThanSoHoc(hoTen, ngay, thang, nam) {
   const thangCaNhan = RN(namCaNhan + curMonth);
   const ngayCaNhan = RN(thangCaNhan + curDay);
   const tuoi = curYear - nam;
+  const theHe = RN(nam);
 
   return {
     hoTen, tenChuan, ngay, thang, nam, wordStats,
     tuoi,
+    theHe,
     duongDoi, truocDuongDoi,
     suMenh, truocSuMenh,
     linhHon, truocLinhHon,
@@ -265,6 +267,7 @@ let currentUser = null;
 let currentResult = null;
 let currentFilter = 'all';
 let currentSelectedTransitYear = null;
+let currentIndicatorView = 'summary'; // 'summary' (Mẫu Báo Cáo 2 Trang) | 'cards' (Lưới Thẻ)
 
 // Kiểm tra trạng thái đăng nhập
 async function checkAuth() {
@@ -986,6 +989,395 @@ function renderLetterBreakdown(data) {
   container.innerHTML = html;
 }
 
+// Chuyển đổi chế độ hiển thị chỉ số (Bảng tổng hợp chuẩn mẫu vs Lưới thẻ chi tiết)
+function switchIndicatorView(mode) {
+  currentIndicatorView = mode;
+  const btnSummary = document.getElementById('btn-view-summary');
+  const btnCards = document.getElementById('btn-view-cards');
+  if (btnSummary && btnCards) {
+    if (mode === 'summary') {
+      btnSummary.classList.add('active');
+      btnCards.classList.remove('active');
+    } else {
+      btnSummary.classList.remove('active');
+      btnCards.classList.add('active');
+    }
+  }
+  if (currentResult) {
+    renderCards(currentResult);
+  }
+}
+window.switchIndicatorView = switchIndicatorView;
+
+// Helper định dạng Bài học nợ nghiệp chuẩn (e.g. 14/5, 13/4)
+function formatKarmicDebtText(noNghiepArr) {
+  if (!noNghiepArr || !noNghiepArr.length) return '0';
+  const map = { 13: '13/4', 14: '14/5', 16: '16/7', 19: '19/1' };
+  return noNghiepArr.map(n => map[n] || n).join(',');
+}
+
+// Helper tính chuỗi 5 năm cá nhân
+function get5PersonalYears(ngay, thang, activeYear) {
+  const y = activeYear || new Date().getFullYear();
+  return [y - 2, y - 1, y, y + 1, y + 2]
+    .map(yr => RN(RN(ngay) + RN(thang) + RN(yr)))
+    .join(',');
+}
+
+// Helper tính chuỗi 5 tháng cá nhân
+function get5PersonalMonths(ngay, thang, activeYear) {
+  const y = activeYear || new Date().getFullYear();
+  const py = RN(RN(ngay) + RN(thang) + RN(y));
+  const curM = new Date().getMonth() + 1;
+  return [-2, -1, 0, 1, 2]
+    .map(offset => {
+      const m = ((curM + offset - 1) % 12 + 12) % 12 + 1;
+      return RN(py + m);
+    })
+    .join(',');
+}
+
+// Helper tính chuỗi 3 ngày cá nhân
+function get3PersonalDays(ngay, thang, activeYear) {
+  const y = activeYear || new Date().getFullYear();
+  const py = RN(RN(ngay) + RN(thang) + RN(y));
+  const curM = new Date().getMonth() + 1;
+  const pm = RN(py + curM);
+  const curD = new Date().getDate();
+  return [-1, 0, 1]
+    .map(offset => {
+      const d = Math.max(1, Math.min(31, curD + offset));
+      return RN(pm + RN(d));
+    })
+    .join(',');
+}
+
+// Render Bảng Tổng Hợp Chỉ Số 2 Trang (Chuẩn Mẫu Báo Cáo - Khớp 100% Ảnh Mẫu)
+function renderSummaryBoard(data, container, isUnlocked, query, filter) {
+  const fullName = (data.hoTen || '').trim().toUpperCase();
+  const birthDateStr = `${String(data.ngay).padStart(2, '0')}/${String(data.thang).padStart(2, '0')}/${data.nam}`;
+  const activeYear = currentSelectedTransitYear || new Date().getFullYear();
+
+  function checkCardMatch(card) {
+    if (filter !== 'all') {
+      if (filter === 'cotLoi' && card.group !== 'cotLoi') return false;
+      if (filter === 'boTro' && card.group !== 'boTro') return false;
+      if (filter === 'dinhCao' && card.group !== 'dinhCao') return false;
+      if (filter === 'thuThach' && card.group !== 'thuThach') return false;
+      if (filter === 'dacBiet' && card.group !== 'dacBiet') return false;
+    }
+    if (query) {
+      const q = boDau(query);
+      const namePlain = boDau(card.name);
+      const descPlain = boDau(card.desc);
+      if (!namePlain.includes(q) && !descPlain.includes(q)) return false;
+    }
+    return true;
+  }
+
+  const isFiltering = !!(query || filter !== 'all');
+
+  // Trang 1: 12 Chỉ số viền vàng nền trắng (3 cột x 4 hàng)
+  const page1Cards = [
+    {
+      key: 'duongDoi',
+      name: 'ĐƯỜNG ĐỜI',
+      val: data.duongDoi,
+      desc: 'Số phận, sức mạnh và nét đặc biệt trong tính cách của bạn. Những trở ngại mà bạn có thể gặp phải để hoàn thành bài học.',
+      group: 'cotLoi',
+      isFree: true
+    },
+    {
+      key: 'canBang',
+      name: 'CÂN BẰNG',
+      val: data.canBang,
+      desc: 'Cách bạn đối diện với vấn đề và nghịch cảnh.',
+      group: 'boTro',
+      isFree: false
+    },
+    {
+      key: 'suMenh',
+      name: 'SỨ MỆNH',
+      val: data.suMenh,
+      desc: 'La bàn dẫn lối giúp bạn hoàn thành sứ mệnh và mang lại những giá trị to lớn cho cuộc đời.',
+      group: 'cotLoi',
+      isFree: true
+    },
+    {
+      key: 'lkDuongDoiSuMenh',
+      name: 'LIÊN KẾT ĐƯỜNG ĐỜI - SỨ MỆNH',
+      val: data.lkDuongDoiSuMenh,
+      desc: 'Việc bạn cần làm để tốt nghiệp bài học cuộc đời và thực hiện sứ mệnh.',
+      group: 'boTro',
+      isFree: false
+    },
+    {
+      key: 'linhHon',
+      name: 'LINH HỒN',
+      val: data.linhHon,
+      desc: 'Khao khát ẩn giấu trong tâm hồn, lý do phía sau mọi hành động của bạn.',
+      group: 'cotLoi',
+      isFree: false
+    },
+    {
+      key: 'ngaySinh',
+      name: 'NGÀY SINH',
+      val: data.ngaySinh,
+      desc: 'Những đặc điểm, lĩnh vực chuyên môn hoặc kỹ năng bạn cần phát triển và sẽ thành công nếu muốn gắn bó cả đời với chúng.',
+      group: 'cotLoi',
+      isFree: false
+    },
+    {
+      key: 'nhanCach',
+      name: 'NHÂN CÁCH',
+      val: data.nhanCach,
+      desc: 'Cá tính, thế giới quan, các mối quan hệ và các vấn đề trong cách bạn đối nhân xử thế.',
+      group: 'cotLoi',
+      isFree: false
+    },
+    {
+      key: 'lkNhanCachLinhHon',
+      name: 'LIÊN KẾT LINH HỒN - NHÂN CÁCH',
+      val: data.lkNhanCachLinhHon,
+      desc: 'Cầu nối liên kết cách nhìn của bạn về bản thân và hình ảnh của bạn trong mắt người khác.',
+      group: 'boTro',
+      isFree: false
+    },
+    {
+      key: 'truongThanh',
+      name: 'TRƯỞNG THÀNH',
+      val: data.truongThanh,
+      desc: 'Con người, giá trị, khát vọng, mục tiêu của bạn trong thời kỳ "vàng son" từ 30 - 40 tuổi.',
+      group: 'cotLoi',
+      isFree: false
+    },
+    {
+      key: 'thaiDo',
+      name: 'THÁI ĐỘ',
+      val: data.thaiDo,
+      desc: 'Mô tả thái độ và cách bạn nhìn nhận các tình huống hằng ngày.',
+      group: 'boTro',
+      isFree: false
+    },
+    {
+      key: 'chiSoThieu',
+      name: 'THIẾU',
+      val: (data.chiSoThieu && data.chiSoThieu.length) ? data.chiSoThieu.join(',') : '0',
+      desc: 'Điểm yếu bạn cần khắc phục.',
+      group: 'dacBiet',
+      isFree: false
+    },
+    {
+      key: 'baiHoc',
+      modalKey: 'noNghiep',
+      name: 'BÀI HỌC',
+      val: formatKarmicDebtText(data.noNghiep),
+      desc: 'Những bài học bạn cần chinh phục để hoàn thiện bản thân.',
+      group: 'dacBiet',
+      isFree: false
+    }
+  ];
+
+  // Trang 2: 9 Chỉ số xanh hoàng gia viền trắng (3 cột x 3 hàng)
+  const pYears = get5PersonalYears(data.ngay, data.thang, activeYear);
+  const pMonths = get5PersonalMonths(data.ngay, data.thang, activeYear);
+  const pDays = get3PersonalDays(data.ngay, data.thang, activeYear);
+  const theHeVal = (data.theHe !== undefined) ? data.theHe : RN(data.nam);
+
+  const page2Cards = [
+    {
+      key: 'tuDuyLyTri',
+      name: 'TƯ DUY LÝ TRÍ',
+      val: data.tuDuyLyTri,
+      desc: 'Lối tư duy và hướng ra quyết định của bạn.',
+      group: 'boTro',
+      isFree: false
+    },
+    {
+      key: 'sucManhTiemThuc',
+      name: 'SỨC MẠNH TIỀM THỨC',
+      val: data.sucManhTiemThuc,
+      desc: 'Đặc điểm tính cách mà bạn cần phát triển để ứng phó và giải quyết vấn đề.',
+      group: 'dacBiet',
+      isFree: false
+    },
+    {
+      key: 'damMe',
+      name: 'ĐAM MÊ',
+      val: (data.damMe && data.damMe.length) ? data.damMe.join(',') : '0',
+      desc: 'Kỹ năng đặc biệt, sở thích, đam mê, những hoạt động mang đến sự tự nhận thức và niềm vui cho bạn.',
+      group: 'boTro',
+      isFree: false
+    },
+    {
+      key: 'namCaNhan',
+      name: 'NĂM CÁ NHÂN',
+      val: pYears,
+      modalVal: data.chuKy ? data.chuKy.namCaNhan : RN(RN(data.ngay) + RN(data.thang) + RN(activeYear)),
+      desc: 'Những thay đổi sẽ xảy ra trong những năm tới và cách bạn ứng xử.',
+      group: 'cotLoi',
+      isFree: true
+    },
+    {
+      key: 'thangCaNhan',
+      name: 'THÁNG CÁ NHÂN',
+      val: pMonths,
+      modalVal: data.chuKy ? data.chuKy.thangCaNhan : '1',
+      desc: 'Những thay đổi sẽ xảy ra trong những tháng tới và cách bạn ứng xử.',
+      group: 'boTro',
+      isFree: true
+    },
+    {
+      key: 'chang',
+      modalKey: 'chang1',
+      modalVal: data.chang[0].val,
+      name: 'CHẶNG',
+      val: data.chang.map(c => c.val).join(','),
+      desc: 'Mức độ trưởng thành, trách nhiệm, khả năng lĩnh hội, các sự kiện quan trọng trong mỗi giai đoạn cuộc đời.',
+      group: 'dinhCao',
+      isFree: false
+    },
+    {
+      key: 'ngayCaNhan',
+      name: 'NGÀY CÁ NHÂN',
+      val: pDays,
+      modalVal: data.chuKy ? data.chuKy.ngayCaNhan : '1',
+      desc: 'Gợi ý những hành động phù hợp cho một ngày hiệu quả của bạn.',
+      group: 'boTro',
+      isFree: true
+    },
+    {
+      key: 'theHe',
+      name: 'THẾ HỆ',
+      val: theHeVal,
+      desc: 'Giúp bạn nhận biết những yêu cầu và kỳ vọng bạn cần làm để phù hợp với thời đại của mình.',
+      group: 'boTro',
+      isFree: false
+    },
+    {
+      key: 'thachThuc',
+      modalKey: 'thuThach1',
+      modalVal: data.thuThach[0].val,
+      name: 'THÁCH THỨC',
+      val: data.thuThach.map(t => t.val).join(','),
+      desc: 'Vấn đề lớn bạn sẽ đối mặt trong các giai đoạn và cách bạn nên làm để vượt qua.',
+      group: 'thuThach',
+      isFree: false
+    }
+  ];
+
+  function renderPage1Card(c) {
+    const isLocked = !isUnlocked && !c.isFree;
+    const isMatch = checkCardMatch(c);
+    let stateClasses = '';
+    if (isLocked) stateClasses += ' tsh-card-locked';
+    if (isFiltering) {
+      stateClasses += isMatch ? ' tsh-card-highlighted' : ' tsh-card-dimmed';
+    }
+
+    const isMulti = String(c.val).length > 4;
+    const displayVal = isLocked ? '🔒' : c.val;
+    const numClass = isMulti ? 'tsh-card-number multi-num' : 'tsh-card-number';
+    const clickAction = isLocked
+      ? (currentUser
+          ? `alert('Tài khoản của bạn đang chờ Quản trị viên (Admin) xác thực/kích hoạt. Vui lòng liên hệ Admin qua Zalo/SĐT 0762294134 để được kích hoạt trước khi mở khoá 23 chỉ số.')`
+          : `openAuthModal('register')`)
+      : `openMeaningModal('${c.modalKey || c.key}', '${c.modalVal || c.val}')`;
+
+    const lockTag = isLocked
+      ? `<span class="tsh-badge-lock">${currentUser ? 'Chờ duyệt' : 'Đăng ký'}</span>`
+      : '';
+
+    return `
+      <div class="tsh-card-white${stateClasses}" onclick="${clickAction}" title="${c.name}: Bấm để xem luận giải chi tiết">
+        ${lockTag}
+        <div class="${numClass}">${displayVal}</div>
+        <div class="tsh-card-title">${c.name}</div>
+        <p class="tsh-card-desc">${c.desc}</p>
+      </div>
+    `;
+  }
+
+  function renderPage2Card(c) {
+    const isLocked = !isUnlocked && !c.isFree;
+    const isMatch = checkCardMatch(c);
+    let stateClasses = '';
+    if (isLocked) stateClasses += ' tsh-card-locked';
+    if (isFiltering) {
+      stateClasses += isMatch ? ' tsh-card-highlighted' : ' tsh-card-dimmed';
+    }
+
+    const isMulti = String(c.val).length > 4;
+    const displayVal = isLocked ? '🔒' : c.val;
+    const numClass = isMulti ? 'tsh-card-number multi-num' : 'tsh-card-number';
+    const clickAction = isLocked
+      ? (currentUser
+          ? `alert('Tài khoản của bạn đang chờ Quản trị viên (Admin) xác thực/kích hoạt. Vui lòng liên hệ Admin qua Zalo/SĐT 0762294134 để được kích hoạt trước khi mở khoá 23 chỉ số.')`
+          : `openAuthModal('register')`)
+      : `openMeaningModal('${c.modalKey || c.key}', '${c.modalVal || c.val}')`;
+
+    const lockTag = isLocked
+      ? `<span class="tsh-badge-lock">${currentUser ? 'Chờ duyệt' : 'Đăng ký'}</span>`
+      : '';
+
+    return `
+      <div class="tsh-card-blue${stateClasses}" onclick="${clickAction}" title="${c.name}: Bấm để xem luận giải chi tiết">
+        ${lockTag}
+        <div class="${numClass}">${displayVal}</div>
+        <div class="tsh-card-title">${c.name}</div>
+        <p class="tsh-card-desc">${c.desc}</p>
+      </div>
+    `;
+  }
+
+  const page1Html = `
+    <div class="tsh-summary-page tsh-page-left">
+      <div class="tsh-summary-page-header">
+        <div class="tsh-summary-user-box">
+          <div class="tsh-summary-fullname">${fullName}</div>
+          <div class="tsh-summary-birthdate">${birthDateStr}</div>
+        </div>
+        <div class="tsh-summary-header-line"></div>
+        <h3 class="tsh-summary-title">TỔNG HỢP CHỈ SỐ</h3>
+      </div>
+      <div class="tsh-grid-page1">
+        ${page1Cards.map(renderPage1Card).join('')}
+      </div>
+      <div class="tsh-page-bottom-ribbon">
+        <div class="tsh-ribbon-gold"></div>
+        <div class="tsh-ribbon-page-num">9</div>
+      </div>
+    </div>
+  `;
+
+  const page2Html = `
+    <div class="tsh-summary-page tsh-page-right">
+      <div class="tsh-summary-page-header">
+        <div class="tsh-summary-user-box">
+          <div class="tsh-summary-fullname">${fullName}</div>
+          <div class="tsh-summary-birthdate">${birthDateStr}</div>
+        </div>
+        <div class="tsh-summary-header-line"></div>
+        <h3 class="tsh-summary-title">TỔNG HỢP CHỈ SỐ</h3>
+      </div>
+      <div class="tsh-grid-page2">
+        ${page2Cards.map(renderPage2Card).join('')}
+      </div>
+      <div class="tsh-page-bottom-ribbon">
+        <div class="tsh-ribbon-gold"></div>
+        <div class="tsh-ribbon-page-num">10</div>
+      </div>
+    </div>
+  `;
+
+  container.innerHTML = `
+    <div class="tsh-summary-board-container">
+      ${page1Html}
+      ${page2Html}
+    </div>
+  `;
+}
+
 // Render 23 Thẻ Chỉ Số
 function renderCards(data) {
   const container = document.getElementById('indicator-cards-grid');
@@ -995,6 +1387,13 @@ function renderCards(data) {
   const searchInput = document.getElementById('indicator-search');
   const query = searchInput ? boDau(searchInput.value) : '';
 
+  // Nếu đang chọn chế độ Bảng Tổng Hợp 2 Trang (Chuẩn Mẫu Báo Cáo - Khớp Ảnh)
+  if (currentIndicatorView === 'summary') {
+    renderSummaryBoard(data, container, isUnlocked, query, currentFilter);
+    return;
+  }
+
+  // Chế độ Lưới Thẻ Chi Tiết
   const indicatorList = [
     { key: 'duongDoi', val: data.duongDoi, rawVal: data.truocDuongDoi },
     { key: 'suMenh', val: data.suMenh, rawVal: data.truocSuMenh },
@@ -1088,7 +1487,7 @@ function renderCards(data) {
     })
     .join('');
 
-  container.innerHTML = cardsHtml || '<div class="no-results">Không tìm thấy chỉ số phù hợp với từ khoá.</div>';
+  container.innerHTML = cardsHtml ? `<div class="indicator-grid">${cardsHtml}</div>` : '<div class="no-results">Không tìm thấy chỉ số phù hợp với từ khoá.</div>';
 }
 
 function getGroupName(group) {
@@ -1108,9 +1507,13 @@ function openMeaningModal(key, val) {
   const body = document.getElementById('meaning-modal-body');
   if (!modal || !body) return;
 
+  if (key === 'baiHoc') key = 'noNghiep';
   const def = TSH_DATA.indicators[key] || { name: key, shortDesc: '' };
-  const numVal = parseInt(val, 10);
-  const meaning = TSH_DATA.meanings[numVal] || TSH_DATA.meanings[1];
+  let numVal = parseInt(val, 10);
+  if (isNaN(numVal) && key === 'noNghiep' && currentResult && currentResult.noNghiep.length) {
+    numVal = currentResult.noNghiep[0];
+  }
+  const meaning = (!isNaN(numVal) && TSH_DATA.meanings[numVal]) ? TSH_DATA.meanings[numVal] : TSH_DATA.meanings[1];
 
   let debtSection = '';
   if (key === 'noNghiep' && currentResult && currentResult.noNghiep.length) {
